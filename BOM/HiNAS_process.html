@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>HiNAS Control 2.0 — 납품 공정도 v6</title>
+<style>
+:root{--navy:#0d2137;--navy2:#163352;--blue:#1a60b0;--blue2:#2878d8;--pale:#e8f1fb;
+  --text:#1e293b;--muted:#64748b;--border:#d1dbe8;--bg:#eef2f7;--lw:138px;--sw:148px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--navy);color:#fff;height:52px;padding:0 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:300;box-shadow:0 2px 10px rgba(0,0,0,.45)}
+.badge{background:var(--blue2);font-size:10px;padding:3px 9px;border-radius:10px;
+  letter-spacing:1.2px;font-weight:700;margin-right:10px}
+.topbar h1{font-size:14px;font-weight:600}
+.topmeta{font-size:11px;color:#90aecb;margin-top:1px}
+.sdot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:#22c55e;margin-right:5px;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;
+  padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+.hbtn:hover{background:rgba(255,255,255,.25)}
+.hbtn.pr{background:var(--blue);border-color:var(--blue2)}
+.tabnav{display:flex;background:#fff;border-bottom:2px solid var(--border);
+  padding:0 20px;position:sticky;top:52px;z-index:200}
+.tabbt{padding:12px 22px;font-size:13px;font-weight:600;border:none;background:none;
+  cursor:pointer;font-family:inherit;color:var(--muted);
+  border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;
+  display:flex;align-items:center;gap:7px}
+.tabbt.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tbadge{background:var(--pale);color:var(--blue);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700}
+.tabcnt{display:none}.tabcnt.active{display:block}
+.wrap{padding:16px 20px}
+.stbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.spill{display:flex;align-items:center;gap:5px;background:#fff;
+  border:1px solid var(--border);padding:5px 13px;border-radius:20px;font-size:12px}
+.spill b{color:var(--blue);font-weight:700}
+.panel{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.phdr{background:var(--navy);color:#fff;padding:11px 16px;
+  display:flex;align-items:center;justify-content:space-between}
+.phdr-t{font-size:13px;font-weight:700}
+.cbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;
+  padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:inherit;margin-left:4px}
+.cbtn:hover{background:rgba(255,255,255,.22)}
+.swimout{overflow:auto;max-height:calc(100vh - 200px)}
+#tbl1{border-collapse:collapse;table-layout:fixed;min-width:100%}
+.th-gc{background:var(--navy);position:sticky;top:0;left:0;z-index:60;
+  min-width:var(--lw);max-width:var(--lw);padding:6px 8px;
+  border-right:2px solid rgba(255,255,255,.15)}
+.th-gc span{font-size:8px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px}
+.th-grp{position:sticky;top:0;z-index:50;text-align:center;
+  font-size:9px;font-weight:700;color:rgba(255,255,255,.65);padding:5px 2px;
+  text-transform:uppercase;letter-spacing:.6px;border-right:1px solid rgba(255,255,255,.07)}
+.th-sc{background:var(--navy);position:sticky;top:26px;left:0;z-index:60;
+  min-width:var(--lw);max-width:var(--lw);padding:6px 8px;
+  border-right:2px solid rgba(255,255,255,.15);border-bottom:2px solid rgba(255,255,255,.12)}
+.th-st{background:var(--navy);color:#fff;position:sticky;top:26px;z-index:50;
+  text-align:center;padding:5px 3px 7px;vertical-align:bottom;
+  min-width:var(--sw);max-width:var(--sw);
+  border-right:1px solid rgba(255,255,255,.08);border-bottom:2px solid rgba(255,255,255,.12)}
+.sn{display:inline-flex;align-items:center;justify-content:center;
+  width:14px;height:14px;background:rgba(255,255,255,.18);
+  border-radius:50%;font-size:8px;font-weight:700;margin-bottom:2px}
+.sl{font-size:10px;font-weight:600;line-height:1.3;white-space:pre-line}
+.se{font-size:8px;color:rgba(255,255,255,.35);margin-top:1px}
+.sg0{background:#0d2137}.sg1{background:#0f2d4a}.sg2{background:#143660}
+.sg3{background:#1a3d6a}.sg4{background:#0e3358}.sg5{background:#19406e}
+.sg6{background:#1a3f2a}.sg7{background:#0a2540}
+.tr-sep td{background:var(--navy2);color:#fff;padding:7px 12px;
+  border-top:3px solid rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.1);
+  font-size:12px;font-weight:700}
+.lane-title{display:flex;align-items:center;gap:8px}
+.lane-bar{width:4px;min-height:22px;border-radius:2px;flex-shrink:0}
+.lane-nt{font-size:13px;font-weight:700}
+.lane-st{font-size:10px;color:rgba(255,255,255,.5);font-weight:400;margin-left:4px}
+.tr-item td{border-bottom:1px solid #edf2f7}
+.tr-item:hover td{background:#f5f8ff!important}
+.td-nm{position:sticky;left:0;z-index:15;min-width:var(--lw);max-width:var(--lw);
+  background:#fff;border-right:2px solid var(--border);vertical-align:middle;padding:0}
+.nm-in{padding:6px 8px;min-height:52px;display:flex;flex-direction:column;justify-content:center}
+.nm-n{font-size:11px;font-weight:700;color:var(--text);line-height:1.35;word-break:keep-all}
+.nm-q{display:inline-block;background:var(--navy);color:#fff;
+  font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;margin-top:3px}
+.nm-p{font-size:9px;color:var(--muted);margin-top:2px;word-break:break-all}
+.nm-m{font-size:9px;color:var(--muted);margin-top:1px}
+.nm-nt{font-size:9px;color:#7c3aed;margin-top:2px;font-style:italic}
+.td-st{border-right:1px solid #edf2f7;vertical-align:middle;text-align:center;
+  min-width:var(--sw);max-width:var(--sw);height:52px;padding:0;
+  background:#fff;position:relative}
+.fline{position:absolute;top:50%;height:2px;transform:translateY(-50%);
+  pointer-events:none;z-index:1;border-radius:1px}
+.fnode{position:relative;z-index:2;display:inline-flex;flex-direction:column;
+  align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;
+  border:2px solid;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .15s}
+.fnode:hover{transform:scale(1.12)}
+.nd-ic{font-size:14px;line-height:1}
+.nd-lb{font-size:7px;font-weight:700;margin-top:1px;opacity:.8;line-height:1}
+.tr-ch td{background:#f0f4f8;padding:5px 12px;font-size:10px;font-weight:700;
+  color:var(--muted);letter-spacing:.4px;border-top:2px dashed #cbd5e1}
+.tr-co td{background:#f8fafc;border-bottom:1px solid #edf2f7}
+.td-cn{position:sticky;left:0;z-index:15;background:#f8fafc!important;
+  min-width:var(--lw);max-width:var(--lw);
+  border-right:1px dashed #e2e8f0;padding:5px 8px;vertical-align:middle}
+.ctag{display:inline-block;background:#fff;color:#64748b;
+  border:1px dashed #cbd5e1;padding:2px 7px;border-radius:3px;font-size:10px}
+.td-ci{padding:5px 10px;font-size:10px;color:#94a3b8;vertical-align:middle}
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:10px 16px;
+  background:#fafbfc;border-top:1px solid var(--border)}
+.lgi{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.lgn{width:14px;height:14px;border-radius:50%;border:2px solid;display:inline-block;flex-shrink:0}
+/* 임원뷰 */
+.exec-wrap{padding:16px 20px}
+.exec-hdr{background:var(--navy);color:#fff;border-radius:12px;
+  padding:20px 28px;margin-bottom:18px;
+  display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.eh-proj{font-size:10px;color:#7dd3fc;font-weight:700;letter-spacing:1px;margin-bottom:5px}
+.eh-title{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.eh-sub{font-size:12px;color:#90aecb;margin-top:5px}
+.eh-cards{display:flex;gap:12px;flex-wrap:wrap}
+.ecard{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  padding:10px 16px;border-radius:8px;text-align:center;min-width:80px}
+.ecard .ev{font-size:22px;font-weight:700;color:#7dd3fc}
+.ecard .ek{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.flow-tl{background:#fff;border:1px solid var(--border);border-radius:10px;
+  padding:16px 20px;margin-bottom:18px;overflow-x:auto}
+.flow-tl h3{font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+.ft-row{display:flex;align-items:center;gap:0;margin-bottom:10px}
+.ft-lbl{font-size:11px;font-weight:700;color:#fff;width:90px;flex-shrink:0;
+  padding:7px 8px;border-radius:7px;text-align:center;margin-right:10px;line-height:1.4}
+.ft-step{display:flex;align-items:center;flex-shrink:0}
+.ft-box{padding:5px 11px;border-radius:6px;font-size:11px;font-weight:600;
+  text-align:center;white-space:nowrap;border:1.5px solid}
+.ft-arr{color:#94a3b8;font-size:15px;margin:0 3px;flex-shrink:0}
+.ft-sep{width:100%;height:1px;background:var(--border);margin:10px 0}
+.exec-so{overflow:auto;border:1px solid var(--border);border-radius:10px;
+  background:#fff;margin-bottom:16px}
+#exec-tbl{border-collapse:collapse;table-layout:fixed;min-width:100%}
+.eth-cor{background:var(--navy);position:sticky;top:0;left:0;z-index:50;
+  min-width:130px;max-width:130px;padding:10px 8px;
+  border-right:2px solid rgba(255,255,255,.15)}
+.eth-cor span{font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px}
+.eth-g{position:sticky;top:0;z-index:40;text-align:center;padding:10px 8px;
+  min-width:160px;border-right:1px solid rgba(255,255,255,.1);vertical-align:bottom}
+.eth-g .egl{font-size:12px;font-weight:700;color:#fff;display:block}
+.eth-g .ege{font-size:9px;color:rgba(255,255,255,.4);margin-top:2px;display:block}
+.eth-g .egar{font-size:15px;color:rgba(255,255,255,.3);display:block;margin-top:2px}
+.etd-ln{color:#fff;font-size:12px;font-weight:700;text-align:center;padding:10px 6px;
+  position:sticky;left:0;z-index:20;
+  border-right:2px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.1);
+  vertical-align:middle;min-width:130px;max-width:130px;
+  white-space:pre-wrap;word-break:keep-all;line-height:1.4}
+.etd-ln .els{font-size:9px;color:rgba(255,255,255,.45);font-weight:400;margin-top:4px;display:block}
+.eln0{background:#0f2744}.eln1{background:#1a3a5c}.eln2{background:#1b3f64}.eln3{background:#133050}
+.etd-c{border:1px solid #dde5ef;vertical-align:top;padding:8px;
+  background:#fff;min-height:80px;min-width:160px}
+.etd-c:hover{background:var(--pale)}.etd-c.ena{background:#f8f9fb}
+.echip{display:block;margin-bottom:5px;padding:5px 8px;border-radius:6px;
+  font-size:11px;line-height:1.4;word-break:break-all}
+.echip:last-child{margin-bottom:0}
+.echip .ecn{font-weight:700;display:block}
+.echip .ecq{display:inline-block;background:rgba(0,0,0,.1);
+  padding:0 4px;border-radius:3px;font-size:10px;margin-left:3px;font-weight:700}
+.echip .eco{font-size:10px;opacity:.65;display:block;margin-top:2px}
+.ech-ab{background:#dbeafe;color:#1e3a8a;border-left:4px solid #3b82f6}
+.ech-mrc{background:#fef3c7;color:#78350f;border-left:4px solid #f59e0b}
+.ech-co{background:#dcfce7;color:#14532d;border-left:4px solid #22c55e}
+.ech-ir{background:#fdf4ff;color:#6b21a8;border-left:4px solid #d946ef}
+.ech-cs{background:#f1f5f9;color:#475569;border-left:4px solid #94a3b8}
+.no-item{font-size:11px;color:#c8d4e0}
+.exec-cons{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:16px}
+.exec-cons h4{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.cons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.cons-card{background:#f8f9fb;border:1px dashed #cbd5e1;border-radius:8px;padding:10px 12px}
+.cc-lane{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.cc-chip{display:inline-block;background:#fff;color:#64748b;border:1px solid #e2e8f0;
+  padding:3px 8px;border-radius:4px;font-size:10px;margin:2px 2px 2px 0}
+.notif{position:fixed;bottom:22px;right:22px;background:var(--navy2);color:#fff;
+  padding:10px 16px;border-radius:8px;font-size:13px;z-index:9999;
+  opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none}
+.notif.show{opacity:1;transform:translateY(0)}
+.loading{text-align:center;padding:50px;color:var(--muted)}
+.sp{display:inline-block;width:20px;height:20px;border:3px solid var(--border);
+  border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* 팝업 모달 */
+.pu-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:9000;
+  align-items:center;justify-content:center}
+.pu-ov.open{display:flex}
+.pu-bx{background:#fff;border-radius:14px;padding:0;max-width:520px;width:94%;
+  box-shadow:0 12px 40px rgba(0,0,0,.3);animation:puIn .18s ease;overflow:hidden}
+@keyframes puIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.pu-head{background:var(--navy);color:#fff;padding:16px 20px;
+  display:flex;align-items:center;gap:10px}
+.pu-icon-wrap{font-size:20px;flex-shrink:0}
+.pu-title-wrap{flex:1;min-width:0}
+.pu-title-text{font-size:14px;font-weight:700;display:block;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.pu-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:2px;display:block}
+.pu-body-wrap{padding:18px 20px}
+/* 사진 영역 */
+.pu-photo{width:100%;background:#f1f5f9;border-radius:10px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+  min-height:150px;overflow:hidden;border:1.5px dashed #cbd5e1;position:relative}
+.pu-photo img{max-width:100%;max-height:220px;object-fit:contain;display:block}
+.pu-photo-ph{text-align:center;color:#94a3b8;padding:24px 16px}
+.pu-photo-ph .pph-ic{font-size:36px;margin-bottom:8px;opacity:.5}
+.pu-photo-ph .pph-tx{font-size:11px;line-height:1.5}
+/* 설명 영역 */
+.pu-sect-lb{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.7px;margin-bottom:8px}
+.pu-list{list-style:none;padding:0;margin:0}
+.pu-list li{position:relative;padding:6px 0 6px 18px;font-size:12.5px;
+  color:var(--text);line-height:1.65;
+  border-bottom:1px solid #f1f5f9}
+.pu-list li:last-child{border-bottom:none}
+.pu-list li::before{content:'■';position:absolute;left:0;top:8px;
+  color:var(--blue);font-size:7px}
+.pu-emp{font-size:12px;color:var(--muted);font-style:italic;line-height:1.7}
+.pu-cl{width:100%;padding:10px;background:var(--navy);color:#fff;
+  border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  border-top:1px solid var(--border)}
+.pu-cl:hover{background:var(--blue)}
+/* D+ 뱃지 */
+.ddb{display:inline-flex;align-items:center;background:#1e40af;color:#bfdbfe;
+  font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;letter-spacing:.5px;flex-shrink:0}
+/* 세팅 유형 서브라벨 */
+.nd-st{font-size:6px;opacity:.75;line-height:1;margin-top:1px;
+  background:rgba(0,0,0,.1);border-radius:2px;padding:0 2px;white-space:nowrap}
+/* 클릭 가능 노드 */
+.fnode.clickable{cursor:pointer}
+.fnode.clickable:hover{transform:scale(1.18);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+/* 제품명 클릭 커서 */
+.nm-in{cursor:pointer}
+.nm-in:hover .nm-n{color:var(--blue);text-decoration:underline}
+/* 임원뷰 mrcyd */
+.ech-mrcyd{background:#d1fae5;color:#064e3b;border-left:4px solid #10b981}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div style="display:flex;align-items:center">
+    <span class="badge">HiNAS</span>
+    <div>
+      <h1>Control 2.0 — 납품 공정도 v6</h1>
+      <div class="topmeta" id="topmeta"><span class="sdot"></span>서버 연결 대기 중…</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:7px">
+    <button class="hbtn" onclick="window.print()">🖨 인쇄</button>
+    <button class="hbtn pr" onclick="doFetch()">🔄 수동 갱신</button>
+  </div>
+</div>
+<div class="tabnav">
+  <button class="tabbt active" id="tab1btn" onclick="switchTab(1)">📋 상세 공정도 <span class="tbadge" id="t1badge">—</span></button>
+  <button class="tabbt" id="tab2btn" onclick="switchTab(2)">👔 임원 요약뷰 <span class="tbadge">한눈에</span></button>
+</div>
+<div class="tabcnt active" id="tab-detail">
+  <div class="wrap">
+    <div class="stbar" id="stbar1"><div class="spill"><div class="loading"><div class="sp"></div> 연결 중…</div></div></div>
+    <div class="panel">
+      <div class="phdr">
+        <div class="phdr-t">📊 품목별 공정 흐름도 — 각 품목이 어느 공정 단계를 거치는지</div>
+        <div><button class="cbtn" onclick="chW(-16)">← 좁게</button><button class="cbtn" onclick="chW(+16)">넓게 →</button></div>
+      </div>
+      <div class="swimout"><table id="tbl1"></table></div>
+      <div class="legend" id="leg1"></div>
+    </div>
+  </div>
+</div>
+<div class="tabcnt" id="tab-exec">
+  <div class="exec-wrap">
+    <div class="exec-hdr">
+      <div>
+        <div class="eh-proj">AVIKUS Co., Ltd. — PROJECT DOCUMENT</div>
+        <div class="eh-title">HiNAS Control 2.0 납품 공정도</div>
+        <div class="eh-sub" id="exec-sub">데이터 로드 중…</div>
+      </div>
+      <div class="eh-cards" id="exec-cards"></div>
+    </div>
+    <div class="flow-tl"><h3>📌 납품 흐름 유형별 요약</h3><div id="ft-rows"></div></div>
+    <div class="exec-so"><table id="exec-tbl"></table></div>
+    <div class="exec-cons" id="exec-cons" style="display:none">
+      <h4>🔩 Essential BOM Component (NIR)</h4>
+      <div class="cons-grid" id="cons-grid"></div>
+    </div>
+  </div>
+</div>
+<div class="notif" id="notif"></div>
+
+<!-- 팝업 모달 -->
+<div class="pu-ov" id="pu-ov" onclick="closePopup(event)">
+  <div class="pu-bx" onclick="event.stopPropagation()">
+    <!-- 헤더 -->
+    <div class="pu-head">
+      <div class="pu-icon-wrap" id="pu-icon">📦</div>
+      <div class="pu-title-wrap">
+        <span class="pu-title-text" id="pu-title-text"></span>
+        <span class="pu-sub" id="pu-sub"></span>
+      </div>
+    </div>
+    <!-- 바디 -->
+    <div class="pu-body-wrap">
+      <!-- 사진 영역 (추후 사진 첨부 시 활성화) -->
+      <div class="pu-photo" id="pu-photo-img" style="display:none">
+        <img id="pu-img" src="" alt="제품 사진">
+      </div>
+      <div class="pu-photo pu-photo-ph" id="pu-photo-ph">
+        <div class="pph-ic">📷</div>
+        <div class="pph-tx">등록된 이미지 없음<br><b>images</b> 폴더에 <b>품목명.png</b> 또는 <b>품목명.jpg</b> 파일을 넣으면 자동으로 표시됩니다</div>
+      </div>
+      <!-- 설명 -->
+      <div class="pu-sect-lb">제품 설명 / 히스토리</div>
+      <div id="pu-body"></div>
+    </div>
+    <button class="pu-cl" onclick="document.getElementById('pu-ov').classList.remove('open')">닫기 ✕</button>
+  </div>
+</div>
+
+<script>
+/* ═══════ 공정 단계 ═══════ */
+const STAGES=[
+  {id:'발주',   label:'발주',          en:'P/O',        grp:0},
+  {id:'입고',   label:'입고',          en:'Incoming',   grp:1},
+  {id:'창고',   label:'자재창고\n입고', en:'Warehouse',  grp:1},
+  {id:'세팅',   label:'세팅',          en:'Setup',      grp:2},
+  {id:'A-QC',  label:'A-QC',          en:'Avikus QC',  grp:3},
+  {id:'P-전달',label:'협력사\n전달',   en:'To Partner', grp:4},
+  {id:'P-QC',  label:'협력사\nQC',    en:'Partner QC', grp:4},
+  {id:'ASSY',  label:'ASSY',          en:'Assembly',   grp:4},
+  {id:'재입고',label:'재입고',         en:'Re-Incoming',grp:1},
+  {id:'FAT',   label:'FAT',           en:'FAT',        grp:5},
+  {id:'MRC 납품',label:'MRC\n납품',   en:'To MRC',     grp:6},
+  {id:'MRC 결선',label:'MRC\n결선',   en:'MRC Wiring', grp:6},
+  {id:'DEL',   label:'DEL',           en:'Delivery',   grp:7},
+];
+const GL={0:'조달',1:'입고/창고',2:'세팅',3:'QC',4:'OEM',5:'FAT',6:'MRC',7:'납품'};
+const GB={0:'#0d2137',1:'#0f2d4a',2:'#143660',3:'#1a3d6a',4:'#0e3358',5:'#19406e',6:'#1a3f2a',7:'#0a2540'};
+const ICON={'발주':'📋','입고':'📦','창고':'🏭','세팅':'💻','A-QC':'🔍',
+  'P-전달':'🚚','P-QC':'✅','ASSY':'🔧','재입고':'📥','FAT':'🧪',
+  'MRC 납품':'📤','MRC 결선':'⚡','DEL':'🚢'};
+
+/* ═══════ 색상 팔레트 ═══════ */
+const PAL={
+  ab:    {line:'#3b82f6',fill:'#dbeafe',border:'#3b82f6',text:'#1e3a8a'},
+  mrc:   {line:'#f59e0b',fill:'#fef3c7',border:'#f59e0b',text:'#78350f'},
+  mrcyd: {line:'#10b981',fill:'#d1fae5',border:'#10b981',text:'#065f46'},
+  co:    {line:'#22c55e',fill:'#dcfce7',border:'#22c55e',text:'#14532d'},
+  ir:    {line:'#d946ef',fill:'#fdf4ff',border:'#d946ef',text:'#6b21a8'},
+  yo:    {line:'#f97316',fill:'#fff7ed',border:'#f97316',text:'#7c2d12'},
+  cs:    {line:'#cbd5e1',fill:'#f1f5f9',border:'#cbd5e1',text:'#475569'},
+};
+
+/* ═══════ 핵심: 한글 키워드 기반 색상 판별 ═══════
+   화살표 개수가 아닌 "시작 주체 + 포함 키워드"로 판별
+   → 열 추가/변경, 오타에도 안전
+*/
+function getPal(owner){
+  if(!owner)return PAL.cs;
+  const up=owner.toUpperCase();
+  // MRC→YARD 직납 (초록) — 엑셀 공정담당을 "MRC->YARD"로 입력
+  if(up.includes('MRC')&&up.includes('YARD'))return PAL.mrcyd;
+  const first=(owner.split('->')[0]||'').trim();
+  // 협력업체 시작 → OEM (초록)
+  if(first.includes('협력'))return PAL.co;
+  // 아비커스 시작 + 협력업체 포함 → IR 특수 왕복 (핑크)
+  if(first.includes('아비커스')&&owner.includes('협력'))return PAL.ir;
+  // MRC 포함 → MRC 경유 (노랑)
+  if(up.includes('MRC'))return PAL.mrc;
+  // 아비커스만 → 직납 (파랑)
+  if(owner.includes('아비커스'))return PAL.ab;
+  if(up.includes('YOKOGAWA'))return PAL.yo;
+  return PAL.cs;
+}
+function eClsKey(o){
+  if(!o)return 'ech-cs';
+  const up=o.toUpperCase();
+  if(up.includes('MRC')&&up.includes('YARD'))return 'ech-mrcyd';
+  const first=(o.split('->')[0]||'').trim();
+  if(first.includes('협력'))return 'ech-co';
+  if(first.includes('아비커스')&&o.includes('협력'))return 'ech-ir';
+  if(up.includes('MRC'))return 'ech-mrc';
+  if(o.includes('아비커스'))return 'ech-ab';
+  return 'ech-cs';
+}
+
+/* ═══════ 품목명 재정의 (요청 4: 엑셀 수정 없이 코드에서 변경) ═══════ */
+const RENAME={
+  'Server':    'Main Server',   // 요청 4
+};
+
+/* ═══════ 레인 정의 ═══════ */
+const LANES=[
+  {keys:['B.C.C','BCC','BRIDGE'],             label:'Bridge Control\nConsole',sub:'B.C.C',            dday:'기준',  elc:'eln0',barC:'#60a5fa'},
+  {keys:['MAIN RACK','MAIN','EER','NAVI'],     label:'Main Rack\n(E.E.R)',     sub:'EER / Navi Locker',dday:'D+11',  elc:'eln1',barC:'#fbbf24'},
+  {keys:['COMPASS','CAMERA HOUSING','CAMERA'], label:'Compass Deck\n/ Camera', sub:'Camera Housing',   dday:'D+104', elc:'eln2',barC:'#34d399'},
+  {keys:['W/H','WHEEL','WH CEILNG'],           label:'Wheel House',            sub:'W/H Ceiling',      dday:'D+159', elc:'eln3',barC:'#a78bfa'},
+];
+
+/* ═══════ 열 이름 자동 감지 (엑셀 열 추가/변경에 강한 버전) ═══════ */
+function getC(rows){
+  if(!rows||!rows.length)return{};
+  const H=Object.keys(rows[0]);
+
+  // 키워드 목록 중 하나라도 포함되는 헤더를 찾음 (대소문자/공백 무시)
+  function find(...kws){
+    return H.find(h=>{
+      const hn=h.toUpperCase().replace(/[\s\.\-_]/g,'');
+      return kws.some(k=>hn.includes(k.toUpperCase().replace(/[\s\.\-_]/g,'')));
+    })||'';
+  }
+  const C={
+    loc:     find('Locaition','Location','위치','LOC'),
+    item:    find('Itemname','ITEM','품목명','품목','자재명'),
+    pn:      find('PartNumber','PartNo','P/N','파트번호'),
+    qty:     find('QTY','수량','EA','개수'),
+    maker:   find('MAKER','메이커','제조사'),
+    proc:    find('공정유형','공정단계','공정'),
+    owner:   find('공정담당','담당'),
+    note:    find('비고','NOTE','REMARK','메모'),
+    desc:    find('제품설명','히스토리','HISTORY','제품 설명'),
+    setType: find('세팅유형','SETTYPE','설치유형','Setting'),
+    fatTask: find('FAT업무','FAT작업','FAT_TASK','FATTASK'),
+    img:     find('사진','IMAGE','PHOTO','IMG'),
+  };
+  // 디버그: 콘솔에 감지된 열 출력
+  console.log('[열 감지 결과]', C);
+  return C;
+}
+
+/* ═══════ Location → 레인 인덱스 ═══════ */
+function laneOf(loc){
+  const u=(loc||'').toUpperCase().trim();
+  for(let i=0;i<LANES.length;i++)
+    if(LANES[i].keys.some(k=>u.includes(k.toUpperCase())))return i;
+  return -1;
+}
+
+/* ═══════ 공정 코드 정규화 ═══════ */
+function norm(s){
+  s=s.trim().replace(/\s+/g,' ');
+  const M={
+    '발주':'발주','입고':'입고','창고':'창고','재입고':'재입고',
+    'SW 세팅':'세팅','SW세팅':'세팅','세팅':'세팅',
+    'A-QC':'A-QC','P-전달':'P-전달','P-QC':'P-QC',
+    'ASSY':'ASSY','FAT':'FAT','DEL':'DEL',
+    'MRC 납품':'MRC 납품','MRC납품':'MRC 납품',
+    'MRC 결선':'MRC 결선','MRC결선':'MRC 결선',
+  };
+  for(const[k,v]of Object.entries(M))
+    if(s.toUpperCase()===k.toUpperCase())return v;
+  return null; // 매핑 안되면 null
+}
+
+/* ═══════ 데이터 파싱 ═══════ */
+function parse(rows){
+  const C=getC(rows);
+  const LI=[[],[],[],[]],LC=[[],[],[],[]];
+  let tot=0,con=0;
+  rows.forEach(row=>{
+    const loc     =(C.loc    ?row[C.loc]    ||'':'').trim();
+    const rawItem =(C.item   ?row[C.item]   ||'':'').trim();
+    const item    =RENAME[rawItem]||rawItem;
+    const pn     =(C.pn     ?row[C.pn]     ||'':'').trim();
+    const qty    =(C.qty    ?row[C.qty]    ||'':'').trim();
+    const maker  =(C.maker  ?row[C.maker]  ||'':'').trim();
+    const proc   =(C.proc   ?row[C.proc]   ||'':'').trim();
+    const owner  =(C.owner  ?row[C.owner]  ||'':'').trim();
+    const note   =(C.note   ?row[C.note]   ||'':'').trim();
+    const desc   =(C.desc   ?row[C.desc]   ||'':'').trim();
+    const setType=(C.setType?row[C.setType]||'':'').trim();
+    const fatTask=(C.fatTask?row[C.fatTask]||'':'').trim();
+    const img    =(C.img    ?row[C.img]    ||'':'').trim();
+    if(!item)return;
+    const li=laneOf(loc);if(li<0)return;
+    const isNIR=owner.toLowerCase().includes('essential bom')||
+                owner.toLowerCase().includes('(nir)')||
+                owner.toLowerCase().includes('소모성');
+    const isCons=!proc||isNIR;
+    if(isCons){LC[li].push({item,pn,qty,maker,owner,note});con++;return;}
+    const stages=new Set(
+      proc.split(',').map(s=>norm(s)).filter(s=>s&&STAGES.some(st=>st.id===s))
+    );
+    if(stages.size>0){LI[li].push({item,rawItem,pn,qty,maker,owner,note,desc,stages,setType,fatTask,img});tot++;}
+  });
+  return{LI,LC,tot,con};
+}
+
+let lastTs=0,sw=148;
+
+/* ═══════ 탭1: 상세 공정도 ═══════ */
+function renderDetail(rows){
+  const{LI,LC,tot,con}=parse(rows);
+  document.getElementById('stbar1').innerHTML=
+    ['🏷 구분 <b>'+LANES.length+'</b>개','⚙️ 공정단계 <b>'+STAGES.length+'</b>개',
+     '📦 품목 <b>'+tot+'</b>개','🔩 NIR <b>'+con+'</b>개','📋 BOM <b>'+rows.length+'</b>행']
+    .map(s=>`<div class="spill">${s}</div>`).join('');
+  document.getElementById('t1badge').textContent=tot+con+'개';
+
+  const tbl=document.getElementById('tbl1');tbl.innerHTML='';
+
+  // 그룹 헤더
+  const r1=tbl.insertRow();
+  const c0=r1.insertCell();c0.className='th-gc';c0.rowSpan=2;c0.innerHTML='<span>구분 / 품목</span>';
+  let pg=-1,gc=null,gs=0;
+  STAGES.forEach(s=>{
+    if(s.grp!==pg){
+      if(gc)gc.colSpan=gs;
+      gc=r1.insertCell();
+      Object.assign(gc.style,{background:GB[s.grp],minWidth:sw+'px',fontSize:'9px',fontWeight:'700',
+        padding:'5px 0',textTransform:'uppercase',letterSpacing:'.6px',textAlign:'center',
+        position:'sticky',top:'0',zIndex:'50',color:'rgba(255,255,255,.65)',
+        borderRight:'1px solid rgba(255,255,255,.07)'});
+      gc.textContent=GL[s.grp];gs=1;pg=s.grp;
+    }else gs++;
+  });
+  if(gc)gc.colSpan=gs;
+
+  // 스테이지 헤더
+  const r2=tbl.insertRow();
+  STAGES.forEach((s,i)=>{
+    const th=r2.insertCell();th.className='th-st sg'+s.grp;
+    th.style.cssText='min-width:'+sw+'px;max-width:'+sw+'px;width:'+sw+'px';
+    th.innerHTML='<div class="sn">'+(i+1)+'</div><div class="sl">'+s.label+'</div><div class="se">'+s.en+'</div>';
+  });
+
+  // 레인별 품목 행
+  LANES.forEach((lane,li)=>{
+    if(!LI[li].length&&!LC[li].length)return;
+
+    // 레인 구분 헤더 — 해당 레인 담당 유형 뱃지 포함
+    const sr=tbl.insertRow();sr.className='tr-sep';
+    const sd=sr.insertCell();sd.colSpan=STAGES.length+1;
+
+    // 같은 색상끼리 그룹핑
+    const COLOR_ORDER=['ab','mrc','mrcyd','co','ir','yo','cs'];
+    LI[li].sort((a,b)=>{
+      const ka=Object.entries(PAL).find(([,v])=>v===getPal(a.owner))?.[0]||'cs';
+      const kb=Object.entries(PAL).find(([,v])=>v===getPal(b.owner))?.[0]||'cs';
+      return COLOR_ORDER.indexOf(ka)-COLOR_ORDER.indexOf(kb);
+    });
+    // Main Rack 레인에서 'Main Rack' 품목을 최상위로 고정 (요청 2)
+    if(li===1){
+      const mrIdx=LI[li].findIndex(it=>it.item.toUpperCase()==='MAIN RACK');
+      if(mrIdx>0){LI[li].unshift(...LI[li].splice(mrIdx,1));}
+    }
+
+    const ODEF={
+      ab:   {label:'아비커스 → YARD',           p:PAL.ab},
+      mrc:  {label:'아비커스 → MRC → YARD',     p:PAL.mrc},
+      mrcyd:{label:'MRC → YARD (직납)',          p:PAL.mrcyd},
+      co:   {label:'협력업체 → 아비커스 → YARD', p:PAL.co},
+      ir:   {label:'아비커스 ↔ 협력업체 (IR)',   p:PAL.ir},
+      yo:   {label:'YOKOGAWA → YARD',           p:PAL.yo},
+    };
+    const seenK=new Set(), bdgs=[];
+    LI[li].forEach(it=>{
+      const pal=getPal(it.owner);
+      const key=Object.entries(PAL).find(([,v])=>v===pal)?.[0];
+      if(key&&key!=='cs'&&!seenK.has(key)){
+        seenK.add(key);
+        const o=ODEF[key];
+        if(o) bdgs.push(
+          '<span style="display:inline-flex;align-items:center;gap:5px;'+
+          'background:'+o.p.fill+';color:'+o.p.text+';'+
+          'border:1.5px solid '+o.p.border+';'+
+          'padding:3px 10px;border-radius:20px;'+
+          'font-size:10px;font-weight:600;white-space:nowrap">'+
+          '<span style="width:8px;height:8px;border-radius:50%;background:'+o.p.border+
+          ';flex-shrink:0;display:inline-block"></span>'+
+          o.label+'</span>'
+        );
+      }
+    });
+
+    sd.innerHTML=
+      '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">'+
+        '<div class="lane-title">'+
+          '<div class="lane-bar" style="background:'+lane.barC+'"></div>'+
+          '<span class="lane-nt">'+lane.label.replace('\n',' ')+'</span>'+
+          (lane.dday==='기준'
+            ?'<span class="ddb" style="background:#374151;color:#e5e7eb">BCC 기준</span>'
+            :lane.dday?'<span class="ddb">'+lane.dday+'</span>':'')+
+          '<span class="lane-st">'+lane.sub+'</span>'+
+        '</div>'+
+        (bdgs.length?'<div style="display:flex;flex-wrap:wrap;gap:5px;padding-right:12px">'+bdgs.join('')+'</div>':'')+
+      '</div>';
+
+    // 품목별 행 (핵심: 1품목 = 1행)
+    LI[li].forEach(it=>{
+      const p=getPal(it.owner);
+      const tr=tbl.insertRow();tr.className='tr-item';
+
+      // 품목명 고정 셀 (클릭 시 팝업, 요청 3)
+      const ntd=tr.insertCell();ntd.className='td-nm';
+      ntd.style.borderLeft='3px solid '+p.border;
+      const nmDiv=document.createElement('div');nmDiv.className='nm-in';
+      nmDiv.title='클릭하여 이슈/메모 보기';
+      nmDiv.innerHTML=
+        '<span class="nm-n">'+escHtml(it.item)+'</span>'+
+        (it.qty?'<span class="nm-q">×'+it.qty+'</span>':'')+
+        (it.pn&&it.pn!=='-'?'<span class="nm-p">'+escHtml(it.pn)+'</span>':'')+
+        (it.maker?'<span class="nm-m">▸ '+escHtml(it.maker)+'</span>':'')+
+        (it.note?'<span class="nm-nt">📝 '+escHtml(it.note)+'</span>':'');
+      nmDiv.onclick=()=>openItemPopup(it);
+      ntd.appendChild(nmDiv);
+
+      // 공정 단계별 셀
+      const aidx=STAGES.map((s,i)=>it.stages.has(s.id)?i:-1).filter(i=>i>=0);
+      const first=aidx.length?aidx[0]:-1;
+      const last =aidx.length?aidx[aidx.length-1]:-1;
+
+      STAGES.forEach((s,si)=>{
+        const td=tr.insertCell();td.className='td-st';
+        td.style.cssText='min-width:'+sw+'px;max-width:'+sw+'px;width:'+sw+'px;height:52px';
+        const isActive=it.stages.has(s.id);
+        const inRange=first>=0&&si>=first&&si<=last;
+
+        // 연결선
+        if(inRange){
+          const ln=document.createElement('div');ln.className='fline';
+          ln.style.cssText='background:'+p.line+';opacity:0.28;'+
+            'left:'+(si===first?'50%':'0')+';right:'+(si===last?'50%':'0');
+          td.appendChild(ln);
+        }
+        // 활성 노드
+        if(isActive){
+          const nd=document.createElement('div');
+          // FAT 노드는 클릭 가능 (요청 8)
+          const isFAT=s.id==='FAT';
+          nd.className='fnode'+(isFAT?' clickable':'');
+          nd.style.cssText='background:'+p.fill+';border-color:'+p.border+';color:'+p.text;
+          // 세팅 단계: SW세팅·IP세팅 등 유형명 직접 표기 (요청 4)
+          const isSet=s.id==='세팅';
+          nd.innerHTML='<div class="nd-ic">'+(ICON[s.id]||'●')+'</div>'+
+            '<div class="nd-lb">'+(isSet&&it.setType?escHtml(it.setType):(s.label||s.id))+'</div>';
+          nd.title=it.item+' → '+(isSet&&it.setType?it.setType:s.id)+(it.owner?' ('+it.owner+')':'');
+          if(isFAT){
+            nd.onclick=(e)=>{e.stopPropagation();openFATPopup(it);};
+          }
+          td.appendChild(nd);
+        }
+      });
+    });
+
+    // 소모성 자재
+    if(LC[li].length){
+      const ch=tbl.insertRow();ch.className='tr-ch';
+      const chd=ch.insertCell();chd.colSpan=STAGES.length+1;
+      chd.textContent='🔩 Essential BOM Component (NIR)';
+      LC[li].forEach(it=>{
+        const cr=tbl.insertRow();cr.className='tr-co';
+        const cn=cr.insertCell();cn.className='td-cn';
+        cn.innerHTML='<span class="ctag">'+it.item+(it.qty?' ×'+it.qty:'')+'</span>';
+        const cd=cr.insertCell();cd.colSpan=STAGES.length;cd.className='td-ci';
+        cd.textContent=[it.maker,it.note].filter(Boolean).join(' · ');
+      });
+    }
+  });
+
+  // 범례
+  document.getElementById('leg1').innerHTML=
+    [['아비커스 → YARD',PAL.ab],
+     ['아비커스 → MRC → YARD',PAL.mrc],
+     ['MRC → YARD (직납)',PAL.mrcyd],
+     ['협력업체 → 아비커스 → YARD',PAL.co],
+     ['아비커스 ↔ 협력업체 (IR카메라)',PAL.ir],
+     ['YOKOGAWA → YARD',PAL.yo]]
+    .map(([l,p])=>'<div class="lgi"><div class="lgn" style="background:'+p.fill+';border-color:'+p.border+'"></div>'+l+'</div>').join('')+
+    '<div class="lgi" style="margin-left:auto;font-size:10px;color:#94a3b8">● 해당 공정 &nbsp;|&nbsp; — 흐름구간 &nbsp;|&nbsp; 🧪 FAT 클릭 시 작업내용 팝업</div>';
+}
+
+/* ═══════ 탭2: 임원 요약뷰 ═══════ */
+const EG=[
+  {label:'발주',        en:'Procurement',   ids:['발주'],                              bg:'#1a60b0'},
+  {label:'입고 / 창고', en:'Incoming',      ids:['입고','창고','재입고'],               bg:'#0f766e'},
+  {label:'세팅',        en:'Setup',         ids:['세팅'],                              bg:'#6d28d9'},
+  {label:'QC / OEM',    en:'QC & OEM',      ids:['A-QC','P-전달','P-QC','ASSY'],       bg:'#b45309'},
+  {label:'FAT',         en:'FAT',           ids:['FAT'],                               bg:'#0e4c8a'},
+  {label:'MRC / DEL',   en:'MRC & Delivery',ids:['MRC 납품','MRC 제작','MRC 창고','MRC 결선','DEL'], bg:'#065f46'},
+];
+
+function renderExec(rows){
+  const{LI,LC,tot,con}=parse(rows);
+  document.getElementById('exec-sub').textContent='총 '+(tot+con)+'개 품목 · '+LANES.length+'개 구분 · '+STAGES.length+'단계 공정';
+  document.getElementById('exec-cards').innerHTML=
+    [{v:LANES.length,k:'구분'},{v:STAGES.length,k:'공정단계'},{v:tot,k:'주요 품목'},{v:con,k:'소모성'}]
+    .map(c=>'<div class="ecard"><div class="ev">'+c.v+'</div><div class="ek">'+c.k+'</div></div>').join('');
+
+  const flows=[
+    {label:'아비커스\n→ YARD',  color:'#1a60b0',steps:['발주','입고','창고','(SW세팅)','FAT','DEL → YARD']},
+    {label:'아비커스\n→ MRC',   color:'#b45309',steps:['발주','입고','창고','FAT','MRC 납품','MRC 결선','DEL']},
+    {label:'협력업체\nOEM',     color:'#0f766e',steps:['발주','P-QC','ASSY','재입고','창고','FAT','DEL']},
+    {label:'IR카메라\n특수',    color:'#7e22ce',steps:['발주','입고','A-QC','P-전달','ASSY','재입고','FAT','DEL']},
+    {label:'MRC\n직납',         color:'#92400e',steps:['발주','MRC 결선','DEL → YARD']},
+  ];
+  document.getElementById('ft-rows').innerHTML=flows.map((f,fi)=>
+    '<div class="ft-row"><div class="ft-lbl" style="background:'+f.color+'">'+f.label+'</div>'+
+    f.steps.map((s,i)=>
+      '<div class="ft-step"><div class="ft-box" style="background:'+f.color+'18;border-color:'+f.color+'55;color:'+f.color+'">'+s+'</div>'+
+      (i<f.steps.length-1?'<span class="ft-arr">›</span>':'')+'</div>'
+    ).join('')+'</div>'+(fi<flows.length-1?'<div class="ft-sep"></div>':'')
+  ).join('');
+
+  const etbl=document.getElementById('exec-tbl');etbl.innerHTML='';
+  const hr=etbl.insertRow();
+  const hc=hr.insertCell();hc.className='eth-cor';hc.innerHTML='<span>구분 / 단계</span>';
+  EG.forEach((g,i)=>{
+    const th=hr.insertCell();th.className='eth-g';th.style.background=g.bg+'dd';
+    th.innerHTML='<span class="egl">'+g.label+'</span><span class="ege">'+g.en+'</span>'+
+      (i<EG.length-1?'<span class="egar">›</span>':'');
+  });
+  LANES.forEach((lane,li)=>{
+    if(!LI[li].length&&!LC[li].length)return;
+    const tr=etbl.insertRow();
+    const lh=tr.insertCell();lh.className='etd-ln '+lane.elc;
+    lh.innerHTML=lane.label+'<span class="els">'+lane.sub+'</span>';
+    EG.forEach(g=>{
+      const td=tr.insertCell();
+      const seen=new Set(),chips=[];
+      LI[li].forEach(it=>{if(g.ids.some(sid=>it.stages.has(sid))&&!seen.has(it.item)){seen.add(it.item);chips.push(it);}});
+      if(!chips.length){td.className='etd-c ena';td.innerHTML='<span class="no-item">—</span>';}
+      else{
+        td.className='etd-c';
+        chips.forEach(it=>{
+          const d=document.createElement('div');d.className='echip '+eClsKey(it.owner);
+          d.innerHTML='<span class="ecn">'+it.item+(it.qty?'<span class="ecq">×'+it.qty+'</span>':'')+'</span>'+
+            (it.owner?'<span class="eco">'+it.owner+'</span>':'');
+          td.appendChild(d);
+        });
+      }
+    });
+  });
+
+  const hasAny=LC.some(a=>a.length);
+  document.getElementById('exec-cons').style.display=hasAny?'':'none';
+  const cg=document.getElementById('cons-grid');cg.innerHTML='';
+  LANES.forEach((lane,li)=>{
+    if(!LC[li].length)return;
+    const card=document.createElement('div');card.className='cons-card';
+    card.innerHTML='<div class="cc-lane">'+lane.sub+'</div>'+
+      LC[li].map(it=>'<span class="cc-chip">'+it.item+(it.qty?' ×'+it.qty:'')+'</span>').join('');
+    cg.appendChild(card);
+  });
+}
+
+/* ═══════ 공통 ═══════ */
+function switchTab(n){
+  ['detail','exec'].forEach((id,i)=>{
+    document.getElementById('tab-'+id).classList.toggle('active',n===i+1);
+    document.getElementById('tab'+(i+1)+'btn').classList.toggle('active',n===i+1);
+  });
+}
+function chW(d){
+  sw=Math.max(100,Math.min(260,sw+d));
+  document.querySelectorAll('.th-st,.td-st').forEach(el=>{
+    el.style.minWidth=sw+'px';el.style.maxWidth=sw+'px';el.style.width=sw+'px';
+  });
+  notif('열 너비: '+sw+'px');
+}
+async function doFetch(){
+  try{
+    const r=await fetch('/api/data?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    if(d.timestamp!==lastTs){
+      lastTs=d.timestamp;
+      renderDetail(d.rows||[]);
+      renderExec(d.rows||[]);
+      document.getElementById('topmeta').innerHTML=
+        '<span class="sdot"></span>자동 갱신 중 · 최종: '+d.updated+' · '+d.row_count+'행';
+      notif('✅ 갱신됨 ('+d.updated+')');
+    }
+  }catch{
+    document.getElementById('topmeta').innerHTML=
+      '<span style="color:#fca5a5">⚠ 서버 미연결 — 실행하기.bat 실행 필요</span>';
+  }
+}
+function notif(m){const n=document.getElementById('notif');n.textContent=m;
+  n.classList.add('show');clearTimeout(n._t);n._t=setTimeout(()=>n.classList.remove('show'),2800);}
+
+/* ═══════ 팝업 함수 (요청 3, 8) ═══════ */
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function openPopup(icon,title,bodyHTML,sub){
+  document.getElementById('pu-icon').textContent=icon||'📦';
+  document.getElementById('pu-title-text').textContent=title;
+  document.getElementById('pu-sub').textContent=sub||'';
+  document.getElementById('pu-body').innerHTML=bodyHTML;
+  document.getElementById('pu-ov').classList.add('open');
+}
+function openItemPopup(it){
+  const imgEl  =document.getElementById('pu-img');
+  const imgWrap=document.getElementById('pu-photo-img');
+  const phEl   =document.getElementById('pu-photo-ph');
+
+  // 초기: placeholder 표시
+  imgWrap.style.display='none';
+  phEl.style.display='';
+
+  // 이미지 탐색: RENAME된 이름 → 엑셀 원본 이름 → 확장자 순서로 모두 시도
+  const EXTS=['.png','.jpg','.jpeg','.webp','.gif'];
+  // RENAME으로 변환된 이름과 엑셀 원본 이름 둘 다 후보로
+  const namePool=[it.item];
+  if(it.rawItem&&it.rawItem!==it.item)namePool.push(it.rawItem);
+  let nameIdx=0,extIdx=0;
+
+  function trySrc(src){
+    imgEl.onload=()=>{imgWrap.style.display='';phEl.style.display='none';};
+    imgEl.onerror=()=>{
+      if(extIdx<EXTS.length){
+        trySrc('/images/'+encodeURIComponent(namePool[nameIdx])+EXTS[extIdx++]);
+      } else if(nameIdx+1<namePool.length){
+        nameIdx++;extIdx=0;
+        trySrc('/images/'+encodeURIComponent(namePool[nameIdx])+EXTS[extIdx++]);
+      } else {
+        imgEl.onload=imgEl.onerror=null;
+        imgWrap.style.display='none';phEl.style.display='';
+      }
+    };
+    imgEl.src=src;
+  }
+
+  if(it.img){
+    imgEl.onload=()=>{imgWrap.style.display='';phEl.style.display='none';};
+    imgEl.onerror=()=>{imgWrap.style.display='none';phEl.style.display='';};
+    imgEl.src='/images/'+encodeURIComponent(it.img);
+  } else {
+    trySrc('/images/'+encodeURIComponent(namePool[nameIdx])+EXTS[extIdx++]);
+  }
+
+  // 제품설명(히스토리) — 줄바꿈(Alt+Enter)마다 ■ 글머리 항목으로 표시
+  let body;
+  if(it.desc){
+    const lines=it.desc.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+      .split('\n').filter(l=>l.trim());
+    body='<ul class="pu-list">'+
+      lines.map(l=>'<li>'+escHtml(l.trim())+'</li>').join('')+
+      '</ul>';
+  } else {
+    body='<div class="pu-emp">📝 제품 설명이 없습니다.<br>'
+      +'<span style="font-size:11px;color:#94a3b8">엑셀 <b>제품설명(히스토리)</b> 열에 내용을 입력하세요.<br>'
+      +'항목을 나누려면 셀 안에서 <b>Alt + Enter</b>를 누르세요.</span></div>';
+  }
+  const sub=it.owner?'담당: '+it.owner:'';
+  openPopup('📦',it.item,body,sub);
+}
+function openFATPopup(it){
+  const content=it.fatTask||'';
+  const body=content
+    ?'<div class="pu-bod">'+escHtml(content).replace(/\n/g,'<br>').replace(/;/g,'<br>')+'</div>'
+    :'<div class="pu-emp">🧪 FAT 작업 내용이 없습니다.<br>'
+    +'<span style="font-size:11px;color:#94a3b8">엑셀에 <b>FAT업무</b> 열을 추가하고 내용을 입력하면 여기에 표시됩니다.</span></div>';
+  openPopup('🧪',it.item+' — FAT 작업',body,'');
+}
+function closePopup(e){
+  if(e&&e.target!==document.getElementById('pu-ov'))return;
+  document.getElementById('pu-ov').classList.remove('open');
+}
+
+doFetch();
+setInterval(doFetch,3000);
+</script>
+</body>
+</html>
