@@ -88,29 +88,70 @@ function refreshSupplierList() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   호선 드롭다운 (Phase 0 vessel_master 연동)
+   PO 호선 검색 드롭다운 (vessel_master 연동)
    ══════════════════════════════════════════════════════════ */
 function refreshPhase1VesselSelect() {
-  var sel = document.getElementById('po-vessel-select');
-  if (!sel) return;
-  if (DB.vessel_master.length === 0) {
-    sel.innerHTML = '<option value="">-- Phase 0에서 호선을 먼저 등록하세요 --</option>'; return;
+  /* 호선 삭제 시 기존 선택값 초기화 */
+  var hidden = document.getElementById('po-vessel-select');
+  if (!hidden || !hidden.value) return;
+  var stillExists = DB.vessel_master.some(function(v) {
+    var name = (v.vessel_type === 'retrofit' && v.shipping_company ? v.shipping_company + ' ' : '') + v.vessel_name;
+    return name === hidden.value;
+  });
+  if (!stillExists) {
+    hidden.value = '';
+    var input = document.getElementById('po-vessel-input');
+    if (input) input.value = '';
   }
-  var retrofits = DB.vessel_master.filter(function(v){ return v.vessel_type === 'retrofit'; });
-  var newbuilds = DB.vessel_master.filter(function(v){ return v.vessel_type === 'newbuild'; });
-  var html = '<option value="">-- 호선 선택 --</option>';
-  if (retrofits.length > 0) {
-    html += '<optgroup label="▸ 개조선박">' + retrofits.map(function(v){
-      var name = (v.shipping_company ? v.shipping_company + ' ' : '') + v.vessel_name;
-      return '<option value="' + name + '">' + name + '</option>';
-    }).join('') + '</optgroup>';
+}
+
+function openPoVesselDropdown() {
+  var input    = document.getElementById('po-vessel-input');
+  var dropdown = document.getElementById('po-vessel-dropdown');
+  if (!input || !dropdown) return;
+  var query = input.value.trim().toLowerCase();
+  var items = DB.vessel_master.map(function(v) {
+    var name = (v.vessel_type === 'retrofit' && v.shipping_company ? v.shipping_company + ' ' : '') + v.vessel_name;
+    return { name: name, type: v.vessel_type === 'retrofit' ? '개조선박' : '신조선박' };
+  });
+  var filtered = query ? items.filter(function(i){ return i.name.toLowerCase().indexOf(query) >= 0; }) : items;
+  if (filtered.length === 0) {
+    dropdown.innerHTML = '<div class="vessel-dropdown-empty">등록된 호선이 없습니다. 설계 탭에서 먼저 등록하세요.</div>';
+  } else {
+    dropdown.innerHTML = filtered.map(function(item) {
+      var safe = item.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return '<div class="vessel-dropdown-item" onmousedown="selectPoVessel(\'' + safe + '\')">'
+        + '<span style="color:var(--text3);font-size:10px;">[' + item.type + '] </span>' + item.name
+        + '</div>';
+    }).join('');
   }
-  if (newbuilds.length > 0) {
-    html += '<optgroup label="▸ 신조선박">' + newbuilds.map(function(v){
-      return '<option value="' + v.vessel_name + '">' + v.vessel_name + '</option>';
-    }).join('') + '</optgroup>';
+  dropdown.style.display = 'block';
+}
+
+function closePoVesselDropdownDelayed() {
+  setTimeout(function(){
+    var d = document.getElementById('po-vessel-dropdown');
+    if (d) d.style.display = 'none';
+  }, 200);
+}
+
+function filterPoVesselDropdown() { openPoVesselDropdown(); }
+
+function selectPoVessel(name) {
+  var input  = document.getElementById('po-vessel-input');
+  var hidden = document.getElementById('po-vessel-select');
+  var codeEl = document.getElementById('po-vessel-code');
+  if (input)  input.value  = name;
+  if (hidden) hidden.value = name;
+  if (codeEl) {
+    var vessel = DB.vessel_master.find(function(v) {
+      var n = (v.vessel_type === 'retrofit' && v.shipping_company ? v.shipping_company + ' ' : '') + v.vessel_name;
+      return n === name;
+    });
+    codeEl.value = (vessel && vessel.vessel_code) ? vessel.vessel_code : '';
   }
-  sel.innerHTML = html;
+  var d = document.getElementById('po-vessel-dropdown');
+  if (d) d.style.display = 'none';
 }
 
 /* ══════════════════════════════════════════════════════════

@@ -66,6 +66,80 @@
 .section        { display:none; }
 .section.active { display:block; }
 
+/* ── 메인 탭 (설계 / SCM / QC) ── */
+.main-tabs {
+  display: flex;
+  background: var(--navy2);
+  border-bottom: 2px solid var(--border);
+  padding: 0 20px;
+  gap: 0;
+}
+.main-tab {
+  padding: 15px 26px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all .2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.main-tab:hover { color: var(--text); }
+.main-tab[data-tab="design"].active { color: var(--purple-lt); border-bottom-color: var(--purple-lt); }
+.main-tab[data-tab="scm"].active    { color: #60a5fa;           border-bottom-color: #60a5fa; }
+.main-tab[data-tab="qc"].active     { color: #f472b6;           border-bottom-color: #f472b6; }
+.main-tab-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.design-badge { background: rgba(124,110,245,0.2); color: var(--purple-lt); }
+.scm-badge    { background: rgba(30,111,200,0.2);  color: #60a5fa; }
+.qc-badge     { background: rgba(236,72,153,0.2);  color: #f472b6; }
+
+/* ── SCM 서브탭 ── */
+.sub-tabs-bar {
+  background: rgba(0,0,0,0.18);
+  border-bottom: 1px solid var(--border);
+}
+.sub-tabs {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  overflow-x: auto;
+  gap: 0;
+}
+.sub-tab {
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.sub-tab:hover  { color: var(--text2); }
+.sub-tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+
+/* ── 메인 섹션 ── */
+.main-section        { display: none; }
+.main-section.active { display: block; }
+
+/* ── 설계 하위 섹션 ── */
+.design-section        { display: none; }
+.design-section.active { display: block; }
+
 /* ── 반응형 ── */
 @media(max-width:680px) {
   .main                                    { padding:14px; }
@@ -73,7 +147,9 @@
   .stats-row                               { grid-template-columns:1fr 1fr; }
   .inspect-grid                            { grid-template-columns:1fr; }
   .item-metrics                            { grid-template-columns:1fr 1fr 1fr; }
-  .tabs                                    { padding:0 8px; }
-  .tab                                     { padding:11px 10px; font-size:11px; }
+  .main-tabs                               { padding:0 8px; }
+  .main-tab                                { padding:12px 14px; font-size:12px; }
+  .sub-tabs                                { padding:0 8px; }
+  .sub-tab                                 { padding:9px 10px; font-size:11px; }
   .qr-box                                  { flex-direction:column; }
 }

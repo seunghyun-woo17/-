@@ -21,8 +21,7 @@
 - PostgreSQL DB 서버 (DELL XE3) — 미구축
 - Node.js 백엔드 API — 미개발
 - FAT 관리 탭 — 기획 완료, 미구현
-- 품목별 2단계 재고 뷰 — 기획 완료, 미구현
-- 출고·대여 전용 탭 2 — 기획 완료, 미구현
+- ISO 9001 기준 호선별 문서 산출물 통합 저장 방식 — 정리 필요 (현재는 Incoming Report만 '문서 산출물' 탭에 위치)
 
 ---
 
@@ -38,7 +37,7 @@
 ├── Phase1_파일분리/              ← 실제 프론트엔드 앱 (여기가 핵심)
 │   ├── index.html               ← 메인 ERP 화면
 │   ├── 열기.bat                 ← 로컬 실행용
-│   ├── assets/signature.png
+│   ├── assets/signature.png1
 │   ├── css/
 │   │   ├── variables.css        ← CSS 변수, 다크/라이트 모드
 │   │   ├── layout.css           ← 헤더, 탭, 레이아웃
@@ -93,47 +92,66 @@
 
 ---
 
-## ERP 탭 구조 (목표)
+## ERP 탭 구조 (현재)
 
 ```
-부산사무소 ERP (http://서버IP:3000)
-├── [탭 1] 구매·자재관리     ← 현재 프로토타입 전체 (Phase 0~5)
-├── [탭 2] 출고·대여·검사요청 ← 신규 개발 예정
-└── [탭 3] FAT 관리          ← 신규 개발 예정
+부산사무소 ERP
+├── [설계 TAB]   호선·BOM·특이사항      ← phase0.js  (구현 완료)
+├── [SCM TAB]    구매·입고
+│   ├── PO 발행                         ← phase1.js  (구현 완료)
+│   ├── 입고 검수                       ← phase23.js (구현 완료)
+│   └── 발주·입고 이력                  ← phase5.js  (PO/입고 DB 조회 전용, 구현 완료)
+├── [재고 TAB]   제품별 S/N 재고 (2단계 뷰)
+│   └── 품목 그룹 목록 → 드릴다운 → S/N 상세 + 출고/대여/검사요청 + 관리자 수기 등록
+│                                       ← phase5.js (refreshInventoryGroups 등, 구현 완료)
+├── [QC TAB]     FAT 관리               ← 기획 완료, 개발 예정
+└── [문서 산출물 TAB] Incoming Report 등 ISO 9001 문서 보관
+                                        ← phase4.js  (구현 완료, Incoming Report 이동)
 ```
 
 ---
 
-## Phase별 기능 요약
+## 탭별 기능 요약
 
-### Phase 0 — 호선·BOM·안전재고
+### 설계 TAB — 호선·BOM·특이사항 (phase0.js)
 - 신조/개조 호선 등록, 선급 입력 (FAT 연동용)
 - BOM 세대 템플릿(1세대·2세대) 적용 + 개별 품목 추가
 - 호선별 필요수량 vs 현재재고 실시간 비교, 부족 알람
 - 호선 특이사항 (품질/납기/SW/기타) 등록·필터·확인 처리
 
-### Phase 1 — PO 발행
-- PO Ref No 자동생성 (`generatePORefNo()` in phase1.js)
+### SCM TAB — PO 발행 (phase1.js)
+- PO Ref No 자동생성 (`generatePORefNo()`)
 - 업체 자동완성 (Tab/Enter → 이름·이메일 자동완성)
 - PO QR 생성 및 Avikus 양식 문서 출력
 - 업체 DB 관리
 
-### Phase 2·3 — 입고 검수
+### SCM TAB — 입고 검수 (phase23.js)
 - PO QR 스캔 → 제품 QR 단건/일괄 스캔 → 입고 완료 처리
 - 단건 QR 생성 + 인쇄 버튼 (printSingleQR)
 - 일괄 QR: 수량 입력 → S/N 팝업 개별 입력 → 일괄 생성·인쇄
 - 입고 완료 후 서류 첨부 모달 자동 표시 (1.5초 후)
 - dev-mock.js: 개발 전용 스캔 시뮬레이터
 
-### Phase 4 — Incoming Report·서류 관리
-- Incoming Report 자동 생성 (제목: "Incoming Report", A4, PIC 이름 표시)
+### SCM TAB — 발주·입고 이력 (phase5.js `refreshPhase5()`)
+- 발주서 목록 / 발주 품목 내역 / 입고 검수 이력 DB 조회 전용 (S/N 재고는 [재고] TAB으로 분리됨)
+- 통계: 발행 PO / 완료 입고 / 미완료 PO
+
+### 재고 TAB — 제품별 S/N 재고 (2단계 뷰) (phase5.js `refreshInventoryGroups()`)
+- ① 품목(item_code) 단위로 그룹화하여 전체/상태별 수량 집계 표시 (가시성 확보 — 30개 품목 × 6000개+ 재고 대응)
+- ② 품목 클릭 시 드릴다운 → 해당 품목의 S/N 단위 상세 테이블(`tbl-inv-detail`) 표시
+- 출고/대여/검사요청: 드릴다운 화면에서 체크박스 선택 → 액션 버튼 → 모달 확인 → 처리 (`openOutgoingModal`/`confirmOutgoing`)
+- 관리자 수기 재고 등록 (PIN: 1234, `toggleAdminPanel`/`addManualInventory`)
+
+### QC TAB — FAT 관리 (미구현)
+- 선급 입력된 호선의 FAT 대상 자동 추출
+- 출고 예정일 기반 기한 임박 알림 (30일 이내 팝업, 서버 전환 후 이메일)
+- FAT 완료 처리 및 결과 문서(PDF) 첨부
+
+### 문서 산출물 TAB — Incoming Report (phase4.js)
+- Incoming Report 자동 생성 (A4, PIC 이름 표시)
 - 서류 첨부: 검사성적서·COC·거래명세서 (3종 독립 관리)
 - 문서 관리 허브: 입고 건별 서류 상태 배지 표시 + 보기/인쇄
-
-### Phase 5 — 재고 현황
-- S/N 단위 전체 재고 조회 (성적서 첨부 여부 포함)
-- 출고/대여/검사요청: 체크박스 선택 → 액션 버튼 → 모달 확인 → 처리
-- 관리자 수기 재고 등록 (PIN: 1234)
+- ※ 추후 ISO 9001 기준 호선별 문서 산출물(설계·QC 등) 통합 보관 위치로 확장 예정 (저장 방식 정리 필요)
 
 ---
 
@@ -146,7 +164,10 @@ A: `js/phase23.js` — `openCertModal()` (346줄), `onDocFileChange()` (388줄),
 A: `js/phase1.js` 맨 아래 `generatePORefNo()` 함수
 
 **Q: 재고 출고/대여 코드 위치?**  
-A: `js/phase5.js` — `openOutgoingModal()`, `confirmOutgoing()`
+A: `js/phase5.js` — `openOutgoingModal()`, `confirmOutgoing()` (재고 TAB의 품목 드릴다운 화면에서 호출)
+
+**Q: 재고 탭 제품별 그룹/드릴다운 코드 위치?**  
+A: `js/phase5.js` — `refreshInventoryGroups()`, `openInventoryDetail()`, `closeInventoryDetail()`, `_renderInventoryDetail()`
 
 **Q: dev-mock.js 삭제 방법?**  
 A: `js/dev/dev-mock.js` 삭제 + `index.html` 맨 아래 DEV ONLY 스크립트 태그 삭제

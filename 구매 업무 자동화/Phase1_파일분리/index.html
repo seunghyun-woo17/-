@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Avikus 구매·자재관리 시스템 v2.0</title>
+<title>Avikus ERP 시스템 v2.0</title>
 <!-- ================================================================
      CSS 로딩 순서
      1. variables.css  — 색상 변수, reset, body
@@ -22,12 +22,12 @@
      HEADER
      ================================================================ -->
 <div class="header">
-  <div class="logo">AVIKUS <span class="logo-sub">구매·자재관리 시스템</span></div>
+  <div class="logo">AVIKUS <span class="logo-sub">부산사무소 ERP</span></div>
   <div class="db-status">
     <div class="db-dot" id="db-dot"></div>
     <span id="db-status-text">localStorage DB</span>
   </div>
-  <div class="header-badge">v2.0 · Phase 0~5</div>
+  <div class="header-badge">v2.0</div>
   <button id="theme-toggle" onclick="toggleTheme()"
           style="background:none;border:1px solid var(--border2);border-radius:20px;color:var(--text2);padding:4px 14px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s;margin-left:8px;">
     ☀ 라이트 모드
@@ -35,230 +35,440 @@
 </div>
 
 <!-- ================================================================
-     TABS
+     MAIN TABS (설계 / SCM / QC)
      ================================================================ -->
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('phase0')">
-    <span class="tab-phase tp-0">Phase 0</span> 안전재고 관리
+<div class="main-tabs">
+  <div class="main-tab active" data-tab="design" onclick="switchMainTab('design')">
+    <span class="main-tab-badge design-badge">설계</span>
+    호선 · BOM · 특이사항
   </div>
-  <div class="tab" onclick="switchTab('phase1')">
-    <span class="tab-phase tp-1">Phase 1</span> PO 발행
+  <div class="main-tab" data-tab="scm" onclick="switchMainTab('scm')">
+    <span class="main-tab-badge scm-badge">SCM</span>
+    구매 · 입고 · 재고
   </div>
-  <div class="tab" onclick="switchTab('phase23')">
-    <span class="tab-phase tp-23">Phase 2·3</span> 입고 검수
+  <div class="main-tab" data-tab="inventory" onclick="switchMainTab('inventory')">
+    <span class="main-tab-badge scm-badge">재고</span>
+    재고 현황
   </div>
-  <div class="tab" onclick="switchTab('phase5')">
-    <span class="tab-phase tp-5">Phase 5</span> 재고 현황
+  <div class="main-tab" data-tab="qc" onclick="switchMainTab('qc')">
+    <span class="main-tab-badge qc-badge">QC</span>
+    FAT 관리
   </div>
-  <div class="tab" onclick="switchTab('phase4')">
-    <span class="tab-phase tp-4">Phase 4</span> Incoming Report
+  <div class="main-tab" data-tab="docs" onclick="switchMainTab('docs')">
+    <span class="main-tab-badge qc-badge">문서</span>
+    문서 산출물
   </div>
 </div>
 
+<!-- ================================================================
+     MAIN SECTION: 설계 (호선 · BOM · 특이사항)
+     ================================================================ -->
+<div class="main-section active" id="main-design">
+<div class="sub-tabs-bar">
+  <div class="sub-tabs">
+    <div class="sub-tab active" onclick="switchDesignTab('main')">
+      <span class="tab-phase tp-0">BOM</span> 호선·BOM·특이사항
+    </div>
+    <div class="sub-tab" onclick="switchDesignTab('safety')">
+      <span class="tab-phase tp-0">재고</span> 안전재고 현황
+    </div>
+    <div class="sub-tab" onclick="switchDesignTab('vessels')">
+      <span class="tab-phase tp-0">목록</span> 호선 목록
+    </div>
+  </div>
+</div>
 <div class="main">
 
 <!-- ================================================================
      SECTION: PHASE 0 — 안전재고 관리
      JS 로직: js/phase0.js
      ================================================================ -->
-<div class="section active" id="sec-phase0">
+<div id="sec-phase0">
 
-  <div class="notice notice-purple">
-    <strong>[Phase 0] 설계부서 연동:</strong> 호선 계약 확정 시 필요 HW 장비 목록을 등록합니다.
-    안전재고 현황이 실시간으로 계산되며, 재고 부족 시 구매팀 확인 알람이 발생합니다.
-  </div>
+  <!-- ── 호선·BOM·특이사항 탭 ── -->
+  <div class="design-section active" id="design-main">
 
-  <div class="form-grid">
+    <div class="notice notice-purple">
+      <strong>설계부서 연동:</strong> 호선 계약 확정 시 필요 HW 장비 목록을 등록합니다.
+      BOM 등록 후 재고가 부족하면 팝업 알림이 발생합니다.
+    </div>
 
-    <!-- 호선 등록 -->
-    <div class="card">
-      <div class="card-title purple">호선 등록</div>
+    <div class="form-grid">
 
-      <!-- 선박 유형 선택 -->
-      <div class="form-group" style="margin-bottom:14px;">
-        <label>선박 유형</label>
-        <div class="vessel-type-toggle">
-          <input type="radio" name="vessel-type" id="vt-newbuild" value="newbuild" checked onchange="toggleVesselForm()">
-          <label for="vt-newbuild">신조선박</label>
-          <input type="radio" name="vessel-type" id="vt-retrofit" value="retrofit" onchange="toggleVesselForm()">
-          <label for="vt-retrofit">개조선박</label>
+      <!-- 호선 등록 -->
+      <div class="card">
+        <div class="card-title purple">호선 등록</div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>선박 유형</label>
+          <div class="vessel-type-toggle">
+            <input type="radio" name="vessel-type" id="vt-newbuild" value="newbuild" checked onchange="toggleVesselForm()">
+            <label for="vt-newbuild">신조선박</label>
+            <input type="radio" name="vessel-type" id="vt-retrofit" value="retrofit" onchange="toggleVesselForm()">
+            <label for="vt-retrofit">개조선박</label>
+          </div>
+        </div>
+
+        <div id="retrofit-fields" style="display:none; margin-bottom:10px;">
+          <div class="form-group">
+            <label>선사</label>
+            <input id="vessel-shipping-company" placeholder="HMM">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>호선명</label>
+            <input id="vessel-name" placeholder="3445">
+          </div>
+          <div class="form-group">
+            <label>계약일</label>
+            <input id="vessel-date" type="date">
+          </div>
+          <div class="form-group">
+            <label>납품 예정일</label>
+            <input id="vessel-delivery" type="date">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>선급 <span style="font-size:10px;color:var(--text3);">(복수 선택 가능 — 없으면 미체크)</span></label>
+          <div class="class-checkbox-group">
+            <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="KR"> KR</label>
+            <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="BV"> BV</label>
+            <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="DNV"> DNV</label>
+            <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="ABS"> ABS</label>
+            <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="LR"> LR</label>
+            <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="NK"> NK</label>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-purple" onclick="addVessel()">호선 등록</button>
         </div>
       </div>
 
-      <!-- 개조선박 전용: 선사 -->
-      <div id="retrofit-fields" style="display:none; margin-bottom:10px;">
-        <div class="form-group">
-          <label>선사</label>
-          <input id="vessel-shipping-company" placeholder="HMM">
-        </div>
-      </div>
+      <!-- HW 장비 목록 등록 (BOM) -->
+      <div class="card">
+        <div class="card-title purple">HW 장비 목록 등록 (BOM)</div>
 
-      <!-- 공통 필드 -->
-      <div class="form-grid">
-        <div class="form-group">
-          <label>호선명</label>
-          <input id="vessel-name" placeholder="3445">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label>대상 호선 선택</label>
+          <div class="searchable-select-wrap">
+            <input id="bom-vessel-input" class="searchable-input"
+                   placeholder="호선명 입력 또는 클릭하여 검색..."
+                   autocomplete="off"
+                   oninput="filterVesselDropdown('bom')"
+                   onfocus="openVesselDropdown('bom')"
+                   onblur="closeVesselDropdownDelayed('bom')">
+            <input type="hidden" id="bom-vessel-select" value="">
+            <div class="searchable-dropdown" id="bom-vessel-dropdown"></div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>계약일</label>
-          <input id="vessel-date" type="date">
+
+        <div class="notice notice-purple" style="margin-bottom:10px;font-size:11px;">
+          <strong>BOM 선택:</strong> 엑셀 업로드 후 구분·모델 선택 → 불러오기. 불러온 후 수정·삭제 가능합니다.
         </div>
-        <div class="form-group">
-          <label>납품 예정일</label>
-          <input id="vessel-delivery" type="date">
+
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="display:flex;align-items:center;justify-content:space-between;">
+            <span>BOM 엑셀 업로드 <span id="bom-catalog-status" style="font-size:10px;color:var(--text3);margin-left:6px;">미업로드</span></span>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('bom-guide-modal').classList.add('show')">📖 참고: BOM 엑셀 수정·업로드 방법</button>
+          </label>
+          <input type="file" id="bom-excel-input" accept=".xlsx,.xls" onchange="onBomExcelUpload(this)">
         </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-purple" onclick="addVessel()">호선 등록</button>
+
+        <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px;">
+          <div class="form-group" style="flex:1;">
+            <label>구분</label>
+            <select id="bom-gubun-select" onchange="onBomGubunChange()">
+              <option value="">-- BOM 엑셀을 먼저 업로드하세요 --</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1.4;">
+            <label>모델</label>
+            <select id="bom-model-select">
+              <option value="">-- 구분을 먼저 선택 --</option>
+            </select>
+          </div>
+          <button class="btn btn-outline" onclick="loadBOMFromCatalog()" style="white-space:nowrap;height:36px;">BOM 불러오기</button>
+        </div>
+
+        <div id="bom-editor-wrap" style="display:none;margin-bottom:12px;padding:12px;background:rgba(124,110,245,0.06);border:1px solid rgba(124,110,245,0.2);border-radius:8px;"></div>
+
+        <hr class="divider">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">개별 품목 직접 추가</div>
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>품목 코드</label>
+            <input id="bom-item-code" placeholder="ITEM-CAM-001">
+          </div>
+          <div class="form-group">
+            <label>품목명</label>
+            <input id="bom-item-name" placeholder="HiNAS Camera Housing">
+          </div>
+          <div class="form-group">
+            <label>필요 수량</label>
+            <input id="bom-qty" type="number" value="1" min="1">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="addBomItem()">+ 개별 추가</button>
+          <button class="btn btn-purple" id="bom-save-all-btn" onclick="saveBOMItems()" style="display:none;">전체 등록</button>
+        </div>
       </div>
     </div>
 
-    <!-- HW 장비 목록 등록 (BOM) -->
+    <!-- 호선 특이사항 -->
     <div class="card">
-      <div class="card-title purple">HW 장비 목록 등록 (BOM)</div>
+      <div class="card-title warn">호선 특이사항</div>
 
       <div class="form-group" style="margin-bottom:12px;">
-        <label>대상 호선 선택</label>
-        <select id="bom-vessel-select" onchange="onBomVesselChange()">
-          <option value="">-- 호선을 먼저 등록하세요 --</option>
-        </select>
+        <label>대상 호선 <span style="font-size:10px;color:var(--text3);">— 기 등록 호선 검색 후 특이사항 등록</span></label>
+        <div class="searchable-select-wrap">
+          <input id="note-vessel-input" class="searchable-input"
+                 placeholder="호선명 입력 또는 클릭하여 검색..."
+                 autocomplete="off"
+                 oninput="filterVesselDropdown('note')"
+                 onfocus="openVesselDropdown('note')"
+                 onblur="closeVesselDropdownDelayed('note')">
+          <input type="hidden" id="note-vessel-hidden" value="">
+          <div class="searchable-dropdown" id="note-vessel-dropdown"></div>
+        </div>
       </div>
 
-      <div class="notice notice-purple" style="margin-bottom:10px;font-size:11px;">
-        <strong>BOM 세대 선택:</strong> 불러온 후 수정·삭제 가능. 데이터 수정: <code style="color:var(--accent);">js/bom-templates.js</code>
-      </div>
-      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px;">
-        <div class="form-group" style="flex:1;">
-          <label>BOM 세대 선택</label>
-          <select id="bom-gen-select">
-            <option value="">-- 직접 입력 --</option>
-            <option value="1세대">1세대 BOM</option>
-            <option value="2세대">2세대 BOM</option>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>구분</label>
+          <select id="note-category">
+            <option value="품질">품질</option>
+            <option value="납기">납기</option>
+            <option value="SW">SW</option>
+            <option value="기타">기타</option>
           </select>
         </div>
-        <button class="btn btn-outline" onclick="loadBOMTemplate()" style="white-space:nowrap;height:36px;">BOM 불러오기</button>
-      </div>
-
-      <div id="bom-editor-wrap" style="display:none;margin-bottom:12px;padding:12px;background:rgba(124,110,245,0.06);border:1px solid rgba(124,110,245,0.2);border-radius:8px;"></div>
-
-      <hr class="divider">
-      <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">개별 품목 직접 추가</div>
-      <div class="form-grid-3">
         <div class="form-group">
-          <label>품목 코드</label>
-          <input id="bom-item-code" placeholder="ITEM-CAM-001">
-        </div>
-        <div class="form-group">
-          <label>품목명</label>
-          <input id="bom-item-name" placeholder="HiNAS Camera Housing">
-        </div>
-        <div class="form-group">
-          <label>필요 수량</label>
-          <input id="bom-qty" type="number" value="1" min="1">
+          <label>특이사항 내용</label>
+          <input id="note-content" placeholder="특이사항 내용을 입력하세요">
         </div>
       </div>
       <div class="btn-row">
-        <button class="btn btn-outline" onclick="addBomItem()">+ 개별 추가</button>
-        <button class="btn btn-purple" id="bom-save-all-btn" onclick="saveBOMItems()" style="display:none;">전체 등록</button>
+        <button class="btn btn-accent" onclick="addSpecialNote()">특이사항 등록</button>
+      </div>
+
+      <div style="display:flex;gap:6px;margin:14px 0 10px;flex-wrap:wrap;">
+        <button class="note-filter-btn active" data-filter="all"   onclick="filterNotes('all')">전체</button>
+        <button class="note-filter-btn" data-filter="품질"         onclick="filterNotes('품질')">품질 <span style="font-size:9px;opacity:.7;">(품질팀 확인)</span></button>
+        <button class="note-filter-btn" data-filter="납기"         onclick="filterNotes('납기')">납기 <span style="font-size:9px;opacity:.7;">(구매팀 확인)</span></button>
+        <button class="note-filter-btn" data-filter="SW"           onclick="filterNotes('SW')">SW <span style="font-size:9px;opacity:.7;">(SW팀 확인)</span></button>
+        <button class="note-filter-btn" data-filter="기타"         onclick="filterNotes('기타')">기타</button>
+      </div>
+
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr><th>호선</th><th>구분</th><th>내용</th><th>등록일</th><th>확인 상태</th><th></th></tr></thead>
+          <tbody id="tbl-notes"></tbody>
+        </table>
       </div>
     </div>
-  </div>
 
-  <!-- 호선 특이사항 (BOM 선택 호선 자동 연동) -->
-  <div class="card">
-    <div class="card-title warn">호선 특이사항</div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;">
-      <span style="font-size:11px;color:var(--text3);">현재 선택 호선:</span>
-      <span id="note-vessel-display" style="font-size:12px;font-weight:600;color:var(--text3);">— BOM 대상 호선을 먼저 선택하세요 —</span>
+  </div><!-- /design-main -->
+
+  <!-- ── 안전재고 현황 탭 ── -->
+  <div class="design-section" id="design-safety">
+
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button class="btn btn-accent btn-sm" id="btn-safety-view-vessel" onclick="switchSafetyView('vessel')">호선별 보기</button>
+      <button class="btn btn-outline btn-sm" id="btn-safety-view-item" onclick="switchSafetyView('item')">제품별 보기</button>
     </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>구분</label>
-        <select id="note-category">
-          <option value="품질">품질</option>
-          <option value="납기">납기</option>
-          <option value="SW">SW</option>
-          <option value="기타">기타</option>
-        </select>
+
+    <!-- 호선별 보기 (기존: 호선 × 품목 행 단위) -->
+    <div id="safety-view-vessel">
+      <div class="card">
+        <div class="card-title purple">안전재고 현황 — 선박별 필요 vs 현재 재고</div>
+        <div class="db-wrap">
+          <table class="db-table">
+            <thead>
+              <tr>
+                <th>유형</th><th>호선명</th><th>품목 코드</th><th>품목명</th>
+                <th style="text-align:center;">필요</th><th style="text-align:center;">현재 재고</th>
+                <th style="text-align:center;">부족</th><th style="text-align:center;">상태</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tbl-safety"></tbody>
+          </table>
+        </div>
       </div>
-      <div class="form-group">
-        <label>특이사항 내용</label>
-        <input id="note-content" placeholder="특이사항 내용을 입력하세요">
+    </div>
+
+    <!-- 제품별 보기 (품목 단위 집계 + 호선별 드릴다운) -->
+    <div id="safety-view-item" style="display:none;">
+      <div class="card">
+        <div class="card-title purple">안전재고 현황 — 제품별 집계 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">품목을 클릭하면 호선별 필요 내역을 확인할 수 있습니다</span></div>
+        <div class="db-wrap">
+          <table class="db-table">
+            <thead>
+              <tr>
+                <th>품목 코드</th><th>품목명</th>
+                <th style="text-align:center;">전체 필요</th><th style="text-align:center;">현재 재고</th>
+                <th style="text-align:center;">부족</th><th style="text-align:center;">관련 호선</th><th style="text-align:center;">상태</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tbl-safety-by-item"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="safety-item-detail-card" style="display:none;">
+        <div class="card-title" style="flex-wrap:wrap;">
+          <span id="safety-item-detail-title">품목별 호선 내역</span>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="closeSafetyItemDetail()">← 목록으로</button>
+        </div>
+        <div class="db-wrap">
+          <table class="db-table">
+            <thead>
+              <tr><th>유형</th><th>호선명</th><th style="text-align:center;">필요</th><th style="text-align:center;">현재 재고</th><th style="text-align:center;">부족</th><th style="text-align:center;">상태</th></tr>
+            </thead>
+            <tbody id="tbl-safety-item-detail"></tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="btn-row">
-      <button class="btn btn-accent" onclick="addSpecialNote()">특이사항 등록</button>
-    </div>
 
-    <!-- 필터 탭 -->
-    <div style="display:flex;gap:6px;margin:14px 0 10px;flex-wrap:wrap;">
-      <button class="note-filter-btn active" data-filter="all"    onclick="filterNotes('all')">전체</button>
-      <button class="note-filter-btn"        data-filter="품질"  onclick="filterNotes('품질')">품질 <span style="font-size:9px;opacity:.7;">(품질팀 확인)</span></button>
-      <button class="note-filter-btn"        data-filter="납기"  onclick="filterNotes('납기')">납기 <span style="font-size:9px;opacity:.7;">(구매팀 확인)</span></button>
-      <button class="note-filter-btn"        data-filter="SW"    onclick="filterNotes('SW')">SW <span style="font-size:9px;opacity:.7;">(SW팀 확인)</span></button>
-      <button class="note-filter-btn"        data-filter="기타"  onclick="filterNotes('기타')">기타</button>
-    </div>
+  </div><!-- /design-safety -->
 
-    <div class="db-wrap">
-      <table class="db-table">
-        <thead><tr><th>호선</th><th>구분</th><th>내용</th><th>등록일</th><th>확인 상태</th><th></th></tr></thead>
-        <tbody id="tbl-notes"></tbody>
-      </table>
+  <!-- ── 호선 목록 탭 ── -->
+  <div class="design-section" id="design-vessels">
+    <div class="card">
+      <div class="card-title purple">등록된 호선 목록</div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead>
+            <tr><th>유형</th><th>호선명</th><th>선급</th><th>계약일</th><th>납품 예정일</th><th>BOM</th><th>특이사항</th><th></th></tr>
+          </thead>
+          <tbody id="tbl-vessels"></tbody>
+        </table>
+      </div>
     </div>
-  </div>
-
-  <!-- 재고 부족 알람 -->
-  <div id="shortage-alert-box" style="display:none;"></div>
-
-  <!-- 안전재고 현황 -->
-  <div class="card">
-    <div class="card-title purple">안전재고 현황 — 선박별 필요 vs 현재 재고</div>
-    <div class="db-wrap">
-      <table class="db-table">
-        <thead>
-          <tr>
-            <th>유형</th><th>호선명</th><th>품목 코드</th><th>품목명</th>
-            <th style="text-align:center;">필요</th><th style="text-align:center;">현재 재고</th>
-            <th style="text-align:center;">부족</th><th style="text-align:center;">상태</th><th></th>
-          </tr>
-        </thead>
-        <tbody id="tbl-safety"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- 등록된 호선 목록 -->
-  <div class="card">
-    <div class="card-title purple">등록된 호선 목록</div>
-    <div class="db-wrap">
-      <table class="db-table">
-        <thead>
-          <tr><th>유형</th><th>호선명</th><th>계약일</th><th>납품 예정일</th><th>BOM</th><th>특이사항</th><th></th></tr>
-        </thead>
-        <tbody id="tbl-vessels"></tbody>
-      </table>
-    </div>
-  </div>
+  </div><!-- /design-vessels -->
 
 </div><!-- /phase0 -->
+
+</div><!-- /main (설계) -->
+
+<!-- BOM 엑셀 수정·업로드 가이드 모달 -->
+<div class="modal-bg" id="bom-guide-modal">
+  <div class="modal" style="max-width:720px;max-height:88vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span>📖 BOM 엑셀 수정 · 업로드 방법 안내</span>
+      <button class="modal-close" onclick="document.getElementById('bom-guide-modal').classList.remove('show')">×</button>
+    </div>
+
+    <div class="notice notice-purple" style="font-size:12px;margin-bottom:14px;">
+      BOM 엑셀(<b>"파싱용"</b> 시트)을 수정한 뒤에는, <b>수정된 파일을 다시 업로드</b>해야 시스템에 반영됩니다.
+      파일을 자동으로 감시하지 않으므로, 수정 후 반드시 위 <b>[BOM 엑셀 업로드]</b>에서 같은 파일을 다시 선택해주세요.
+    </div>
+
+    <h4 style="margin:0 0 8px;font-size:13px;">① 다시 업로드하면 어떻게 되나요?</h4>
+    <ul style="margin:0 0 16px;padding-left:20px;font-size:12px;line-height:1.7;">
+      <li>새로 업로드한 내용으로 BOM 데이터가 <b>전체 교체</b>됩니다. (구분·모델 드롭다운도 자동 갱신)</li>
+      <li><b>이미 등록된 호선의 호선코드·BOM·발주서는 영향받지 않습니다.</b> 호선코드는 최초 1회만 자동 부여되고 이후 보호됩니다.</li>
+      <li>새로 업로드한 데이터는 <b>앞으로 새로 등록할 호선</b>에만 적용됩니다.</li>
+    </ul>
+
+    <h4 style="margin:0 0 8px;font-size:13px;">② 시트의 기본 구조 (이 틀을 유지해야 정상 인식됩니다)</h4>
+    <div class="db-wrap" style="margin-bottom:6px;">
+      <table class="db-table" style="font-size:11px;">
+        <thead>
+          <tr><th>열</th><th>A</th><th>B</th><th>C</th><th>D</th><th>F</th><th>L</th><th>M</th><th>N</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>의미</td>
+            <td>구분</td><td>모델</td><td>자재관리코드</td><td>품명</td><td>소요량</td>
+            <td>완제품코드</td><td>구분</td><td>모델</td>
+          </tr>
+          <tr>
+            <td>비고</td>
+            <td colspan="5">품목 목록 (그룹별로 구분·모델은 첫 행에만 입력됨)</td>
+            <td colspan="3">호선코드 앞자리를 결정하는 매핑표</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul style="margin:0 0 16px;padding-left:20px;font-size:12px;line-height:1.7;">
+      <li><b>A열(구분)·B열(모델)</b>은 한 그룹(예: HiNAS Control)의 <b>맨 첫 행에만 값을 입력</b>하고, 같은 그룹의 나머지 행은 비워둡니다 (병합된 형태).</li>
+      <li><b>C열(자재관리코드)</b> 또는 <b>D열(품명)</b> 중 최소 하나는 값이 있어야 품목으로 인식됩니다.</li>
+      <li><b>F열(소요량)</b>은 반드시 숫자로 입력합니다.</li>
+    </ul>
+
+    <h4 style="margin:0 0 8px;font-size:13px;">③ 품목을 추가·삭제할 때</h4>
+    <ul style="margin:0 0 16px;padding-left:20px;font-size:12px;line-height:1.7;">
+      <li><b>기존 그룹 안에서 추가/삭제</b>: 해당 그룹의 행 범위 안에서 행을 추가·삭제하면 됩니다. 단, 새로 끼워 넣은 행의 <b>A·B열(구분·모델)은 비워두세요</b> — 값을 채우면 새로운 그룹으로 잘못 인식됩니다.</li>
+      <li><b>완전히 새로운 모델(그룹) 추가</b>: 표 끝(또는 그룹 사이)에 새 행을 만들고, 그 첫 행의 A열에 구분, B열에 모델명을 입력한 뒤 아래로 품목들을 나열합니다.</li>
+    </ul>
+
+    <h4 style="margin:0 0 8px;font-size:13px;">④ 새 모델을 추가했다면 — 완제품코드 매핑(L·M·N열)도 함께 추가하세요</h4>
+    <div class="notice notice-blue" style="font-size:12px;margin-bottom:8px;">
+      L·M·N열은 "이 모델은 어떤 완제품코드를 쓰는지" 정의하는 표이며, 이 코드가 <b>호선코드의 앞자리</b>가 됩니다 (예: <code>MS25-0001</code>의 "MS").
+      여기에 새 모델을 등록하지 않으면, 해당 모델로 BOM을 등록해도 <b>호선코드가 자동 생성되지 않고</b> 직접 입력해야 합니다.
+    </div>
+    <ul style="margin:0 0 16px;padding-left:20px;font-size:12px;line-height:1.7;">
+      <li>새 행에 <b>L열 = 완제품코드</b>, <b>M열 = 구분</b>, <b>N열 = 모델명</b>을 입력합니다.</li>
+      <li>모델명은 B열(품목 목록)에 적은 이름과 <b>정확히 일치하는 단어</b>를 사용해야 합니다 (오탈자 주의).</li>
+      <li>"HiNAS Control / HiNAS SVM"처럼 모델 두 개를 합친 콤보 이름은 <b>"HiNAS " 표기 유무나 슬래시(/) 순서가 달라도 자동으로 매칭</b>되니 안심하고 사용하셔도 됩니다.</li>
+    </ul>
+
+    <h4 style="margin:0 0 8px;font-size:13px;">⑤ 체크리스트 — 업로드 전에 확인하세요</h4>
+    <ul style="margin:0;padding-left:20px;font-size:12px;line-height:1.8;">
+      <li>☑ 시트 이름이 정확히 <b>"파싱용"</b> 인가요?</li>
+      <li>☑ A·B열(구분·모델)이 그룹 첫 행에만 입력되어 있나요? (중간 행에 잘못 채워지지 않았는지)</li>
+      <li>☑ 새 품목의 자재관리코드/품명/소요량이 모두 채워졌나요?</li>
+      <li>☑ 새 모델을 추가했다면 L·M·N열에 완제품코드 매핑도 추가했나요?</li>
+      <li>☑ 저장 후 <b>같은 파일을 [BOM 엑셀 업로드]에서 다시 선택</b>했나요?</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /main-design -->
+
+
+<!-- ================================================================
+     MAIN SECTION: SCM (구매 · 입고 · 재고)
+     ================================================================ -->
+<div class="main-section" id="main-scm">
+<div class="sub-tabs-bar">
+  <div class="sub-tabs">
+    <div class="sub-tab active" onclick="switchTab('phase1')">
+      <span class="tab-phase tp-1">PO</span> PO 발행
+    </div>
+    <div class="sub-tab" onclick="switchTab('phase23')">
+      <span class="tab-phase tp-23">입고</span> 입고 검수
+    </div>
+    <div class="sub-tab" onclick="switchTab('phase5')">
+      <span class="tab-phase tp-5">이력</span> 발주·입고 이력
+    </div>
+  </div>
+</div>
+<div class="main">
 
 
 <!-- ================================================================
      SECTION: PHASE 1 — PO 발행 + QR 생성
      JS 로직: js/phase1.js
      ================================================================ -->
-<div class="section" id="sec-phase1">
+<div class="section active" id="sec-phase1">
 
   <div class="notice notice-blue">
-    <strong>[Phase 1] PO 발행:</strong> Supplier Code 입력 후 Tab키를 누르면 업체명·이메일 자동완성됩니다.
-    호선은 Phase 0 등록 목록에서 선택합니다.
+    <strong>PO 발행:</strong> Supplier Code 입력 후 Tab키를 누르면 업체명·이메일 자동완성됩니다.
+    호선은 설계 탭 등록 목록에서 검색합니다.
     <button class="btn btn-outline btn-sm" onclick="openSupplierModal()" style="margin-left:10px;">업체 DB 관리</button>
   </div>
 
   <div class="card">
     <div class="card-title blue">PO 발행 정보 입력</div>
 
-    <!-- 1행: PO 기본 정보 -->
+    <!-- 1행: PO REF.NO. | VESSEL/호선 | 호선코드 -->
     <div class="form-grid-3" style="margin-bottom:10px;">
       <div class="form-group">
         <label>PO Ref. No.</label>
@@ -268,13 +478,26 @@
         </div>
       </div>
       <div class="form-group">
-        <label>호선 코드 </label>
-        <input id="po-vessel-code" placeholder="MS25-0038">
+        <label>Vessel / 호선 <span style="font-size:9px;color:var(--text3);">(설계 탭 등록 목록)</span></label>
+        <div class="searchable-select-wrap">
+          <input id="po-vessel-input" class="searchable-input"
+                 placeholder="호선명 입력 또는 클릭하여 검색..."
+                 autocomplete="off"
+                 oninput="filterPoVesselDropdown()"
+                 onfocus="openPoVesselDropdown()"
+                 onblur="closePoVesselDropdownDelayed()">
+          <input type="hidden" id="po-vessel-select" value="">
+          <div class="searchable-dropdown" id="po-vessel-dropdown"></div>
+        </div>
       </div>
       <div class="form-group">
-        <label>PIC (구매 담당자)</label>
-        <input id="po-pic" placeholder="Hyunbae Gong / SCM Manager">
+        <label>호선 코드</label>
+        <input id="po-vessel-code" placeholder="MS25-0038">
       </div>
+    </div>
+
+    <!-- 2행: ISSUE DATE | DUE DATE | PIC -->
+    <div class="form-grid-3" style="margin-bottom:10px;">
       <div class="form-group">
         <label>Issue Date</label>
         <input id="po-date" type="date">
@@ -284,15 +507,12 @@
         <input id="po-due" type="date">
       </div>
       <div class="form-group">
-        <label>Vessel / 호선 <span style="font-size:9px;color:var(--text3);">(Phase 0 등록 목록)</span></label>
-        <select id="po-vessel-select">
-          <option value="">-- Phase 0에서 호선 등록 후 선택 --</option>
-        </select>
+        <label>PIC (구매 담당자)</label>
+        <input id="po-pic" placeholder="Hyunbae Gong / SCM Manager">
       </div>
     </div>
 
-    <!-- 2행: 업체 정보 (자동완성) -->
-    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">업체 정보 <span style="color:var(--text3);font-size:10px;">— Supplier Code 입력 후 Tab 또는 Enter 시 자동완성</span></div>
+    <!-- 3행: SUPPLIER CODE | SUPPLIER NAME | SUPPLIER EMAIL -->
     <div class="form-grid-3">
       <div class="form-group">
         <label>Supplier Code</label>
@@ -373,9 +593,9 @@
   <!-- QR 결과 (닫기 버튼 포함) -->
   <div id="po-qr-result" style="display:none;">
     <div class="card">
-      <div class="card-title blue" style="justify-content:space-between;">
+      <div class="card-title blue">
         <span>생성된 PO QR 코드</span>
-        <button class="btn btn-outline btn-sm" onclick="closePOQR()">✕ 닫기</button>
+        <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="closePOQR()">✕ 닫기</button>
       </div>
       <div class="qr-box">
         <div class="qr-img-wrap" id="po-qr-img"></div>
@@ -511,8 +731,8 @@
             <input id="pq-sn" placeholder="제품 S/N">
           </div>
           <div class="form-group">
-            <label>Item Code</label>
-            <input id="pq-item" placeholder="ITEM-CAM-001">
+            <label>Item Code <span style="font-size:10px;font-weight:400;color:var(--text3);" id="pq-item-hint"></span></label>
+            <select id="pq-item"></select>
           </div>
           <div class="form-group">
             <label>입고일</label>
@@ -585,10 +805,6 @@
           <div id="inspection-status-panel"></div>
           <div id="scan-total-summary" style="margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(0,201,167,0.08);border:1px solid rgba(0,201,167,0.2);display:none;"></div>
         </div>
-        <div class="devlog">
-          <div style="font-size:10px;color:#60a5fa;margin-bottom:5px;">시스템 처리 로그</div>
-          <pre id="scan-dev-log"></pre>
-        </div>
       </div>
       <div>
         <div id="item-progress-list"></div>
@@ -602,8 +818,12 @@
       <span id="scan-count-badge" style="font-size:11px;font-weight:400;color:var(--text2);margin-left:8px;"></span>
     </div>
     <div id="scanned-list"></div>
+    <div class="form-group" style="margin-top:10px;max-width:280px;">
+      <label>입고 검사자 <span style="font-size:10px;font-weight:400;color:var(--text3);">(추적성을 위해 실명 입력)</span></label>
+      <input id="incoming-inspector-input" placeholder="예: 우승현">
+    </div>
     <div class="btn-row">
-      <button class="btn btn-success" onclick="completeIncoming()" style="flex:1;">입고 완료 처리 (Phase 4 자동 실행)</button>
+      <button class="btn btn-success" onclick="completeIncoming()" style="flex:1;">입고 완료처리</button>
       <button class="btn btn-outline btn-sm" onclick="resetScan()">스캔 초기화</button>
     </div>
   </div>
@@ -617,15 +837,19 @@
      ================================================================ -->
 <div class="section" id="sec-phase5">
 
+  <div class="notice notice-blue" style="font-size:11px;">
+    <strong>발주·입고 이력:</strong> 발주서·발주 품목·입고 검수 진행 내역을 조회합니다.
+    실제 S/N 단위 재고 현황은 <strong>[재고 현황]</strong> 탭에서 제품별로 확인할 수 있습니다.
+  </div>
+
   <div class="stats-row" id="phase5-stats">
-    <div class="stat-card"><div class="stat-label">발행 PO</div>        <div class="stat-val blue"  id="stat-po">0</div></div>
-    <div class="stat-card"><div class="stat-label">재고 품목 (S/N)</div><div class="stat-val accent" id="stat-inv">0</div></div>
-    <div class="stat-card"><div class="stat-label">완료 입고</div>       <div class="stat-val"       id="stat-inc">0</div></div>
-    <div class="stat-card"><div class="stat-label">미완료 PO</div>       <div class="stat-val warn"  id="stat-open">0</div></div>
+    <div class="stat-card"><div class="stat-label">발행 PO</div>  <div class="stat-val blue"  id="stat-po">0</div></div>
+    <div class="stat-card"><div class="stat-label">완료 입고</div> <div class="stat-val"       id="stat-inc">0</div></div>
+    <div class="stat-card"><div class="stat-label">미완료 PO</div> <div class="stat-val warn"  id="stat-open">0</div></div>
   </div>
 
   <div class="card">
-    <div class="card-title">발주서 목록 (PO)</div>
+    <div class="card-title">발주서 목록 (PO) <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">행을 클릭하면 아래에 발주 품목 내역이 표시됩니다</span></div>
     <div class="db-wrap">
       <table class="db-table">
         <thead><tr><th>발주서 번호</th><th>발주일</th><th>납기일</th><th>공급업체</th><th>적용 호선</th><th>진행 상태</th></tr></thead>
@@ -635,7 +859,10 @@
   </div>
 
   <div class="card">
-    <div class="card-title">발주 품목 내역</div>
+    <div class="card-title" style="flex-wrap:wrap;">
+      <span id="po-line-detail-title">발주 품목 내역 <span style="font-size:10px;font-weight:400;color:var(--text3);">— 위 목록에서 발주서를 선택하세요</span></span>
+      <button class="btn btn-outline btn-sm" id="btn-po-line-clear" style="display:none;margin-left:auto;" onclick="clearPOLineDetail()">← 전체 보기</button>
+    </div>
     <div class="db-wrap">
       <table class="db-table">
         <thead><tr><th>순번</th><th>발주서 번호</th><th>품목 코드</th><th>품목명 / 규격</th><th style="text-align:center;">발주 수량</th><th>단위</th></tr></thead>
@@ -645,13 +872,61 @@
   </div>
 
   <div class="card">
-    <div class="card-title" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
-      <span>재고 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);">제품 S/N 단위</span></span>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+    <div class="card-title">입고 검수 이력</div>
+    <div class="db-wrap">
+      <table class="db-table">
+        <thead><tr><th>입고 검사자</th><th>발주서 번호</th><th>입고일</th><th style="text-align:center;">발주 수량</th><th style="text-align:center;">실입고 수량</th><th>검수 결과</th></tr></thead>
+        <tbody id="tbl-inc"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /phase5 -->
+
+</div><!-- /main (SCM) -->
+</div><!-- /main-scm -->
+
+
+<!-- ================================================================
+     MAIN SECTION: 재고 현황 (제품별 S/N 재고 관리)
+     JS 로직: js/phase5.js
+     ================================================================ -->
+<div class="main-section" id="main-inventory">
+<div class="main">
+
+  <div class="notice notice-purple" style="font-size:11px;">
+    <strong>재고 현황:</strong> 품목(제품)별로 그룹화하여 표시합니다. 품목을 클릭하면 해당 품목의 S/N 단위 상세 재고를 확인하고
+    출고·대여·검사요청 처리를 할 수 있습니다.
+  </div>
+
+  <div class="stats-row" id="inventory-stats">
+    <div class="stat-card"><div class="stat-label">전체 재고 (S/N)</div> <div class="stat-val accent" id="stat-inv-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">재고 보유</div>       <div class="stat-val"        id="stat-inv-stock">0</div></div>
+    <div class="stat-card"><div class="stat-label">출고 / 대여중</div>   <div class="stat-val blue"   id="stat-inv-out">0</div></div>
+    <div class="stat-card"><div class="stat-label">검사요청</div>        <div class="stat-val warn"   id="stat-inv-insp">0</div></div>
+  </div>
+
+  <!-- ① 품목(제품)별 그룹 목록 -->
+  <div class="card" id="inventory-group-card">
+    <div class="card-title">제품별 재고 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">품목을 클릭하면 S/N 상세로 이동합니다</span></div>
+    <div class="db-wrap">
+      <table class="db-table">
+        <thead><tr><th>품목 코드</th><th>품목명</th><th style="text-align:center;">전체</th><th style="text-align:center;">재고</th><th style="text-align:center;">출고</th><th style="text-align:center;">대여중</th><th style="text-align:center;">검사요청</th><th></th></tr></thead>
+        <tbody id="tbl-inv-groups"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ② 선택한 품목의 S/N 상세 (드릴다운) -->
+  <div class="card" id="inventory-detail-card" style="display:none;">
+    <div class="card-title" style="flex-wrap:wrap;">
+      <span id="inventory-detail-title">품목 상세</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
         <button class="btn btn-success btn-sm" onclick="openOutgoingModal('SHIPPED')">출고</button>
         <button class="btn btn-outline btn-sm" style="border-color:var(--accent);color:var(--accent);" onclick="openOutgoingModal('RENTED')">대여</button>
         <button class="btn btn-outline btn-sm" style="border-color:var(--warn);color:var(--warn);" onclick="openOutgoingModal('INSPECTION_REQUESTED')">검사요청</button>
         <span style="font-size:10px;color:var(--text3);align-self:center;">← 체크 후 선택</span>
+        <button class="btn btn-outline btn-sm" onclick="closeInventoryDetail()">← 목록으로</button>
       </div>
     </div>
     <div class="db-wrap">
@@ -660,17 +935,7 @@
           <th style="text-align:center;"><input type="checkbox" onchange="toggleAllInventory(this.checked)" title="전체 선택"></th>
           <th>관리 코드 (MC)</th><th>품목 코드</th><th>시리얼 번호 (S/N)</th><th>발주서 번호</th><th>공급업체</th><th>입고일</th><th>배정 호선</th><th>보관 위치</th><th>성적서</th><th>재고 상태</th>
         </tr></thead>
-        <tbody id="tbl-inv"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">입고 검수 이력</div>
-    <div class="db-wrap">
-      <table class="db-table">
-        <thead><tr><th>입고 번호</th><th>발주서 번호</th><th>입고일</th><th style="text-align:center;">발주 수량</th><th style="text-align:center;">실입고 수량</th><th>검수 결과</th></tr></thead>
-        <tbody id="tbl-inc"></tbody>
+        <tbody id="tbl-inv-detail"></tbody>
       </table>
     </div>
   </div>
@@ -725,24 +990,49 @@
     </div>
   </div>
 
-</div><!-- /phase5 -->
+</div><!-- /main (재고) -->
+</div><!-- /main-inventory -->
 
 
 <!-- ================================================================
-     SECTION: PHASE 4 — Incoming Inspection Report
+     MAIN SECTION: QC (FAT 관리)
+     ================================================================ -->
+<div class="main-section" id="main-qc">
+<div class="main">
+
+  <div style="text-align:center; padding:60px 40px; color:var(--text2);">
+    <div style="font-size:52px; margin-bottom:16px; opacity:.25;">🔍</div>
+    <div style="font-size:20px; font-weight:700; margin-bottom:8px; color:var(--text);">QC — FAT 관리</div>
+    <div style="font-size:13px; margin-bottom:12px;">기획 완료 · 개발 예정</div>
+    <div style="font-size:12px; color:var(--text3); max-width:460px; margin:0 auto; line-height:1.9;">
+      선급(KR, BV, DNV 등)이 입력된 호선의 FAT 대상 자동 추출<br>
+      출고 예정일 기반 기한 임박 알림<br>
+      FAT 완료 처리 및 결과 문서(PDF) 첨부
+    </div>
+  </div>
+
+</div><!-- /main (QC) -->
+</div><!-- /main-qc -->
+
+
+<!-- ================================================================
+     MAIN SECTION: 문서 산출물 (Incoming Report 등 ISO 9001 문서 보관)
      JS 로직: js/phase4.js
      ================================================================ -->
-<div class="section" id="sec-phase4">
+<div class="main-section" id="main-docs">
+<div class="main">
+
   <div class="notice notice-amber">
-    <strong>[Phase 4] 결과 처리:</strong> 입고 완료 처리 시 자동으로 생성됩니다.
+    <strong>Incoming Report:</strong> 입고 완료 처리 시 자동으로 생성됩니다.
     수량 일치/부족/초과에 따라 상태가 표시되며, Incoming Inspection Report가 Avikus 양식으로 자동 생성됩니다.
+    <br>※ 추후 ISO 9001 기준 호선별 문서 산출물(설계·QC 등)도 이 탭에서 통합 관리할 예정입니다.
   </div>
   <div id="incoming-report-list">
     <div class="empty-state">입고 완료 처리 후 리포트가 여기에 표시됩니다</div>
   </div>
-</div><!-- /phase4 -->
 
-</div><!-- /main -->
+</div><!-- /main (문서 산출물) -->
+</div><!-- /main-docs -->
 
 <!-- ================================================================
      MODAL: QR 인식 결과
@@ -888,6 +1178,26 @@
   </div>
 </div>
 
+<!-- ================================================================
+     MODAL: 재고 부족 알람 팝업 (BOM 등록 시 자동 표시)
+     ================================================================ -->
+<div class="modal-bg" id="shortage-popup-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title">
+      <span>⚠ 재고 부족 알람</span>
+      <button class="modal-close" onclick="document.getElementById('shortage-popup-modal').classList.remove('show')">×</button>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;">
+      아래 품목의 재고가 필요 수량에 미달합니다. 구매팀 확인이 필요합니다.
+    </div>
+    <div id="shortage-popup-body"></div>
+    <div class="btn-row" style="justify-content:flex-end;margin-top:14px;">
+      <button class="btn btn-outline" onclick="document.getElementById('shortage-popup-modal').classList.remove('show')">닫기</button>
+      <button class="btn btn-primary" onclick="switchDesignTab('safety');document.getElementById('shortage-popup-modal').classList.remove('show');">안전재고 현황 보기</button>
+    </div>
+  </div>
+</div>
+
 <!-- 알림 토스트 -->
 <div class="notif" id="notif"></div>
 
@@ -898,7 +1208,6 @@
 <script src="js/db.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/qr.js"></script>
-<script src="js/bom-templates.js"></script>
 <script src="js/phase0.js"></script>
 <script src="js/phase1.js"></script>
 <script src="js/phase23.js"></script>
@@ -917,6 +1226,10 @@
 <!-- jsQR: 카메라 QR 디코딩 라이브러리 (HTTPS 환경 전용) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"
         onerror="console.warn('[jsQR] CDN 로드 실패 — 카메라 스캔 불가. 수동 입력을 사용하세요.');"></script>
+
+<!-- SheetJS(xlsx): BOM 엑셀 파싱 라이브러리 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+        onerror="console.warn('[xlsx] CDN 로드 실패 — BOM 엑셀 업로드 기능을 사용할 수 없습니다.');"></script>
 
 </body>
 </html>

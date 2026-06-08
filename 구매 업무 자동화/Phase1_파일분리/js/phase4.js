@@ -3,7 +3,7 @@
    역할: 입고 완료 결과 표시, Avikus 양식 Incoming Report 생성/인쇄
    ──────────────────────────────────────────────────────────
    관련 파일:
-     - HTML : index.html → id="sec-phase4" 섹션
+     - HTML : index.html → id="main-docs" 섹션 (최상단 탭 '문서 산출물')
      - 스타일: css/components.css (.report-preview, .report-info)
      - 데이터: js/db.js  (DB.incoming_header, DB.incoming_line, DB.po_header, DB.po_line)
    참조: avikus_system_report.html > Phase 4, Section 5 STEP 4 Incoming Report

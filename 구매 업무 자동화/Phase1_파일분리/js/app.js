@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initDates();
   checkProtocol();
   refreshBomVesselSelect();     // phase0: 호선 셀렉트 + 특이사항 셀렉트 동기화
+  populateBomGubunSelect();     // phase0: 업로드된 BOM 카탈로그 → 구분/모델 드롭다운 복원
   refreshPhase1VesselSelect(); // phase1: PO 발행용 호선 드롭다운
   refreshSafetyStock();
   refreshVesselList();
@@ -23,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
   refreshPOList();
   updateQuickTestBtns();
   refreshPhase5();
+  refreshInventoryGroups();
   refreshIncomingReports();
   updateScanUI();
   updateDBStatus();

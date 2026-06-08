@@ -60,8 +60,6 @@ canvas#cam-canvas { display:none; }
 .inspect-info-row span:first-child { color:var(--text3); }
 
 /* ── 시스템 처리 로그 ── */
-.devlog     { margin-top:11px; background:rgba(30,111,200,.1); border:1px solid rgba(96,165,250,.22); border-radius:10px; padding:11px; }
-.devlog pre { margin:0; white-space:pre-wrap; word-break:break-word; font-family:Consolas,monospace; color:#bfdbfe; font-size:10px; line-height:1.5; }
 
 /* ── 안전재고 상태 색상 ── */
 .safety-row-ok     { color:var(--success); }
@@ -113,6 +111,96 @@ canvas#cam-canvas { display:none; }
   background:rgba(34,197,94,.05);
 }
 
+/* ── 선급 체크박스 그룹 ── */
+.class-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.class-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+}
+.class-checkbox-item:has(input:checked) {
+  background: rgba(124,110,245,0.18);
+  border-color: var(--purple-lt);
+  color: var(--purple-lt);
+}
+.class-checkbox-item input { display: none; }
+
+/* ── 검색 가능 호선 드롭다운 ── */
+.searchable-select-wrap {
+  position: relative;
+}
+.searchable-input {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  padding: 8px 11px;
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .2s;
+}
+.searchable-input:focus { border-color: var(--accent); }
+.searchable-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--navy2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  z-index: 200;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.vessel-dropdown-item {
+  padding: 9px 14px;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+.vessel-dropdown-item:last-child { border-bottom: none; }
+.vessel-dropdown-item:hover { background: rgba(0,201,167,0.1); color: var(--accent); }
+.vessel-dropdown-empty {
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+}
+
+/* 팝업 재고 부족 아이템 카드 */
+.shortage-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(239,68,68,.3);
+  border-radius: 8px;
+  background: rgba(239,68,68,.06);
+  margin-bottom: 8px;
+}
+.shortage-popup-item:last-child { margin-bottom: 0; }
+
 /* ── 날짜 입력 아이콘 (다크모드: 흰색으로, 라이트모드: 기본) ── */
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1) brightness(2);
@@ -129,8 +217,3 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: rgba(225,238,255,0.95);
   border-color: rgba(30,111,200,0.22);
 }
-[data-theme="light"] .devlog {
-  background: rgba(30,111,200,0.07);
-  border-color: rgba(30,111,200,0.18);
-}
-[data-theme="light"] .devlog pre { color: #1a4080; }

@@ -31,6 +31,10 @@ const DB = {
      category  : '품질' | '납기' | 'SW' | '기타'
      verified / verified_by / verified_at : 팀별 검증 정보 */
   vessel_notes:    [],
+  /* BOM 엑셀 파싱 캐시 (단일 레코드)
+     groups       : [{ gubun, model, items:[{item_code,item_name,qty}] }]
+     productCodes : [{ code, gubun, model }]  — 완제품 코드 매핑 (호선코드 prefix) */
+  bom_catalog:     [],
   /* 업체(공급사) 마스터
      supplier_code  : 업체 코드 (예: VND-MRC-001)
      supplier_name  : 업체명
@@ -57,6 +61,15 @@ const DB = {
     }
   });
   console.log('[DB] 초기화 완료 |', Object.keys(DB).map(function(k){ return k+'('+DB[k].length+')'; }).join(' | '));
+  /* item_name 누락된 기존 재고 레코드 보정 (입고 처리 로직에서 item_name 미저장하던 시기의 데이터) */
+  var inventoryFixed = false;
+  DB.inventory.forEach(function(inv) {
+    if (!inv.item_name) {
+      var line = DB.po_line.find(function(l){ return l.po_id === inv.po_id && l.item_code === inv.item_code; });
+      if (line && line.description) { inv.item_name = line.description; inventoryFixed = true; }
+    }
+  });
+  if (inventoryFixed) dbSave('inventory');
   /* 업체 DB가 비어있으면 기본 데이터 삽입 */
   if (DB.suppliers.length === 0) {
     DB.suppliers = [
@@ -151,6 +164,7 @@ function refreshAllViews() {
   refreshPOList();
   updateQuickTestBtns();
   refreshPhase5();
+  refreshInventoryGroups();
   refreshIncomingReports();
   updateScanUI();
 }

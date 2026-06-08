@@ -58,7 +58,7 @@ function updateScanUI() {
     if (poInfo) poInfo.style.display = 'none';
     if (scList) scList.style.display = 'none';
     /* 초기화 시 입력 필드 수정 가능하도록 복원 */
-    ['pq-item','pq-date'].forEach(function(id){
+    ['pq-date'].forEach(function(id){
       var el = document.getElementById(id);
       if (el) { el.removeAttribute('readonly'); el.style.cursor = ''; el.style.opacity = ''; }
     });
@@ -77,11 +77,11 @@ function updateScanUI() {
     renderInspectionSummary();
     updateScannedList();
     renderBatchQRForm();
-    if (lines[0]) document.getElementById('pq-item').value = lines[0].item_code;
+    populateScanItemSelect();
     document.getElementById('pq-date').value = today();
     document.getElementById('pq-mc').value = uid('MC');
-    /* PO 스캔 후 자동완성된 필드 수정 불가 */
-    ['pq-item','pq-date'].forEach(function(id){
+    /* PO 스캔 후 자동완성된 필드 수정 불가 (Item Code는 select로 관리 — populateScanItemSelect에서 처리) */
+    ['pq-date'].forEach(function(id){
       var el = document.getElementById(id);
       if (el) { el.setAttribute('readonly',''); el.style.cssText += ';cursor:not-allowed;opacity:0.6;'; }
     });
@@ -146,15 +146,6 @@ function renderInspectionSummary() {
   + (itemSummary ? '<div style="margin-top:6px;padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border:1px solid var(--border);">' + itemSummary + '</div>' : '')
   + '<div class="inspect-info-row" style="margin-top:4px;"><span>세션 ID</span><strong style="font-family:monospace;font-size:10px;">' + (scanState.sessionId || '-') + '</strong></div>';
 
-  document.getElementById('scan-dev-log').textContent = [
-    '[1] QR 파싱 완료: TYPE=PO, ID=' + po.po_id.substring(0,16),
-    '[2] DB 조회 성공: PO_HEADER 1건 / PO_LINE ' + lines.length + '건',
-    '[3] 발주 정보 로드: REF=' + po.po_ref_no + ', VND=' + po.supplier_code,
-    '[4] 세션 고정: ' + scanState.sessionId,
-    '[5] 입고 카운터: scanned=' + totalScanned + ', remaining=' + remaining,
-    '[6] 제품 QR 스캔 ' + (scanState.phase === 'SCAN_PRODUCTS' ? '활성화' : '종료')
-  ].join('\n');
-
   var progress_arr = getItemProgress();
   document.getElementById('item-progress-list').innerHTML = progress_arr.map(function(item) {
     var isDone     = item.remaining === 0;
@@ -217,14 +208,39 @@ function generateProductQR() {
   if (snMatch) document.getElementById('pq-sn').value = sn.replace(/\d+$/, String(parseInt(snMatch[1])+1).padStart(snMatch[1].length,'0'));
 }
 
+/* ── 단건 QR Item Code 선택 드롭다운 구성 ──
+   발주 품목이 1개면 자동 선택 + 비활성화, 여러 개면 사용자가 직접 선택하도록 활성화 */
+function populateScanItemSelect() {
+  var sel  = document.getElementById('pq-item');
+  var hint = document.getElementById('pq-item-hint');
+  if (!sel) return;
+  var lines = getCurrentPOLines();
+  var prevValue = sel.value;
+  sel.innerHTML = lines.map(function(l) {
+    return '<option value="' + l.item_code + '">' + l.item_code + (l.description ? ' — ' + l.description.substring(0,30) : '') + '</option>';
+  }).join('');
+  /* 이전에 선택돼 있던 품목이 여전히 PO에 있으면 유지, 아니면 첫 품목 */
+  if (prevValue && lines.some(function(l){ return l.item_code === prevValue; })) sel.value = prevValue;
+  else if (lines[0]) sel.value = lines[0].item_code;
+
+  if (lines.length <= 1) {
+    sel.setAttribute('disabled','');
+    sel.style.cssText += ';cursor:not-allowed;opacity:0.6;';
+    if (hint) hint.textContent = '(발주 품목 1종 — 자동 선택됨)';
+  } else {
+    sel.removeAttribute('disabled');
+    sel.style.cssText = sel.style.cssText.replace(/cursor:not-allowed;?/g,'').replace(/opacity:0\.6;?/g,'');
+    if (hint) hint.textContent = '(발주 품목 ' + lines.length + '종 — 입력할 제품을 선택하세요)';
+  }
+}
+
 /* ── 현재 PO 기준 자동완성 ── */
 function autoFillProductQR() {
   if (!scanState.currentPO) { notify('PO QR을 먼저 스캔하세요.', 'err'); return; }
-  var lines = getCurrentPOLines();
   document.getElementById('pq-mc').value   = uid('MC');
-  document.getElementById('pq-item').value = lines[0] ? lines[0].item_code : '';
+  populateScanItemSelect();
   document.getElementById('pq-date').value = today();
-  notify('현재 PO 기준으로 자동완성되었습니다. S/N을 입력해주세요.', 'info');
+  notify('현재 PO 기준으로 자동완성되었습니다. 제품을 선택하고 S/N을 입력해주세요.', 'info');
 }
 
 /* ── QR 처리 핵심 로직 ── */
@@ -287,6 +303,8 @@ function manualScan() {
 function resetScan() {
   if (scanState.scannedItems.length > 0 && !confirm('스캔 데이터를 초기화합니다. 계속하시겠습니까?')) return;
   scanState = { phase: 'WAIT_PO', currentPO: null, scannedItems: [], sessionId: null };
+  var inspectorEl = document.getElementById('incoming-inspector-input');
+  if (inspectorEl) inspectorEl.value = '';
   updateScanUI();
   notify('스캔 초기화 완료', 'info');
 }
@@ -294,6 +312,9 @@ function resetScan() {
 /* ── 입고 완료 처리 → Phase 4/5 자동 실행 ── */
 function completeIncoming() {
   if (scanState.scannedItems.length === 0) { notify('스캔된 제품이 없습니다.', 'err'); return; }
+  var inspectorEl = document.getElementById('incoming-inspector-input');
+  var inspector   = inspectorEl ? inspectorEl.value.trim() : '';
+  if (!inspector) { notify('입고 검사자 이름을 입력해주세요. (추적성 확보를 위해 필수입니다)', 'err'); if (inspectorEl) inspectorEl.focus(); return; }
   var po      = scanState.currentPO;
   var lines   = getCurrentPOLines();
   var ordered = lines.reduce(function(s,l){ return s+l.ordered_qty; }, 0);
@@ -309,7 +330,7 @@ function completeIncoming() {
     incoming_date: incDate,
     ordered_qty:   ordered,
     total_scanned: scanned,
-    inspector:     po.inspector || 'SCM',
+    inspector:     inspector,
     status:        result,
     vessel:        po.vessel_code
   });
@@ -319,7 +340,8 @@ function completeIncoming() {
   });
 
   scanState.scannedItems.forEach(function(item) {
-    DB.inventory.push({ mc_code: item.mc, item_code: item.item, serial_no: item.sn, po_id: po.po_id, po_ref_no: po.po_ref_no, supplier_code: item.vnd, incoming_date: item.date, status: 'IN_STOCK', rack_location: null, vessel_assigned: po.vessel_code });
+    var poLine = lines.find(function(l){ return l.item_code === item.item; });
+    DB.inventory.push({ mc_code: item.mc, item_code: item.item, item_name: poLine ? poLine.description : '', serial_no: item.sn, po_id: po.po_id, po_ref_no: po.po_ref_no, supplier_code: item.vnd, incoming_date: item.date, status: 'IN_STOCK', rack_location: null, vessel_assigned: po.vessel_code });
   });
 
   var poIdx = DB.po_header.findIndex(function(p){ return p.po_id === po.po_id; });
@@ -402,10 +424,13 @@ function onDocFileChange(input, type) {
 
 /* ── 서류 저장 (성적서·COC·거래명세서 일괄) ── */
 function saveCertAndClose() {
-  var incId    = document.getElementById('cert-modal-incoming-id').value;
-  var certNo   = document.getElementById('cert-no-input').value.trim();
-  var issuer   = document.getElementById('cert-issuer-input').value.trim();
-  var certDate = document.getElementById('cert-date-input').value || today();
+  var incId      = document.getElementById('cert-modal-incoming-id').value;
+  var certNoEl   = document.getElementById('cert-no-input');
+  var issuerEl   = document.getElementById('cert-issuer-input');
+  var certDateEl = document.getElementById('cert-date-input');
+  var certNo   = certNoEl   ? certNoEl.value.trim()   : '';
+  var issuer   = issuerEl   ? issuerEl.value.trim()   : '';
+  var certDate = (certDateEl && certDateEl.value) ? certDateEl.value : today();
 
   var existIdx = DB.inspection_cert ? DB.inspection_cert.findIndex(function(c){ return c.incoming_id === incId; }) : -1;
 
@@ -466,6 +491,8 @@ function closeCertModal() {
   var modal = document.getElementById('cert-modal');
   if (modal) modal.classList.remove('show');
   scanState = { phase: 'WAIT_PO', currentPO: null, scannedItems: [], sessionId: null };
+  var inspectorEl = document.getElementById('incoming-inspector-input');
+  if (inspectorEl) inspectorEl.value = '';
   updateScanUI();
 }
 

@@ -9,18 +9,32 @@
    ============================================================ */
 'use strict';
 
-/* ── 탭 전환 ── */
-function switchTab(id) {
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
-  var tabs = ['phase0','phase1','phase23','phase5','phase4'];
-  var idx  = tabs.indexOf(id);
-  if (idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
-  document.getElementById('sec-' + id).classList.add('active');
+/* ── 메인 탭 전환 (설계 / SCM / QC) ── */
+function switchMainTab(tabId) {
+  document.querySelectorAll('.main-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.main-section').forEach(function(s){ s.classList.remove('active'); });
+  var btn = document.querySelector('.main-tab[data-tab="' + tabId + '"]');
+  if (btn) btn.classList.add('active');
+  var sec = document.getElementById('main-' + tabId);
+  if (sec) sec.classList.add('active');
+  if (tabId === 'design')    { refreshSafetyStock(); refreshVesselList(); refreshSpecialNotes(); }
+  if (tabId === 'inventory') { refreshInventoryGroups(); }
+  if (tabId === 'docs')      { refreshIncomingReports(); }
+}
 
-  if (id === 'phase0') { refreshSafetyStock(); refreshVesselList(); }
+/* ── SCM 서브탭 전환 (main-scm 스코프 내에서만 동작) ── */
+function switchTab(id) {
+  var scm = document.getElementById('main-scm');
+  if (scm) {
+    scm.querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
+    scm.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+    var subTabs = ['phase1','phase23','phase5'];
+    var idx     = subTabs.indexOf(id);
+    if (idx >= 0) scm.querySelectorAll('.sub-tab')[idx].classList.add('active');
+  }
+  var sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
   if (id === 'phase5') { refreshPhase5(); }
-  if (id === 'phase4') { refreshIncomingReports(); }
 }
 
 /* ── 알림 토스트 ── */
