@@ -472,6 +472,10 @@ function addSpecialNote() {
     verified_at: null
   });
   dbSave('vessel_notes');
+  currentNoteFilter = 'all';
+  document.querySelectorAll('.note-filter-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-filter') === 'all');
+  });
   refreshSpecialNotes();
   document.getElementById('note-content').value = '';
   notify('특이사항 등록 완료', 'ok');
@@ -481,7 +485,11 @@ function addSpecialNote() {
 function confirmNote(noteId) {
   var note = DB.vessel_notes.find(function(n){ return n.note_id === noteId; });
   if (!note || note.verified) return;
-  var teamMap = { '품질': '품질팀', '납기': '구매팀', 'SW': 'SW팀' };
+  var teamMap = {
+    'QC': 'QC팀', 'SCM': 'SCM팀', 'SW': 'SW팀',
+    'CX': 'CX팀', 'OP': 'OP팀', '커미셔닝': '커미셔닝팀', '설계': '설계팀',
+    '품질-QC': 'QC팀', '납기-SCM': 'SCM팀', '품질': 'QC팀', '납기': 'SCM팀'
+  };
   note.verified    = true;
   note.verified_by = teamMap[note.category] || '-';
   note.verified_at = today();
@@ -520,15 +528,26 @@ function refreshSpecialNotes() {
     notes = notes.filter(function(n){ return n.category === currentNoteFilter; });
   }
 
-  var order = { '품질': 0, '납기': 1, 'SW': 2, '기타': 3 };
+  var order = {
+    'QC': 0, 'SCM': 1, 'SW': 2, 'CX': 3, 'OP': 4, '커미셔닝': 5, '설계': 6, '기타': 7,
+    '품질-QC': 0, '납기-SCM': 1, '품질': 0, '납기': 1
+  };
   notes = notes.slice().sort(function(a, b){ return (order[a.category]||9) - (order[b.category]||9); });
 
   if (notes.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" class="empty-state">등록된 특이사항이 없습니다.</td></tr>'; return;
   }
 
-  var catColor  = { '품질': '#fcd34d', '납기': '#f87171', 'SW': '#60a5fa', '기타': '#94a3b8' };
-  var teamLabel = { '품질': '품질팀 확인', '납기': '구매팀 확인', 'SW': 'SW팀 확인' };
+  var catColor = {
+    'QC': '#fcd34d', 'SCM': '#f87171', 'SW': '#60a5fa',
+    'CX': '#34d399', 'OP': '#fb923c', '커미셔닝': '#c084fc', '설계': '#a3e635', '기타': '#94a3b8',
+    '품질-QC': '#fcd34d', '납기-SCM': '#f87171', '품질': '#fcd34d', '납기': '#f87171'
+  };
+  var teamLabel = {
+    'QC': 'QC팀 확인', 'SCM': 'SCM팀 확인', 'SW': 'SW팀 확인',
+    'CX': 'CX팀 확인', 'OP': 'OP팀 확인', '커미셔닝': '커미셔닝팀 확인', '설계': '설계팀 확인',
+    '품질-QC': 'QC팀 확인', '납기-SCM': 'SCM팀 확인', '품질': 'QC팀 확인', '납기': 'SCM팀 확인'
+  };
 
   tbody.innerHTML = notes.map(function(n) {
     var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === n.vessel_id; });
@@ -559,7 +578,7 @@ function refreshSafetyStock(showPopup) {
   if (!tbody) return;
 
   if (DB.vessel_bom.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">등록된 안전재고 항목이 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">등록된 안전재고 항목이 없습니다.</td></tr>';
     return;
   }
 
@@ -587,7 +606,6 @@ function refreshSafetyStock(showPopup) {
       + '<td style="text-align:center;"><span class="badge ' + (shortage === 0 ? 'badge-ok' : shortage >= bom.required_qty ? 'badge-short' : 'badge-partial') + '">' + statusText + '</span>'
       + '<div class="shortage-bar" style="width:80px;margin:4px auto 0;"><div class="shortage-fill" style="width:' + pct + '%;background:' + fillColor + ';"></div></div>'
       + '</td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="deleteBomItem(\'' + bom.bom_id + '\')">삭제</button></td>'
       + '</tr>';
   }).join('');
 

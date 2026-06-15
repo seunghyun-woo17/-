@@ -66,20 +66,18 @@ function clearPOLineDetail() {
 function _renderPOLineDetail() {
   var tblLine = document.getElementById('tbl-line');
   var titleEl = document.getElementById('po-line-detail-title');
-  var clearBtn = document.getElementById('btn-po-line-clear');
+  var cardEl  = document.getElementById('po-line-detail-card');
   if (!tblLine) return;
 
-  var lines;
-  if (_selectedPOId) {
-    var po = DB.po_header.find(function(p){ return p.po_id === _selectedPOId; });
-    lines = DB.po_line.filter(function(l){ return l.po_id === _selectedPOId; });
-    if (titleEl) titleEl.innerHTML = '발주 품목 내역 <span style="font-size:10px;font-weight:400;color:var(--accent);">— ' + (po ? po.po_ref_no : shortId(_selectedPOId)) + ' (' + lines.length + '건)</span>';
-    if (clearBtn) clearBtn.style.display = '';
-  } else {
-    lines = [];
-    if (titleEl) titleEl.innerHTML = '발주 품목 내역 <span style="font-size:10px;font-weight:400;color:var(--text3);">— 위 목록에서 발주서를 선택하세요</span>';
-    if (clearBtn) clearBtn.style.display = 'none';
+  if (!_selectedPOId) {
+    if (cardEl) cardEl.style.display = 'none';
+    return;
   }
+
+  if (cardEl) cardEl.style.display = '';
+  var po    = DB.po_header.find(function(p){ return p.po_id === _selectedPOId; });
+  var lines = DB.po_line.filter(function(l){ return l.po_id === _selectedPOId; });
+  if (titleEl) titleEl.innerHTML = '발주 품목 내역 <span style="font-size:10px;font-weight:400;color:var(--accent);">— ' + (po ? po.po_ref_no : shortId(_selectedPOId)) + ' (' + lines.length + '건)</span>';
 
   tblLine.innerHTML = lines.length === 0
     ? '<tr><td colspan="6" class="empty-state">' + (_selectedPOId ? '품목 내역이 없습니다' : '발주서를 선택하면 품목 내역이 표시됩니다') + '</td></tr>'
@@ -106,14 +104,30 @@ function _inventoryStatusInfo(status) {
 }
 
 function refreshInventoryGroups() {
-  var totalEl = document.getElementById('stat-inv-total');
-  var stockEl = document.getElementById('stat-inv-stock');
-  var outEl   = document.getElementById('stat-inv-out');
-  var inspEl  = document.getElementById('stat-inv-insp');
-  if (totalEl) totalEl.textContent = DB.inventory.length;
-  if (stockEl) stockEl.textContent = DB.inventory.filter(function(i){ return i.status === 'IN_STOCK'; }).length;
-  if (outEl)   outEl.textContent   = DB.inventory.filter(function(i){ return i.status === 'SHIPPED' || i.status === 'RENTED'; }).length;
-  if (inspEl)  inspEl.textContent  = DB.inventory.filter(function(i){ return i.status === 'INSPECTION_REQUESTED'; }).length;
+  var stockCount = DB.inventory.filter(function(i){ return i.status === 'IN_STOCK'; }).length;
+  var inspCount  = DB.inventory.filter(function(i){ return i.status === 'INSPECTION_REQUESTED'; }).length;
+
+  /* ── [재고] 탭 최상단 — 전체 품목 단위 BOM 안전재고 연동 통계 ── */
+  var requiredTotal = 0;
+  var shortageTotal = 0;
+  var bomGroups = {};
+  DB.vessel_bom.forEach(function(bom) {
+    requiredTotal += bom.required_qty;
+    if (!bomGroups[bom.item_code]) bomGroups[bom.item_code] = 0;
+    bomGroups[bom.item_code] += bom.required_qty;
+  });
+  Object.keys(bomGroups).forEach(function(code) {
+    var current = DB.inventory.filter(function(i){ return i.item_code === code && i.status === 'IN_STOCK'; }).length;
+    shortageTotal += Math.max(0, bomGroups[code] - current);
+  });
+  var requiredEl = document.getElementById('stat-inv-required');
+  var shortageEl = document.getElementById('stat-inv-shortage');
+  var stockTopEl = document.getElementById('stat-inv-stock');
+  var inspTopEl  = document.getElementById('stat-inv-insp');
+  if (requiredEl) requiredEl.textContent = requiredTotal;
+  if (shortageEl) shortageEl.textContent = shortageTotal;
+  if (stockTopEl) stockTopEl.textContent = stockCount;
+  if (inspTopEl)  inspTopEl.textContent  = inspCount;
 
   var tblGroups = document.getElementById('tbl-inv-groups');
   if (tblGroups) {
@@ -162,10 +176,20 @@ function closeInventoryDetail() {
   if (card) card.style.display = 'none';
 }
 
+/* vessel_assigned에는 출고/대여 처리 시 vessel_id가, 입고 시 PO의 vessel_code가 저장되어
+   데이터 형식이 혼재되어 있음 — 두 키를 모두 시도해 표시용 호선명으로 변환 */
+function _resolveVesselName(vesselRef) {
+  if (!vesselRef) return null;
+  var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === vesselRef || v.vessel_code === vesselRef; });
+  return vessel ? getVesselDisplayName(vessel) : vesselRef;
+}
+
 function _renderInventoryDetail(itemCode) {
   var titleEl = document.getElementById('inventory-detail-title');
   var items   = DB.inventory.filter(function(i){ return (i.item_code || '(미지정)') === itemCode; });
-  if (titleEl) titleEl.textContent = '품목 상세 — ' + itemCode + ' (' + items.length + '건)';
+  var itemName = '';
+  for (var gi = 0; gi < items.length; gi++) { if (items[gi].item_name) { itemName = items[gi].item_name; break; } }
+  if (titleEl) titleEl.textContent = (itemName ? itemName + ' - ' : '') + itemCode;
 
   var tblDetail = document.getElementById('tbl-inv-detail');
   if (!tblDetail) return;
@@ -181,20 +205,96 @@ function _renderInventoryDetail(itemCode) {
     var certCell = cert
       ? '<span style="font-size:10px;color:var(--success);">첨부됨</span>'
       : '<span style="font-size:10px;color:var(--warn);">미등록</span>';
-    return '<tr>'
-      + '<td style="text-align:center;"><input type="checkbox" class="inv-checkbox" data-mc="' + i.mc_code + '" data-sn="' + i.serial_no + '"' + (i.status !== 'IN_STOCK' ? ' disabled' : '') + '></td>'
-      + '<td class="mono" style="font-size:10px;">' + i.mc_code.substring(0,18) + '</td>'
+    var vesselName = _resolveVesselName(i.vessel_assigned);
+    return '<tr style="cursor:pointer;" onclick="openInventoryItemDetail(\'' + i.mc_code + '\')">'
+      + '<td>' + (i.item_name || '<span style="color:var(--text3);">-</span>') + '</td>'
       + '<td class="mono">' + i.item_code + '</td>'
       + '<td class="sn">' + i.serial_no + '</td>'
       + '<td>' + (i.po_ref_no || shortId(i.po_id)) + '</td>'
       + '<td>' + i.supplier_code + '</td>'
       + '<td>' + i.incoming_date + '</td>'
-      + '<td>' + (i.vessel_assigned || '-') + '</td>'
+      + '<td>' + (vesselName || '<span style="color:var(--text3);">미지정</span>') + '</td>'
       + '<td>' + (i.rack_location || '<span style="color:var(--text3);">미지정</span>') + '</td>'
       + '<td>' + certCell + '</td>'
       + '<td><span class="badge ' + info.badgeClass + '">' + info.label + '</span></td>'
       + '</tr>';
   }).join('');
+}
+
+/* ══════════════════════════════════════════════════════════
+   개별 재고 상세 모달 — 행 클릭 시 표시
+   배정호선·보관위치 수정, 상태 변경 이력 확인, 출고/대여/검사요청 처리
+   ══════════════════════════════════════════════════════════ */
+function openInventoryItemDetail(mcCode) {
+  _renderInventoryItemModal(mcCode);
+  var modal = document.getElementById('inv-item-modal');
+  if (modal) modal.classList.add('show');
+}
+
+function closeInventoryItemModal() {
+  var modal = document.getElementById('inv-item-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+function _renderInventoryItemModal(mcCode) {
+  var item = DB.inventory.find(function(i){ return i.mc_code === mcCode; });
+  if (!item) return;
+  var info = _inventoryStatusInfo(item.status);
+
+  /* 입고 이벤트는 별도 구조체로 생성 */
+  var historyRows = [];
+  historyRows.push({ date: item.incoming_date || '-', statusLabel: '입고 등록', badgeClass: 'badge-stock', tags: [], note: '' });
+  DB.outgoing_log
+    .filter(function(l){ return l.inv_mc === mcCode; })
+    .sort(function(a,b){ return (a.date < b.date) ? -1 : (a.date > b.date ? 1 : 0); })
+    .forEach(function(l) {
+      var li   = _inventoryStatusInfo(l.action);
+      var tags = [];
+      if (l.team)        tags.push({ text: l.team + ' 팀', color: 'var(--accent)' });
+      if (l.vessel_code) tags.push({ text: l.vessel_code,  color: 'var(--text2)'  });
+      if (l.due_date)    tags.push({ text: 'Due: ' + l.due_date, color: 'var(--warn)' });
+      historyRows.push({ date: l.date || '-', statusLabel: li.label, badgeClass: li.badgeClass, tags: tags, note: l.note || '' });
+    });
+  var historyHTML = historyRows.map(function(h) {
+    var tagsHTML = h.tags.map(function(t){
+      return '<span style="font-size:10px;color:' + t.color + ';background:rgba(255,255,255,0.05);padding:1px 6px;border-radius:10px;border:1px solid var(--border);">' + t.text + '</span>';
+    }).join('');
+    var noteHTML = h.note
+      ? '<div style="margin-top:5px;padding:4px 8px;background:rgba(255,255,255,0.03);border-left:2px solid var(--border);border-radius:0 4px 4px 0;font-size:11px;color:var(--text2);">메모: ' + h.note + '</div>'
+      : '';
+    return '<div style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--input-bg);">'
+      + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+      + '<span style="font-size:12px;font-weight:600;color:var(--text);min-width:82px;">' + h.date + '</span>'
+      + '<span class="badge ' + h.badgeClass + '">' + h.statusLabel + '</span>'
+      + tagsHTML
+      + '</div>'
+      + noteHTML
+      + '</div>';
+  }).join('');
+
+  var actionsHTML = item.status === 'SHIPPED'
+    ? '<span style="font-size:11px;color:var(--text3);">현재 상태(출고)에서는 추가 처리가 불가합니다.</span>'
+    : '<button class="btn btn-outline btn-sm" style="border-color:var(--accent);color:var(--accent);" onclick="inventoryItemAction(\'' + mcCode + '\',\'RENTED\')">대여</button>'
+    + '<button class="btn btn-outline btn-sm" style="border-color:var(--warn);color:var(--warn);" onclick="inventoryItemAction(\'' + mcCode + '\',\'INSPECTION_REQUESTED\')">검사요청</button>'
+    + '<span style="font-size:10px;color:var(--text3);display:block;margin-top:6px;">출고는 [SCM] 탭 → 출고 서브탭에서 QR 스캔으로 처리하세요.</span>';
+
+  document.getElementById('inv-item-modal-title').textContent = '재고 상세 — ' + item.serial_no;
+  document.getElementById('inv-item-modal-body').innerHTML =
+      '<div class="inspect-info-row"><span>품목명</span><strong>' + (item.item_name || '-') + '</strong></div>'
+    + '<div class="inspect-info-row"><span>품목 코드</span><strong class="mono">' + item.item_code + '</strong></div>'
+    + '<div class="inspect-info-row"><span>S/N</span><strong class="sn">' + item.serial_no + '</strong></div>'
+    + '<div class="inspect-info-row"><span>현재 재고 상태</span><span class="badge ' + info.badgeClass + '">' + info.label + '</span></div>'
+    + '<hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">'
+    + '<div class="form-group"><label>재고 상태 변경 이력</label>' + historyHTML + '</div>'
+    + '<div class="btn-row" style="margin-top:8px;flex-wrap:wrap;">' + actionsHTML + '</div>';
+}
+
+/* ── 모달에서 출고/대여/검사요청 → 해당 항목만 출고 처리 모달로 전달 ── */
+function inventoryItemAction(mcCode, action) {
+  var item = DB.inventory.find(function(i){ return i.mc_code === mcCode; });
+  if (!item) return;
+  closeInventoryItemModal();
+  openOutgoingModal(action, [{ mc: item.mc_code, sn: item.serial_no }]);
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -222,69 +322,308 @@ function toggleAdminPanel() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   출고 / 대여 / 검사요청 처리
+   출고 / 대여 / 검사요청 처리 — 개별 재고 상세 모달에서 호출
    ══════════════════════════════════════════════════════════ */
 
-/* ── 전체 선택/해제 ── */
-function toggleAllInventory(checked) {
-  document.querySelectorAll('.inv-checkbox:not(:disabled)').forEach(function(cb){ cb.checked = checked; });
-}
+var _outgoingSelection = [];
 
-/* ── 체크된 재고 항목 가져오기 ── */
-function getSelectedInventory() {
-  return Array.prototype.map.call(
-    document.querySelectorAll('.inv-checkbox:checked'),
-    function(cb){ return { mc: cb.getAttribute('data-mc'), sn: cb.getAttribute('data-sn') }; }
-  );
-}
-
-/* ── 출고/대여/검사요청 모달 열기 ── */
-function openOutgoingModal(action) {
-  var selected = getSelectedInventory();
-  if (selected.length === 0) { notify('처리할 제품을 체크박스로 선택해주세요.', 'err'); return; }
+/* ── 출고/대여/검사요청 모달 열기 (items: [{mc, sn}, ...]) ── */
+function openOutgoingModal(action, items) {
+  if (!items || items.length === 0) return;
+  _outgoingSelection = items;
   var labels = { SHIPPED: '출고', RENTED: '대여', INSPECTION_REQUESTED: '검사요청' };
   document.getElementById('outgoing-modal-title').textContent = labels[action] + ' 처리';
   document.getElementById('outgoing-action-hidden').value = action;
   document.getElementById('outgoing-modal-info').innerHTML =
     '<div style="padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;">'
-  + '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">선택된 제품 (' + selected.length + '개)</div>'
-  + selected.map(function(s){ return '<div style="font-family:monospace;font-size:11px;color:var(--text2);">• ' + s.sn + '</div>'; }).join('')
+  + '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">선택된 제품 (' + items.length + '개)</div>'
+  + items.map(function(s){ return '<div style="font-family:monospace;font-size:11px;color:var(--text2);">• ' + s.sn + '</div>'; }).join('')
   + '</div>';
-  /* 검사요청은 호선 선택 불필요 */
-  var vesselRow = document.getElementById('outgoing-vessel-row');
-  if (vesselRow) vesselRow.style.display = action === 'INSPECTION_REQUESTED' ? 'none' : 'block';
-  /* 호선 드롭다운 */
-  var sel = document.getElementById('outgoing-vessel-select');
-  if (sel) {
-    sel.innerHTML = '<option value="">-- 호선 선택 (선택) --</option>'
-      + DB.vessel_master.map(function(v){ return '<option value="' + v.vessel_id + '">' + v.vessel_name + '</option>'; }).join('');
+
+  var fieldsEl = document.getElementById('outgoing-modal-fields');
+  if (action === 'SHIPPED') {
+    var vesselOpts = '<option value="">-- 호선 선택 (필수) --</option>'
+      + DB.vessel_master.map(function(v){
+          return '<option value="' + v.vessel_id + '">' + getVesselDisplayName(v) + '</option>';
+        }).join('');
+    fieldsEl.innerHTML =
+        '<div class="form-group" style="margin-bottom:12px;">'
+      + '<label>배정 호선</label>'
+      + '<select id="outgoing-vessel-select" onchange="onOutgoingVesselChange()">' + vesselOpts + '</select>'
+      + '</div>'
+      + '<div class="form-group" style="margin-bottom:12px;">'
+      + '<label>호선 코드</label>'
+      + '<input id="outgoing-vessel-code" readonly placeholder="호선 선택 시 자동 입력" style="background:var(--bg2);color:var(--text2);cursor:default;">'
+      + '</div>'
+      + '<div class="form-group" style="margin-bottom:14px;">'
+      + '<label>메모 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>'
+      + '<input id="outgoing-note" placeholder="출고 사유, 수령인 등">'
+      + '</div>';
+  } else if (action === 'RENTED') {
+    fieldsEl.innerHTML =
+        '<div class="form-group" style="margin-bottom:12px;">'
+      + '<label>수령 팀</label>'
+      + '<select id="outgoing-team">'
+      + '<option value="">-- 팀 선택 --</option>'
+      + '<option value="QC">QC</option>'
+      + '<option value="SW">SW</option>'
+      + '<option value="CX">CX</option>'
+      + '<option value="커미셔닝">커미셔닝</option>'
+      + '<option value="설계">설계</option>'
+      + '</select>'
+      + '</div>'
+      + '<div class="form-group" style="margin-bottom:14px;">'
+      + '<label>메모 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>'
+      + '<input id="outgoing-note" placeholder="대여 목적, 수령인 등">'
+      + '</div>';
+  } else if (action === 'INSPECTION_REQUESTED') {
+    fieldsEl.innerHTML =
+        '<div class="form-group" style="margin-bottom:12px;">'
+      + '<label>검사 팀</label>'
+      + '<select id="outgoing-team">'
+      + '<option value="">-- 팀 선택 --</option>'
+      + '<option value="QC">QC</option>'
+      + '<option value="SW">SW</option>'
+      + '<option value="공통">공통</option>'
+      + '</select>'
+      + '</div>'
+      + '<div class="form-group" style="margin-bottom:12px;">'
+      + '<label>Due Date <span style="color:var(--text3);font-size:10px;">(선택)</span></label>'
+      + '<input type="date" id="outgoing-due-date">'
+      + '</div>'
+      + '<div class="form-group" style="margin-bottom:14px;">'
+      + '<label>메모 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>'
+      + '<input id="outgoing-note" placeholder="검사 내용, 요청 사항 등">'
+      + '</div>';
   }
-  document.getElementById('outgoing-note').value = '';
   document.getElementById('outgoing-modal').classList.add('show');
+}
+
+/* ── 출고 모달에서 호선 선택 시 호선코드 자동 표시 ── */
+function onOutgoingVesselChange() {
+  var sel    = document.getElementById('outgoing-vessel-select');
+  var codeEl = document.getElementById('outgoing-vessel-code');
+  if (!sel || !codeEl) return;
+  var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === sel.value; });
+  codeEl.value = (vessel && vessel.vessel_code) ? vessel.vessel_code : '';
 }
 
 /* ── 출고 확정 ── */
 function confirmOutgoing() {
   var action   = document.getElementById('outgoing-action-hidden').value;
-  var selected = getSelectedInventory();
-  var vesselEl = document.getElementById('outgoing-vessel-select');
-  var vesselId = vesselEl ? vesselEl.value : '';
-  var note     = document.getElementById('outgoing-note').value.trim();
+  var selected = _outgoingSelection;
+  var noteEl   = document.getElementById('outgoing-note');
+  var note     = noteEl ? noteEl.value.trim() : '';
   var dt       = today();
   var labels   = { SHIPPED: '출고', RENTED: '대여', INSPECTION_REQUESTED: '검사요청' };
+
+  var vesselId = '', vesselCode = '', team = '', dueDate = '';
+  if (action === 'SHIPPED') {
+    var vesselSel = document.getElementById('outgoing-vessel-select');
+    vesselId = vesselSel ? vesselSel.value : '';
+    if (!vesselId) { notify('배정 호선을 선택해주세요.', 'err'); return; }
+    var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
+    vesselCode = (vessel && vessel.vessel_code) ? vessel.vessel_code : '';
+  } else {
+    var teamEl = document.getElementById('outgoing-team');
+    team = teamEl ? teamEl.value : '';
+    if (action === 'INSPECTION_REQUESTED') {
+      var dueDateEl = document.getElementById('outgoing-due-date');
+      dueDate = dueDateEl ? dueDateEl.value : '';
+    }
+  }
+
   selected.forEach(function(sel) {
     var idx = DB.inventory.findIndex(function(i){ return i.mc_code === sel.mc; });
     if (idx >= 0) {
       DB.inventory[idx].status = action;
-      if (vesselId) DB.inventory[idx].vessel_assigned = vesselId;
+      if (vesselId) {
+        DB.inventory[idx].vessel_assigned      = vesselId;
+        DB.inventory[idx].vessel_code_assigned = vesselCode;
+      }
     }
-    DB.outgoing_log.push({ log_id: uid('OUT'), inv_mc: sel.mc, inv_sn: sel.sn, action: action, vessel_id: vesselId, date: dt, note: note });
+    DB.outgoing_log.push({
+      log_id:     uid('OUT'),
+      inv_mc:     sel.mc,
+      inv_sn:     sel.sn,
+      action:     action,
+      vessel_id:  vesselId,
+      vessel_code: vesselCode,
+      team:       team,
+      due_date:   dueDate,
+      date:       dt,
+      note:       note
+    });
   });
+  _outgoingSelection = [];
   dbSave('inventory');
   dbSave('outgoing_log');
   refreshAllViews();
   document.getElementById('outgoing-modal').classList.remove('show');
+  clearOutgoingScanResult();
   notify(labels[action] + ' 처리 완료: ' + selected.length + '개 제품', 'ok');
+}
+
+/* ══════════════════════════════════════════════════════════
+   재고 현황 — 호선별 뷰
+   SHIPPED 상태 재고를 vessel_assigned 기준으로 그룹화
+   ══════════════════════════════════════════════════════════ */
+var _vesselDetailVesselId = null;
+
+function switchInventoryView(view) {
+  ['product', 'vessel'].forEach(function(v) {
+    var tab = document.getElementById('inv-subtab-' + v);
+    if (tab) tab.classList.toggle('active', v === view);
+  });
+  var prodView = document.getElementById('inventory-product-view');
+  var vslView  = document.getElementById('inventory-vessel-view');
+  if (prodView) prodView.style.display = view === 'product' ? '' : 'none';
+  if (vslView)  vslView.style.display  = view === 'vessel'  ? '' : 'none';
+  if (view === 'vessel') refreshInventoryVesselView();
+}
+
+function refreshInventoryVesselView() {
+  var shippedItems = DB.inventory.filter(function(i){ return i.status === 'SHIPPED'; });
+  var groups = {};
+  shippedItems.forEach(function(i) {
+    var key = i.vessel_assigned || '(미지정)';
+    if (!groups[key]) {
+      var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === key; });
+      groups[key] = {
+        vessel_id:   key,
+        vessel_name: vessel ? getVesselDisplayName(vessel) : (key === '(미지정)' ? '호선 미지정' : key),
+        vessel_code: (vessel && vessel.vessel_code) ? vessel.vessel_code : '-',
+        items: []
+      };
+    }
+    groups[key].items.push(i);
+  });
+
+  var tbody = document.getElementById('tbl-inv-vessel-groups');
+  if (!tbody) return;
+  var keys = Object.keys(groups).sort();
+  if (keys.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">출고된 재고가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = keys.map(function(key) {
+    var g = groups[key];
+    return '<tr style="cursor:pointer;" onclick="openVesselInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">'
+      + '<td><strong>' + g.vessel_name + '</strong></td>'
+      + '<td class="mono">' + g.vessel_code + '</td>'
+      + '<td style="text-align:center;font-weight:600;">' + g.items.length + '</td>'
+      + '<td style="text-align:right;"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openVesselInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">상세 보기 →</button></td>'
+      + '</tr>';
+  }).join('');
+
+  if (_vesselDetailVesselId) _renderVesselInventoryDetail(_vesselDetailVesselId);
+}
+
+function openVesselInventoryDetail(vesselId) {
+  _vesselDetailVesselId = vesselId;
+  var card = document.getElementById('vessel-inventory-detail-card');
+  if (card) { card.style.display = 'block'; card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  _renderVesselInventoryDetail(vesselId);
+}
+
+function closeVesselInventoryDetail() {
+  _vesselDetailVesselId = null;
+  var card = document.getElementById('vessel-inventory-detail-card');
+  if (card) card.style.display = 'none';
+}
+
+function _renderVesselInventoryDetail(vesselId) {
+  var titleEl = document.getElementById('vessel-inventory-detail-title');
+  var items   = DB.inventory.filter(function(i){ return i.status === 'SHIPPED' && (i.vessel_assigned || '(미지정)') === vesselId; });
+  var vessel  = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
+  var displayName = vesselId === '(미지정)' ? '호선 미지정' : (vessel ? getVesselDisplayName(vessel) : vesselId);
+  if (titleEl) titleEl.textContent = displayName;
+
+  var tbody = document.getElementById('tbl-vessel-inv-detail');
+  if (!tbody) return;
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">해당 호선에 출고된 재고가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(function(i) {
+    var log = DB.outgoing_log.find(function(l){ return l.inv_mc === i.mc_code && l.action === 'SHIPPED'; });
+    return '<tr>'
+      + '<td>' + (i.item_name || '<span style="color:var(--text3);">-</span>') + '</td>'
+      + '<td class="mono">' + i.item_code + '</td>'
+      + '<td class="sn">' + i.serial_no + '</td>'
+      + '<td class="mono">' + (i.vessel_code_assigned || '-') + '</td>'
+      + '<td>' + (log ? (log.date || '-') : '-') + '</td>'
+      + '<td>' + (log && log.note ? log.note : '<span style="color:var(--text3);">-</span>') + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCM 출고 탭 — QR 스캔 → 재고 확인 → 출고 처리
+   ══════════════════════════════════════════════════════════ */
+function onOutgoingScanInput(val) {
+  var v = (val || '').trim();
+  if (!v) return;
+  var parsed = parseQRString(v);
+  if (parsed.TYPE !== 'PROD') {
+    notify('제품 QR 코드가 아닙니다. 입고 시 발급된 TYPE:PROD QR을 스캔하세요.', 'err');
+    return;
+  }
+  var mc   = parsed.MC;
+  var item = DB.inventory.find(function(i){ return i.mc_code === mc; });
+  if (!item) {
+    notify('해당 QR의 재고를 찾을 수 없습니다. 입고 완료된 제품인지 확인하세요.', 'err');
+    return;
+  }
+  if (item.status === 'SHIPPED') {
+    notify('이미 출고 처리된 제품입니다. S/N: ' + item.serial_no, 'err');
+    return;
+  }
+  var infoEl = document.getElementById('outgoing-scan-result');
+  if (infoEl) {
+    var info = _inventoryStatusInfo(item.status);
+    infoEl.innerHTML =
+        '<div style="padding:12px;background:rgba(0,201,167,0.06);border:1px solid rgba(0,201,167,0.3);border-radius:8px;margin-bottom:12px;">'
+      + '<div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:8px;">QR 스캔 성공 — 제품 정보 확인</div>'
+      + '<div class="inspect-info-row"><span>품목명</span><strong>' + (item.item_name || '-') + '</strong></div>'
+      + '<div class="inspect-info-row"><span>품목 코드</span><strong class="mono">' + item.item_code + '</strong></div>'
+      + '<div class="inspect-info-row"><span>S/N</span><strong class="sn">' + item.serial_no + '</strong></div>'
+      + '<div class="inspect-info-row"><span>현재 상태</span><span class="badge ' + info.badgeClass + '">' + info.label + '</span></div>'
+      + '</div>';
+    infoEl.style.display = 'block';
+  }
+  var scanInput = document.getElementById('outgoing-scan-input');
+  if (scanInput) scanInput.value = '';
+  openOutgoingModal('SHIPPED', [{ mc: item.mc_code, sn: item.serial_no }]);
+}
+
+function clearOutgoingScanResult() {
+  var el = document.getElementById('outgoing-scan-result');
+  if (el) { el.innerHTML = ''; el.style.display = 'none'; }
+  var scanInput = document.getElementById('outgoing-scan-input');
+  if (scanInput) scanInput.value = '';
+}
+
+/* ── 출고 탭 — 재고 목록 직접 선택 (QR 스캐너 없을 때 / 테스트용) ── */
+function refreshOutgoingStockList() {
+  var tbody = document.getElementById('tbl-outgoing-stock');
+  if (!tbody) return;
+  var items = DB.inventory.filter(function(i){ return i.status !== 'SHIPPED'; });
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">출고 가능한 재고가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(function(i) {
+    var info = _inventoryStatusInfo(i.status);
+    return '<tr style="cursor:pointer;" onclick="openOutgoingModal(\'SHIPPED\',[{mc:\'' + i.mc_code + '\',sn:\'' + i.serial_no + '\'}])">'
+      + '<td>' + (i.item_name || '<span style="color:var(--text3);">-</span>') + '</td>'
+      + '<td class="mono">' + i.item_code + '</td>'
+      + '<td class="sn">' + i.serial_no + '</td>'
+      + '<td>' + (i.incoming_date || '-') + '</td>'
+      + '<td><span class="badge ' + info.badgeClass + '">' + info.label + '</span></td>'
+      + '<td style="text-align:right;"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openOutgoingModal(\'SHIPPED\',[{mc:\'' + i.mc_code + '\',sn:\'' + i.serial_no + '\'}])">출고 처리</button></td>'
+      + '</tr>';
+  }).join('');
 }
 
 /* ── 수기 재고 단건 등록 ── */

@@ -88,73 +88,6 @@ function refreshSupplierList() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   PO 호선 검색 드롭다운 (vessel_master 연동)
-   ══════════════════════════════════════════════════════════ */
-function refreshPhase1VesselSelect() {
-  /* 호선 삭제 시 기존 선택값 초기화 */
-  var hidden = document.getElementById('po-vessel-select');
-  if (!hidden || !hidden.value) return;
-  var stillExists = DB.vessel_master.some(function(v) {
-    var name = (v.vessel_type === 'retrofit' && v.shipping_company ? v.shipping_company + ' ' : '') + v.vessel_name;
-    return name === hidden.value;
-  });
-  if (!stillExists) {
-    hidden.value = '';
-    var input = document.getElementById('po-vessel-input');
-    if (input) input.value = '';
-  }
-}
-
-function openPoVesselDropdown() {
-  var input    = document.getElementById('po-vessel-input');
-  var dropdown = document.getElementById('po-vessel-dropdown');
-  if (!input || !dropdown) return;
-  var query = input.value.trim().toLowerCase();
-  var items = DB.vessel_master.map(function(v) {
-    var name = (v.vessel_type === 'retrofit' && v.shipping_company ? v.shipping_company + ' ' : '') + v.vessel_name;
-    return { name: name, type: v.vessel_type === 'retrofit' ? '개조선박' : '신조선박' };
-  });
-  var filtered = query ? items.filter(function(i){ return i.name.toLowerCase().indexOf(query) >= 0; }) : items;
-  if (filtered.length === 0) {
-    dropdown.innerHTML = '<div class="vessel-dropdown-empty">등록된 호선이 없습니다. 설계 탭에서 먼저 등록하세요.</div>';
-  } else {
-    dropdown.innerHTML = filtered.map(function(item) {
-      var safe = item.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-      return '<div class="vessel-dropdown-item" onmousedown="selectPoVessel(\'' + safe + '\')">'
-        + '<span style="color:var(--text3);font-size:10px;">[' + item.type + '] </span>' + item.name
-        + '</div>';
-    }).join('');
-  }
-  dropdown.style.display = 'block';
-}
-
-function closePoVesselDropdownDelayed() {
-  setTimeout(function(){
-    var d = document.getElementById('po-vessel-dropdown');
-    if (d) d.style.display = 'none';
-  }, 200);
-}
-
-function filterPoVesselDropdown() { openPoVesselDropdown(); }
-
-function selectPoVessel(name) {
-  var input  = document.getElementById('po-vessel-input');
-  var hidden = document.getElementById('po-vessel-select');
-  var codeEl = document.getElementById('po-vessel-code');
-  if (input)  input.value  = name;
-  if (hidden) hidden.value = name;
-  if (codeEl) {
-    var vessel = DB.vessel_master.find(function(v) {
-      var n = (v.vessel_type === 'retrofit' && v.shipping_company ? v.shipping_company + ' ' : '') + v.vessel_name;
-      return n === name;
-    });
-    codeEl.value = (vessel && vessel.vessel_code) ? vessel.vessel_code : '';
-  }
-  var d = document.getElementById('po-vessel-dropdown');
-  if (d) d.style.display = 'none';
-}
-
-/* ══════════════════════════════════════════════════════════
    품목 라인 추가/삭제
    ══════════════════════════════════════════════════════════ */
 function addLineItem() {
@@ -164,7 +97,7 @@ function addLineItem() {
   div.style.marginBottom = '9px';
   div.setAttribute('data-idx', lineIdx++);
   div.innerHTML =
-    '<div class="form-group" style="grid-column:span 2;"><label>Part Name / Description</label><input class="li-desc" value=""></div>'
+    '<div class="form-group" style="grid-column:span 2;"><label>Part Name / Description</label><input class="li-desc" value="" oninput="autoFillItemCode(this)"></div>'
   + '<div class="form-group"><label>Item Code</label><input class="li-code" value="ITEM-CAM-00' + lineIdx + '"></div>'
   + '<div class="form-group"><label>Qty</label><input class="li-qty" type="number" value="1" min="1"></div>'
   + '<div class="form-group"><label>단가 (KRW)</label><input class="li-price" type="number" value="0" min="0"></div>'
@@ -172,6 +105,27 @@ function addLineItem() {
   + '<div class="form-group" style="justify-content:flex-end;align-items:flex-end;"><button class="btn btn-danger btn-sm" onclick="removeLineItem(this)">삭제</button></div>';
   wrap.appendChild(div);
 }
+/* 품목명 입력 시 품목코드 자동 연동 — 이미 코드가 입력된 경우 덮어쓰지 않음 */
+function autoFillItemCode(descInput) {
+  var lineItem  = descInput.closest ? descInput.closest('.line-item') : descInput.parentElement.parentElement;
+  var codeInput = lineItem ? lineItem.querySelector('.li-code') : null;
+  if (!codeInput || codeInput.value.trim()) return;
+  var name = descInput.value.trim().toLowerCase();
+  if (name.length < 2) return;
+  var found = null;
+  var sources = [
+    DB.vessel_bom.map(function(b){ return { name: b.item_name, code: b.item_code }; }),
+    DB.po_line.map(function(l){ return { name: l.description, code: l.item_code }; }),
+    DB.inventory.map(function(i){ return { name: i.item_name, code: i.item_code }; })
+  ];
+  sources.forEach(function(list) {
+    if (found) return;
+    var m = list.find(function(e){ return e.name && e.code && e.name.toLowerCase().indexOf(name) === 0; });
+    if (m) found = m.code;
+  });
+  if (found) codeInput.value = found;
+}
+
 function removeLineItem(btn) {
   var items = document.querySelectorAll('.line-item');
   if (items.length <= 1) { notify('품목은 최소 1개 이상이어야 합니다.', 'warn'); return; }
@@ -189,10 +143,9 @@ function generatePO() {
   var vnd       = document.getElementById('po-vnd').value.trim();
   var vndName   = document.getElementById('po-vnd-name').value.trim();
   var vndEmail  = document.getElementById('po-vnd-email').value.trim();
-  var vessel    = document.getElementById('po-vessel-select').value;
+  var vessel    = document.getElementById('po-vessel-input').value.trim() || 'T.B.D';
   var pic       = document.getElementById('po-pic').value.trim();
   if (!poRef || !vnd) { notify('PO Ref. No.와 업체 코드를 입력해주세요.', 'err'); return; }
-  if (!vessel)        { notify('호선을 선택해주세요.', 'err'); return; }
 
   /* PO 조건 (Terms) */
   var terms = {
@@ -335,7 +288,7 @@ function previewPODoc() {
   var poDue   = document.getElementById('po-due').value;
   var vndName  = document.getElementById('po-vnd-name').value;
   var vndEmail = document.getElementById('po-vnd-email').value;
-  var vessel   = document.getElementById('po-vessel-select').value;
+  var vessel   = document.getElementById('po-vessel-input').value.trim() || 'T.B.D';
   var pic      = document.getElementById('po-pic').value;
   var qrSrc    = window._lastQRSrc || '';
   var terms    = {

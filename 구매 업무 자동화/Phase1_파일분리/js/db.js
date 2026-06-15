@@ -48,6 +48,15 @@ const DB = {
   incoming_line:   [],  // INCOMING_LINE          (Phase 4)
   inspection_cert: [],  // INSPECTION_CERT        (Phase 4 — 입고 건 단위 검사성적서, N개 S/N 공유)
   outgoing_log:    [],  // OUTGOING_LOG           (Phase 5 — 출고/대여/검사요청 이력)
+  /* 호선별 수기 첨부 문서 (FAT, SW 설치, 기타)
+     vessel_id   : vessel_master FK
+     doc_type    : 'FAT' | 'SW_INSTALL' | 'ETC'
+     doc_title   : 문서 제목
+     file_name   : 원본 파일명
+     file_data   : base64 데이터 URL
+     uploaded_by : 첨부자 이름 (currentUserName)
+     uploaded_at : 첨부 날짜 (today())              */
+  vessel_docs:     [],  // VESSEL_DOCS            (문서 산출물 탭 — 호선별 수기 첨부)
 };
 
 /* ── localStorage에서 DB 로드 (페이지 로드 시 1회 실행) ── */
@@ -160,11 +169,14 @@ function refreshAllViews() {
   refreshSafetyStock();
   refreshVesselList();
   refreshSpecialNotes();
-  refreshPhase1VesselSelect();  // Phase 1: 호선 드롭다운 동기화
   refreshPOList();
   updateQuickTestBtns();
   refreshPhase5();
   refreshInventoryGroups();
   refreshIncomingReports();
   updateScanUI();
+  var vv = document.getElementById('inventory-vessel-view');
+  if (vv && vv.style.display !== 'none' && typeof refreshInventoryVesselView === 'function') {
+    refreshInventoryVesselView();
+  }
 }

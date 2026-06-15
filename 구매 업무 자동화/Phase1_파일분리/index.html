@@ -28,8 +28,14 @@
     <span id="db-status-text">localStorage DB</span>
   </div>
   <div class="header-badge">v2.0</div>
+  <div onclick="promptUserName()" title="클릭하여 이름 설정"
+       style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:4px 10px;border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);transition:border-color .2s;margin-left:4px;"
+       onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+    <span>👤</span>
+    <span id="header-user-name">이름 설정</span>
+  </div>
   <button id="theme-toggle" onclick="toggleTheme()"
-          style="background:none;border:1px solid var(--border2);border-radius:20px;color:var(--text2);padding:4px 14px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s;margin-left:8px;">
+          style="background:none;border:1px solid var(--border2);border-radius:20px;color:var(--text2);padding:4px 14px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s;margin-left:4px;">
     ☀ 라이트 모드
   </button>
 </div>
@@ -44,11 +50,15 @@
   </div>
   <div class="main-tab" data-tab="scm" onclick="switchMainTab('scm')">
     <span class="main-tab-badge scm-badge">SCM</span>
-    구매 · 입고 · 재고
+    구매 · 입고 · 발주 · 출고
   </div>
   <div class="main-tab" data-tab="inventory" onclick="switchMainTab('inventory')">
     <span class="main-tab-badge scm-badge">재고</span>
     재고 현황
+  </div>
+  <div class="main-tab" data-tab="inspection" onclick="switchMainTab('inspection')">
+    <span class="main-tab-badge insp-badge">검사</span>
+    검사요청 관리
   </div>
   <div class="main-tab" data-tab="qc" onclick="switchMainTab('qc')">
     <span class="main-tab-badge qc-badge">QC</span>
@@ -241,9 +251,13 @@
         <div class="form-group">
           <label>구분</label>
           <select id="note-category">
-            <option value="품질">품질</option>
-            <option value="납기">납기</option>
+            <option value="QC">QC</option>
+            <option value="SCM">SCM</option>
             <option value="SW">SW</option>
+            <option value="CX">CX</option>
+            <option value="OP">OP</option>
+            <option value="커미셔닝">커미셔닝</option>
+            <option value="설계">설계</option>
             <option value="기타">기타</option>
           </select>
         </div>
@@ -257,11 +271,15 @@
       </div>
 
       <div style="display:flex;gap:6px;margin:14px 0 10px;flex-wrap:wrap;">
-        <button class="note-filter-btn active" data-filter="all"   onclick="filterNotes('all')">전체</button>
-        <button class="note-filter-btn" data-filter="품질"         onclick="filterNotes('품질')">품질 <span style="font-size:9px;opacity:.7;">(품질팀 확인)</span></button>
-        <button class="note-filter-btn" data-filter="납기"         onclick="filterNotes('납기')">납기 <span style="font-size:9px;opacity:.7;">(구매팀 확인)</span></button>
-        <button class="note-filter-btn" data-filter="SW"           onclick="filterNotes('SW')">SW <span style="font-size:9px;opacity:.7;">(SW팀 확인)</span></button>
-        <button class="note-filter-btn" data-filter="기타"         onclick="filterNotes('기타')">기타</button>
+        <button class="note-filter-btn active" data-filter="all"      onclick="filterNotes('all')">전체</button>
+        <button class="note-filter-btn" data-filter="QC"        onclick="filterNotes('QC')">QC</button>
+        <button class="note-filter-btn" data-filter="SCM"       onclick="filterNotes('SCM')">SCM</button>
+        <button class="note-filter-btn" data-filter="SW"             onclick="filterNotes('SW')">SW</button>
+        <button class="note-filter-btn" data-filter="CX"             onclick="filterNotes('CX')">CX</button>
+        <button class="note-filter-btn" data-filter="OP"             onclick="filterNotes('OP')">OP</button>
+        <button class="note-filter-btn" data-filter="커미셔닝"       onclick="filterNotes('커미셔닝')">커미셔닝</button>
+        <button class="note-filter-btn" data-filter="설계"           onclick="filterNotes('설계')">설계</button>
+        <button class="note-filter-btn" data-filter="기타"           onclick="filterNotes('기타')">기타</button>
       </div>
 
       <div class="db-wrap">
@@ -448,6 +466,9 @@
     <div class="sub-tab" onclick="switchTab('phase5')">
       <span class="tab-phase tp-5">이력</span> 발주·입고 이력
     </div>
+    <div class="sub-tab" onclick="switchTab('outgoing')">
+      <span class="tab-phase tp-5" style="background:rgba(0,201,167,0.15);color:var(--accent);">출고</span> 출고 처리
+    </div>
   </div>
 </div>
 <div class="main">
@@ -461,7 +482,7 @@
 
   <div class="notice notice-blue">
     <strong>PO 발행:</strong> Supplier Code 입력 후 Tab키를 누르면 업체명·이메일 자동완성됩니다.
-    호선은 설계 탭 등록 목록에서 검색합니다.
+    Vessel/호선은 발주 시점에 미정인 경우가 많아 자유 입력란으로 운영되며(미입력 시 T.B.D), 설계 탭의 호선 등록 정보와는 별개로 SCM 내부에서만 참고됩니다.
     <button class="btn btn-outline btn-sm" onclick="openSupplierModal()" style="margin-left:10px;">업체 DB 관리</button>
   </div>
 
@@ -478,21 +499,12 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Vessel / 호선 <span style="font-size:9px;color:var(--text3);">(설계 탭 등록 목록)</span></label>
-        <div class="searchable-select-wrap">
-          <input id="po-vessel-input" class="searchable-input"
-                 placeholder="호선명 입력 또는 클릭하여 검색..."
-                 autocomplete="off"
-                 oninput="filterPoVesselDropdown()"
-                 onfocus="openPoVesselDropdown()"
-                 onblur="closePoVesselDropdownDelayed()">
-          <input type="hidden" id="po-vessel-select" value="">
-          <div class="searchable-dropdown" id="po-vessel-dropdown"></div>
-        </div>
+        <label>Vessel / 호선 <span style="font-size:9px;color:var(--text3);">(발주 시점에 호선이 미정일 수 있음 — SCM 내부 참고용)</span></label>
+        <input id="po-vessel-input" placeholder="T.B.D" autocomplete="off">
       </div>
       <div class="form-group">
-        <label>호선 코드</label>
-        <input id="po-vessel-code" placeholder="MS25-0038">
+        <label>호선 코드 <span style="font-size:9px;color:var(--text3);">(선택 입력)</span></label>
+        <input id="po-vessel-code" placeholder="T.B.D">
       </div>
     </div>
 
@@ -531,28 +543,28 @@
     <hr class="divider">
 
     <!-- 품목 라인 -->
-    <div class="card-title blue" style="margin-bottom:10px;">품목 정보 (Line Items)</div>
+    <div class="card-title blue" style="margin-bottom:10px;">품목 정보</div>
     <div id="line-items">
       <div class="line-item form-grid-4" style="margin-bottom:9px;" data-idx="0">
         <div class="form-group" style="grid-column:span 2;">
-          <label>Part Name / Description</label>
-          <input class="li-desc" value="HiNAS CAMERA HOUSING (w. External Junction Box) for New-Building">
+          <label>품목명</label>
+          <input class="li-desc" placeholder="SERVER" oninput="autoFillItemCode(this)">
         </div>
         <div class="form-group">
-          <label>Item Code</label>
-          <input class="li-code" value="ITEM-CAM-001">
+          <label>품목코드</label>
+          <input class="li-code" placeholder="SS0001">
         </div>
         <div class="form-group">
-          <label>Qty</label>
-          <input class="li-qty" type="number" value="4" min="1">
+          <label>수량</label>
+          <input class="li-qty" type="number" placeholder="4" min="1">
         </div>
         <div class="form-group">
-          <label>단가 (KRW)</label>
-          <input class="li-price" type="number" value="0" min="0">
+          <label>단가</label>
+          <input class="li-price" type="number" placeholder="20,000" min="0">
         </div>
         <div class="form-group">
           <label>Unit</label>
-          <select class="li-unit"><option>EA</option><option>SET</option><option>LOT</option></select>
+          <input class="li-unit" placeholder="EA">
         </div>
         <div class="form-group" style="justify-content:flex-end;align-items:flex-end;">
           <button class="btn btn-danger btn-sm" onclick="removeLineItem(this)">삭제</button>
@@ -858,10 +870,10 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="po-line-detail-card" style="display:none;">
     <div class="card-title" style="flex-wrap:wrap;">
-      <span id="po-line-detail-title">발주 품목 내역 <span style="font-size:10px;font-weight:400;color:var(--text3);">— 위 목록에서 발주서를 선택하세요</span></span>
-      <button class="btn btn-outline btn-sm" id="btn-po-line-clear" style="display:none;margin-left:auto;" onclick="clearPOLineDetail()">← 전체 보기</button>
+      <span id="po-line-detail-title">발주 품목 내역</span>
+      <button class="btn btn-outline btn-sm" id="btn-po-line-clear" style="margin-left:auto;" onclick="clearPOLineDetail()">← 전체 보기</button>
     </div>
     <div class="db-wrap">
       <table class="db-table">
@@ -883,6 +895,54 @@
 
 </div><!-- /phase5 -->
 
+
+<!-- ================================================================
+     SECTION: 출고 처리 — QR 스캔으로 출고
+     JS 로직: js/phase5.js (onOutgoingScanInput)
+     ================================================================ -->
+<div class="section" id="sec-outgoing">
+
+  <div class="notice notice-blue">
+    <strong>출고 처리:</strong> 입고 검수 시 제품에 부착한 QR 코드를 스캔하면 출고 처리가 진행됩니다.
+    바코드 스캐너를 입력창에 포커스한 후 스캔하거나, QR 코드를 직접 입력하세요.
+  </div>
+
+  <div class="card" style="max-width:600px;">
+    <div class="card-title">제품 QR 스캔</div>
+    <div class="form-group">
+      <label>QR 코드 입력 <span style="font-size:10px;color:var(--text3);">(스캐너 또는 수동 입력 후 Enter)</span></label>
+      <div style="display:flex;gap:6px;">
+        <input id="outgoing-scan-input"
+               placeholder="TYPE:PROD|PO:...|MC:...|SN:..."
+               autocomplete="off"
+               style="flex:1;font-family:'Courier New',monospace;font-size:12px;"
+               onkeydown="if(event.key==='Enter'){ onOutgoingScanInput(this.value); }">
+        <button class="btn btn-primary" style="white-space:nowrap;" onclick="onOutgoingScanInput(document.getElementById('outgoing-scan-input').value)">확인</button>
+        <button class="btn btn-outline" onclick="clearOutgoingScanResult()">초기화</button>
+      </div>
+    </div>
+    <div id="outgoing-scan-result" style="display:none;"></div>
+  </div>
+
+  <!-- 재고 목록에서 직접 선택 (QR 스캐너 없을 때 / 테스트용) -->
+  <div class="card">
+    <div class="card-title" style="flex-wrap:wrap;">
+      재고 목록에서 선택
+      <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:8px;">QR 스캐너 없을 때 또는 테스트 시 — 행을 클릭하면 출고 처리 창이 열립니다</span>
+      <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="refreshOutgoingStockList()">새로고침</button>
+    </div>
+    <div class="db-wrap">
+      <table class="db-table">
+        <thead><tr>
+          <th>품목명</th><th>품목 코드</th><th>S/N</th><th>입고일</th><th>재고 상태</th><th></th>
+        </tr></thead>
+        <tbody id="tbl-outgoing-stock"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /outgoing -->
+
 </div><!-- /main (SCM) -->
 </div><!-- /main-scm -->
 
@@ -892,60 +952,101 @@
      JS 로직: js/phase5.js
      ================================================================ -->
 <div class="main-section" id="main-inventory">
+<div class="sub-tabs-bar">
+  <div class="sub-tabs">
+    <div class="sub-tab inv-sub-tab active" id="inv-subtab-product" onclick="switchInventoryView('product')">
+      <span class="tab-phase tp-5">제품</span> 제품별 현황
+    </div>
+    <div class="sub-tab inv-sub-tab" id="inv-subtab-vessel" onclick="switchInventoryView('vessel')">
+      <span class="tab-phase tp-0">호선</span> 호선별 출고 현황
+    </div>
+  </div>
+</div>
 <div class="main">
 
   <div class="notice notice-purple" style="font-size:11px;">
-    <strong>재고 현황:</strong> 품목(제품)별로 그룹화하여 표시합니다. 품목을 클릭하면 해당 품목의 S/N 단위 상세 재고를 확인하고
-    출고·대여·검사요청 처리를 할 수 있습니다.
+    <strong>재고 현황:</strong> BOM 기준 필요·부족 재고와 현재 재고·검사요청 현황을 보여줍니다.
+    품목을 클릭하면 S/N 단위 상세를 확인하고 대여·검사요청 처리를 할 수 있습니다.
+    출고 처리는 <strong>[SCM] → 출고</strong> 서브탭에서 QR 스캔으로 진행합니다.
   </div>
 
   <div class="stats-row" id="inventory-stats">
-    <div class="stat-card"><div class="stat-label">전체 재고 (S/N)</div> <div class="stat-val accent" id="stat-inv-total">0</div></div>
-    <div class="stat-card"><div class="stat-label">재고 보유</div>       <div class="stat-val"        id="stat-inv-stock">0</div></div>
-    <div class="stat-card"><div class="stat-label">출고 / 대여중</div>   <div class="stat-val blue"   id="stat-inv-out">0</div></div>
-    <div class="stat-card"><div class="stat-label">검사요청</div>        <div class="stat-val warn"   id="stat-inv-insp">0</div></div>
+    <div class="stat-card"><div class="stat-label">전체 품목 필요 재고</div> <div class="stat-val accent" id="stat-inv-required">0</div></div>
+    <div class="stat-card"><div class="stat-label">부족 재고</div>          <div class="stat-val warn"   id="stat-inv-shortage">0</div></div>
+    <div class="stat-card"><div class="stat-label">현재 재고</div>          <div class="stat-val"        id="stat-inv-stock">0</div></div>
+    <div class="stat-card"><div class="stat-label">검사요청</div>           <div class="stat-val blue"   id="stat-inv-insp">0</div></div>
   </div>
 
-  <!-- ① 품목(제품)별 그룹 목록 -->
-  <div class="card" id="inventory-group-card">
-    <div class="card-title">제품별 재고 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">품목을 클릭하면 S/N 상세로 이동합니다</span></div>
-    <div class="db-wrap">
-      <table class="db-table">
-        <thead><tr><th>품목 코드</th><th>품목명</th><th style="text-align:center;">전체</th><th style="text-align:center;">재고</th><th style="text-align:center;">출고</th><th style="text-align:center;">대여중</th><th style="text-align:center;">검사요청</th><th></th></tr></thead>
-        <tbody id="tbl-inv-groups"></tbody>
-      </table>
-    </div>
-  </div>
+  <!-- ── 제품별 뷰 ── -->
+  <div id="inventory-product-view">
 
-  <!-- ② 선택한 품목의 S/N 상세 (드릴다운) -->
-  <div class="card" id="inventory-detail-card" style="display:none;">
-    <div class="card-title" style="flex-wrap:wrap;">
-      <span id="inventory-detail-title">품목 상세</span>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
-        <button class="btn btn-success btn-sm" onclick="openOutgoingModal('SHIPPED')">출고</button>
-        <button class="btn btn-outline btn-sm" style="border-color:var(--accent);color:var(--accent);" onclick="openOutgoingModal('RENTED')">대여</button>
-        <button class="btn btn-outline btn-sm" style="border-color:var(--warn);color:var(--warn);" onclick="openOutgoingModal('INSPECTION_REQUESTED')">검사요청</button>
-        <span style="font-size:10px;color:var(--text3);align-self:center;">← 체크 후 선택</span>
-        <button class="btn btn-outline btn-sm" onclick="closeInventoryDetail()">← 목록으로</button>
+    <!-- ① 품목(제품)별 그룹 목록 -->
+    <div class="card" id="inventory-group-card">
+      <div class="card-title">제품별 재고 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">품목을 클릭하면 S/N 상세로 이동합니다</span></div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr><th>품목 코드</th><th>품목명</th><th style="text-align:center;">전체</th><th style="text-align:center;">재고</th><th style="text-align:center;">출고</th><th style="text-align:center;">대여중</th><th style="text-align:center;">검사요청</th><th></th></tr></thead>
+          <tbody id="tbl-inv-groups"></tbody>
+        </table>
       </div>
     </div>
-    <div class="db-wrap">
-      <table class="db-table">
-        <thead><tr>
-          <th style="text-align:center;"><input type="checkbox" onchange="toggleAllInventory(this.checked)" title="전체 선택"></th>
-          <th>관리 코드 (MC)</th><th>품목 코드</th><th>시리얼 번호 (S/N)</th><th>발주서 번호</th><th>공급업체</th><th>입고일</th><th>배정 호선</th><th>보관 위치</th><th>성적서</th><th>재고 상태</th>
-        </tr></thead>
-        <tbody id="tbl-inv-detail"></tbody>
-      </table>
+
+    <!-- ② 선택한 품목의 S/N 상세 (드릴다운) -->
+    <div class="card" id="inventory-detail-card" style="display:none;">
+      <div class="card-title" style="flex-wrap:wrap;">
+        <span id="inventory-detail-title">품목 상세</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;align-items:center;">
+          <span style="font-size:10px;color:var(--text3);">행 클릭 시 개별 상세·이력 확인 및 대여·검사요청 처리</span>
+          <button class="btn btn-outline btn-sm" onclick="closeInventoryDetail()">← 목록으로</button>
+        </div>
+      </div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>품목명</th><th>품목 코드</th><th>시리얼 번호 (S/N)</th><th>발주서 번호</th><th>공급업체</th><th>입고일</th><th>배정 호선</th><th>보관 위치</th><th>성적서</th><th>재고 상태</th>
+          </tr></thead>
+          <tbody id="tbl-inv-detail"></tbody>
+        </table>
+      </div>
     </div>
-  </div>
+
+  </div><!-- /inventory-product-view -->
+
+  <!-- ── 호선별 뷰 ── -->
+  <div id="inventory-vessel-view" style="display:none;">
+
+    <div class="card">
+      <div class="card-title">호선별 출고 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">호선을 클릭하면 출고된 제품 목록을 확인합니다</span></div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr><th>호선명</th><th>호선 코드</th><th style="text-align:center;">출고 수량</th><th></th></tr></thead>
+          <tbody id="tbl-inv-vessel-groups"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="vessel-inventory-detail-card" style="display:none;">
+      <div class="card-title" style="flex-wrap:wrap;">
+        <span id="vessel-inventory-detail-title">호선별 출고 상세</span>
+        <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="closeVesselInventoryDetail()">← 목록으로</button>
+      </div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>품목명</th><th>품목 코드</th><th>시리얼 번호 (S/N)</th><th>호선 코드</th><th>출고일</th><th>메모</th>
+          </tr></thead>
+          <tbody id="tbl-vessel-inv-detail"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /inventory-vessel-view -->
 
   <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
     <button class="btn btn-outline btn-sm" id="btn-admin-toggle" onclick="toggleAdminPanel()" style="border-color:rgba(245,158,11,.4);color:var(--warn);">관리자 수기 재고 등록</button>
     <button class="btn btn-danger btn-sm" onclick="dbReset()">DB 전체 초기화</button>
   </div>
 
-  <!-- 관리자 수기 재고 등록 패널 -->
   <div id="admin-inventory-panel" style="display:none; margin-top:12px;">
     <div class="card" style="border-color:rgba(245,158,11,.3);">
       <div class="card-title warn">관리자 — 수기 재고 등록</div>
@@ -995,6 +1096,111 @@
 
 
 <!-- ================================================================
+     MAIN SECTION: 검사요청 관리
+     JS 로직: js/phase-inspection.js
+     ================================================================ -->
+<div class="main-section" id="main-inspection">
+<div class="main">
+
+  <div class="stats-row" id="inspection-stats-row">
+    <div class="stat-card">
+      <div class="stat-label">총 검사요청</div>
+      <div class="stat-val accent" id="stat-insp-total">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">검사중</div>
+      <div class="stat-val warn" id="stat-insp-pending">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">완료</div>
+      <div class="stat-val" id="stat-insp-done">0</div>
+    </div>
+  </div>
+
+  <!-- 그룹 목록 (QC / SW 구분) -->
+  <div id="inspection-groups-view">
+
+    <div class="card">
+      <div class="card-title">
+        <span style="background:rgba(245,158,11,0.2);color:#fcd34d;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-right:6px;">QC</span>
+        검수요청 현황
+      </div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>품목 코드</th><th>품목명</th>
+            <th style="text-align:center;">요청건수</th>
+            <th style="text-align:center;">완료</th>
+            <th style="text-align:center;">미완료</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbl-insp-QC"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span style="background:rgba(30,111,200,0.2);color:#60a5fa;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-right:6px;">SW</span>
+        검수요청 현황
+      </div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>품목 코드</th><th>품목명</th>
+            <th style="text-align:center;">요청건수</th>
+            <th style="text-align:center;">완료</th>
+            <th style="text-align:center;">미완료</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbl-insp-SW"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span style="background:rgba(148,163,184,0.2);color:#94a3b8;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-right:6px;">공통</span>
+        검수요청 현황
+      </div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>품목 코드</th><th>품목명</th>
+            <th style="text-align:center;">요청건수</th>
+            <th style="text-align:center;">완료</th>
+            <th style="text-align:center;">미완료</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbl-insp-공통"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /inspection-groups-view -->
+
+  <!-- 품목별 상세 (드릴다운) -->
+  <div class="card" id="inspection-detail-card" style="display:none;">
+    <div class="card-title" style="flex-wrap:wrap;">
+      <span id="inspection-detail-title">검사요청 상세</span>
+      <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="closeInspectionDetail()">← 목록으로</button>
+    </div>
+    <div class="db-wrap">
+      <table class="db-table">
+        <thead><tr>
+          <th>시리얼 번호 (S/N)</th><th>요청일</th><th>팀</th><th>Due Date</th><th>메모</th>
+          <th style="text-align:center;">상태</th><th>완료일 / 검사자</th>
+        </tr></thead>
+        <tbody id="tbl-insp-detail"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main (검사요청) -->
+</div><!-- /main-inspection -->
+
+
+<!-- ================================================================
      MAIN SECTION: QC (FAT 관리)
      ================================================================ -->
 <div class="main-section" id="main-qc">
@@ -1023,12 +1229,41 @@
 <div class="main">
 
   <div class="notice notice-amber">
-    <strong>Incoming Report:</strong> 입고 완료 처리 시 자동으로 생성됩니다.
-    수량 일치/부족/초과에 따라 상태가 표시되며, Incoming Inspection Report가 Avikus 양식으로 자동 생성됩니다.
-    <br>※ 추후 ISO 9001 기준 호선별 문서 산출물(설계·QC 등)도 이 탭에서 통합 관리할 예정입니다.
+    <strong>호선별 문서 허브:</strong> 출고된 제품의 호선을 클릭하면 해당 호선과 관련된 모든 문서를 확인할 수 있습니다.
+    Incoming Report·검사성적서·COC·거래명세서는 입고/출고 처리 시 자동으로 연결되며,
+    FAT·SW 설치 문서 등 추가 서류는 호선 상세 화면에서 직접 첨부합니다.
   </div>
-  <div id="incoming-report-list">
-    <div class="empty-state">입고 완료 처리 후 리포트가 여기에 표시됩니다</div>
+
+  <!-- 호선 목록 뷰 -->
+  <div id="docs-vessel-list-view">
+    <div id="docs-vessel-list">
+      <div class="empty-state">제품 출고 후 호선별 문서가 여기에 표시됩니다.</div>
+    </div>
+  </div>
+
+  <!-- 호선 상세 문서 허브 -->
+  <div id="docs-vessel-detail-view" style="display:none;">
+    <div class="card">
+      <div class="card-title" style="flex-wrap:wrap;">
+        <span id="docs-vessel-detail-title">호선 문서 허브</span>
+        <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="closeVesselDocHub()">← 목록으로</button>
+      </div>
+
+      <!-- 자동 집계 문서 -->
+      <div style="margin-bottom:4px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);padding:4px 0 10px;">자동 집계 문서 — Incoming Report · 검사성적서 · COC · 거래명세서</div>
+        <div id="docs-auto-section"></div>
+      </div>
+
+      <!-- 추가 첨부 문서 -->
+      <div style="margin-top:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);">추가 첨부 문서 — FAT · SW 설치 · 기타</div>
+          <button class="btn btn-accent btn-sm" onclick="openVesselDocModal()">+ 문서 추가</button>
+        </div>
+        <div id="docs-manual-section"></div>
+      </div>
+    </div>
   </div>
 
 </div><!-- /main (문서 산출물) -->
@@ -1161,20 +1396,22 @@
     </div>
     <input type="hidden" id="outgoing-action-hidden">
     <div id="outgoing-modal-info"></div>
-    <div id="outgoing-vessel-row" class="form-group" style="margin-bottom:12px;">
-      <label>배정 호선 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>
-      <select id="outgoing-vessel-select">
-        <option value="">-- 호선 선택 (선택) --</option>
-      </select>
-    </div>
-    <div class="form-group" style="margin-bottom:14px;">
-      <label>메모 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>
-      <input id="outgoing-note" placeholder="출고 사유, 수령인 등">
-    </div>
+    <div id="outgoing-modal-fields"></div>
     <div class="btn-row" style="justify-content:flex-end;">
       <button class="btn btn-outline" onclick="document.getElementById('outgoing-modal').classList.remove('show')">취소</button>
       <button class="btn btn-primary" onclick="confirmOutgoing()">확인</button>
     </div>
+  </div>
+</div>
+
+<!-- 개별 재고 상세 — 행 클릭 시 표시 (배정호선·보관위치 수정, 상태 이력, 출고/대여/검사요청) -->
+<div class="modal-bg" id="inv-item-modal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title">
+      <span id="inv-item-modal-title">재고 상세</span>
+      <button class="modal-close" onclick="closeInventoryItemModal()">×</button>
+    </div>
+    <div id="inv-item-modal-body"></div>
   </div>
 </div>
 
@@ -1198,6 +1435,52 @@
   </div>
 </div>
 
+<!-- ================================================================
+     MODAL: 호선 문서 추가 (FAT · SW 설치 · 기타)
+     ================================================================ -->
+<div class="modal-bg" id="vessel-doc-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">
+      <span>문서 추가</span>
+      <button class="modal-close" onclick="document.getElementById('vessel-doc-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="vessel-doc-modal-vessel-id">
+
+    <div class="form-group">
+      <label>문서 종류</label>
+      <select id="vessel-doc-type">
+        <option value="FAT">FAT 문서</option>
+        <option value="SW_INSTALL">SW 설치 문서</option>
+        <option value="ETC">기타 문서</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>문서 제목</label>
+      <input id="vessel-doc-title" placeholder="예: FAT 결과 보고서">
+    </div>
+
+    <div class="form-group">
+      <label>파일 첨부 <span style="font-size:10px;color:var(--text3);">(PDF, JPG, PNG — 5MB 이하)</span></label>
+      <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--input-bg);border:1px dashed var(--border2);border-radius:8px;cursor:pointer;">
+        <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="onVesselDocFileChange(this)" style="display:none;">
+        <span style="font-size:18px;">📎</span>
+        <span id="vessel-doc-file-label" style="font-size:12px;color:var(--text2);">파일을 선택하세요</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>비고 <span style="font-size:10px;color:var(--text3);">(선택)</span></label>
+      <input id="vessel-doc-note" placeholder="참고사항">
+    </div>
+
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('vessel-doc-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-success" onclick="saveVesselDoc()">저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- 알림 토스트 -->
 <div class="notif" id="notif"></div>
 
@@ -1213,6 +1496,7 @@
 <script src="js/phase23.js"></script>
 <script src="js/phase4.js"></script>
 <script src="js/phase5.js"></script>
+<script src="js/phase-inspection.js"></script>
 <script src="js/app.js"></script>
 
 <!-- ================================================================

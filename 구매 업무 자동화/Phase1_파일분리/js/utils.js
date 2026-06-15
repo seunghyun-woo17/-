@@ -9,6 +9,18 @@
    ============================================================ */
 'use strict';
 
+/* ── 전역 사용자 이름 (검사 완료처리 시 검사자로 자동 입력) ── */
+var currentUserName = localStorage.getItem('avikus_user_name') || '';
+
+function promptUserName() {
+  var name = prompt('이름을 입력하세요 (검사 완료처리 시 검사자로 자동 입력됩니다):', currentUserName);
+  if (name === null) return;
+  currentUserName = name.trim();
+  localStorage.setItem('avikus_user_name', currentUserName);
+  var el = document.getElementById('header-user-name');
+  if (el) el.textContent = currentUserName || '이름 설정';
+}
+
 /* ── 메인 탭 전환 (설계 / SCM / QC) ── */
 function switchMainTab(tabId) {
   document.querySelectorAll('.main-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -17,9 +29,10 @@ function switchMainTab(tabId) {
   if (btn) btn.classList.add('active');
   var sec = document.getElementById('main-' + tabId);
   if (sec) sec.classList.add('active');
-  if (tabId === 'design')    { refreshSafetyStock(); refreshVesselList(); refreshSpecialNotes(); }
-  if (tabId === 'inventory') { refreshInventoryGroups(); }
-  if (tabId === 'docs')      { refreshIncomingReports(); }
+  if (tabId === 'design')     { refreshSafetyStock(); refreshVesselList(); refreshSpecialNotes(); }
+  if (tabId === 'inventory')  { refreshInventoryGroups(); }
+  if (tabId === 'inspection') { refreshInspectionTab(); }
+  if (tabId === 'docs')       { refreshIncomingReports(); }
 }
 
 /* ── SCM 서브탭 전환 (main-scm 스코프 내에서만 동작) ── */
@@ -28,13 +41,14 @@ function switchTab(id) {
   if (scm) {
     scm.querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
     scm.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
-    var subTabs = ['phase1','phase23','phase5'];
+    var subTabs = ['phase1','phase23','phase5','outgoing'];
     var idx     = subTabs.indexOf(id);
     if (idx >= 0) scm.querySelectorAll('.sub-tab')[idx].classList.add('active');
   }
   var sec = document.getElementById('sec-' + id);
   if (sec) sec.classList.add('active');
-  if (id === 'phase5') { refreshPhase5(); }
+  if (id === 'phase5')    { refreshPhase5(); }
+  if (id === 'outgoing')  { refreshOutgoingStockList(); }
 }
 
 /* ── 알림 토스트 ── */

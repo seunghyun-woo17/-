@@ -369,10 +369,26 @@ function openCertModal(incId, poRefNo, qty) {
   var modal = document.getElementById('cert-modal');
   if (!modal) return;
   document.getElementById('cert-modal-incoming-id').value = incId;
+  var incoming = DB.incoming_header ? DB.incoming_header.find(function(h){ return h.incoming_id === incId; }) : null;
+  var poLines  = (incoming && DB.po_line) ? DB.po_line.filter(function(l){ return l.po_id === incoming.po_id; }) : [];
+  var itemsHTML = poLines.length > 0
+    ? poLines.map(function(l){
+        return '<div style="font-size:11px;color:var(--text2);padding:2px 0;">'
+             + '<span style="font-family:monospace;font-size:10px;color:var(--accent);">' + l.item_code + '</span>'
+             + '<span style="margin-left:8px;">' + (l.description || '-') + '</span>'
+             + '</div>';
+      }).join('')
+    : '<span style="font-size:11px;color:var(--text3);">-</span>';
   document.getElementById('cert-modal-info').innerHTML =
-    '<div style="display:flex;gap:20px;padding:10px 14px;background:rgba(0,201,167,0.07);border:1px solid rgba(0,201,167,0.2);border-radius:8px;margin-bottom:10px;">'
+    '<div style="padding:10px 14px;background:rgba(0,201,167,0.07);border:1px solid rgba(0,201,167,0.2);border-radius:8px;margin-bottom:10px;">'
+  + '<div style="display:flex;gap:24px;margin-bottom:8px;">'
   + '<div><div style="font-size:10px;color:var(--text3);">PO 번호</div><div style="font-weight:600;font-size:13px;">' + poRefNo + '</div></div>'
   + '<div><div style="font-size:10px;color:var(--text3);">입고 수량</div><div style="font-weight:600;color:var(--accent);font-size:13px;">' + qty + ' EA</div></div>'
+  + '</div>'
+  + '<div style="border-top:1px solid rgba(0,201,167,0.2);padding-top:8px;">'
+  + '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;">품목 정보</div>'
+  + itemsHTML
+  + '</div>'
   + '</div>';
 
   /* 파일 변수 초기화 */
