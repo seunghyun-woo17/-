@@ -380,12 +380,12 @@ function openCertModal(incId, poRefNo, qty) {
       }).join('')
     : '<span style="font-size:11px;color:var(--text3);">-</span>';
   document.getElementById('cert-modal-info').innerHTML =
-    '<div style="padding:10px 14px;background:rgba(0,201,167,0.07);border:1px solid rgba(0,201,167,0.2);border-radius:8px;margin-bottom:10px;">'
+    '<div style="padding:10px 14px;background:rgba(29,78,216,0.07);border:1px solid rgba(29,78,216,0.2);border-radius:8px;margin-bottom:10px;">'
   + '<div style="display:flex;gap:24px;margin-bottom:8px;">'
   + '<div><div style="font-size:10px;color:var(--text3);">PO 번호</div><div style="font-weight:600;font-size:13px;">' + poRefNo + '</div></div>'
   + '<div><div style="font-size:10px;color:var(--text3);">입고 수량</div><div style="font-weight:600;color:var(--accent);font-size:13px;">' + qty + ' EA</div></div>'
   + '</div>'
-  + '<div style="border-top:1px solid rgba(0,201,167,0.2);padding-top:8px;">'
+  + '<div style="border-top:1px solid rgba(29,78,216,0.2);padding-top:8px;">'
   + '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;">품목 정보</div>'
   + itemsHTML
   + '</div>'

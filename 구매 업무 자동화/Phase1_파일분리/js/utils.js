@@ -33,6 +33,8 @@ function switchMainTab(tabId) {
   if (tabId === 'inventory')  { refreshInventoryGroups(); }
   if (tabId === 'inspection') { refreshInspectionTab(); }
   if (tabId === 'docs')       { refreshIncomingReports(); }
+  if (tabId === 'cxop')       { refreshCxopTab(); }
+  if (tabId === 'qc')         { refreshFatTab(); }
 }
 
 /* ── SCM 서브탭 전환 (main-scm 스코프 내에서만 동작) ── */
@@ -98,22 +100,7 @@ function updateDBStatus() {
   if (el) el.textContent = 'localStorage DB (' + total + '건)';
 }
 
-/* ── 라이트/다크 모드 토글 ── */
-function toggleTheme() {
-  var current = document.documentElement.getAttribute('data-theme') || 'dark';
-  var next    = current === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('avikus_theme', next);
-  var btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = next === 'light' ? '🌙 다크 모드' : '☀ 라이트 모드';
-}
-
-function initTheme() {
-  var saved = localStorage.getItem('avikus_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  var btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = saved === 'light' ? '🌙 다크 모드' : '☀ 라이트 모드';
-}
+/* 라이트 테마 고정 (다크 모드·토글 제거됨 — index.html <html data-theme="light">) */
 
 /* ── 날짜 초기값 설정 ── */
 function initDates() {

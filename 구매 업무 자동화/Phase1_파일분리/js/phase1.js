@@ -449,7 +449,7 @@ function updateQuickTestBtns() {
     var qrData = buildPOQRPayload(po, lines);
     var btn    = document.createElement('button');
     btn.className = 'btn btn-outline btn-sm';
-    btn.style.cssText = 'border-color:rgba(0,201,167,.3);color:var(--accent);';
+    btn.style.cssText = 'border-color:rgba(29,78,216,.3);color:var(--accent);';
     btn.textContent = 'PO: ' + po.po_ref_no;
     btn.onclick = function() { document.getElementById('manual-qr-input').value = qrData; };
     container.appendChild(btn);

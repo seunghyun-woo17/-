@@ -1,11 +1,18 @@
 /* ============================================================
-   phase4.js  —  [Phase 4] 결과 처리 + Incoming Inspection Report
-   역할: 입고 완료 결과 표시, Avikus 양식 Incoming Report 생성/인쇄
+   phase4.js  —  [문서 산출물] 호선별 문서 허브 + Incoming Report
+   역할: 출고 호선별로 팀별 산출 문서를 집계/첨부
+     - SCM 문서: 발행 PO → 입고 → 검사성적서 자동 연결
+                 (Incoming Report · 검사성적서 · COC · 거래명세서)
+     - QC 문서 : FAT 문서 (수기 첨부)
+     - SW 문서 : SW Installation Report (수기 첨부)
    ──────────────────────────────────────────────────────────
    관련 파일:
      - HTML : index.html → id="main-docs" 섹션 (최상단 탭 '문서 산출물')
+              상세 화면: #docs-scm-section / #docs-qc-section / #docs-sw-section
      - 스타일: css/components.css (.report-preview, .report-info)
-     - 데이터: js/db.js  (DB.incoming_header, DB.incoming_line, DB.po_header, DB.po_line)
+     - 데이터: js/db.js  (DB.inventory, DB.incoming_header, DB.incoming_line,
+                          DB.inspection_cert, DB.po_header, DB.vessel_docs)
+     - 첨부 : 검사성적서·COC·거래명세서는 phase23.js openCertModal() 재사용
    참조: avikus_system_report.html > Phase 4, Section 5 STEP 4 Incoming Report
    ============================================================ */
 'use strict';
@@ -15,12 +22,65 @@ var _docsVesselId      = null;
 var _vesselDocFileData = null;
 var _vesselDocFileName = null;
 
-/* ── 공통 문서 상태 칩 빌더 ── */
-function _docChip(label, has, onclick) {
-  var clr = has ? 'rgba(34,197,94,0.15);color:var(--success)' : 'rgba(255,255,255,0.04);color:var(--text3)';
+/* ── 공통 문서 상태 칩 빌더 (warn: 미등록 시 빨간색으로 강조) ── */
+function _docChip(label, has, onclick, warn) {
+  var clr = has ? 'rgba(34,197,94,0.15);color:var(--success)'
+          : (warn ? 'rgba(248,113,113,0.12);color:#f87171' : 'rgba(255,255,255,0.04);color:var(--text3)');
   var dot = has ? '● ' : '○ ';
   var style = 'padding:3px 9px;border-radius:4px;font-size:10px;font-weight:600;background:' + clr + ';' + (has && onclick ? 'cursor:pointer;' : '');
   return '<span style="' + style + '"' + (has && onclick ? ' onclick="' + onclick + '"' : '') + ' title="' + (has ? '클릭하여 보기' : '미등록') + '">' + dot + label + '</span>';
+}
+
+/* ── 팀별 산출 문서 정의 (SCM/QC/SW 담당 문서 매핑) ── */
+var _TEAM_DOC_GROUPS = [
+  { team: 'SCM', items: [
+    { key: 'hasIncoming', label: 'Incoming Report' },
+    { key: 'hasCert',     label: '검사성적서' },
+    { key: 'hasCOC',      label: 'COC' },
+    { key: 'hasTrade',    label: '거래명세서' }
+  ]},
+  { team: 'QC', items: [
+    { key: 'hasFAT', label: 'FAT 문서' }
+  ]},
+  { team: 'SW', items: [
+    { key: 'hasSW', label: 'SW Installation Report' }
+  ]}
+];
+
+/* ── 호선별 문서 보유 현황 집계 (목록 카드 / 상세 체크리스트 공용) ── */
+function _vesselDocStatus(vesselId) {
+  var items = DB.inventory.filter(function(i){ return i.status === 'SHIPPED' && (i.vessel_assigned || '(미지정)') === vesselId; });
+
+  var incomingSet = {};
+  items.forEach(function(i) {
+    var line = DB.incoming_line.find(function(l){ return l.mc_code === i.mc_code; });
+    if (line) incomingSet[line.incoming_id] = true;
+  });
+  var incIds = Object.keys(incomingSet);
+  var certs  = DB.inspection_cert.filter(function(c){ return incIds.indexOf(c.incoming_id) >= 0; });
+  var manualDocs = (DB.vessel_docs || []).filter(function(d){ return d.vessel_id === vesselId; });
+
+  return {
+    hasIncoming: incIds.length > 0,
+    hasCert:     certs.some(function(c){ return !!c.file_name; }),
+    hasCOC:      certs.some(function(c){ return !!c.coc_file_name; }),
+    hasTrade:    certs.some(function(c){ return !!c.trade_file_name; }),
+    hasFAT:      manualDocs.some(function(d){ return d.doc_type === 'FAT'; }),
+    hasSW:       manualDocs.some(function(d){ return d.doc_type === 'SW_INSTALL'; })
+  };
+}
+
+/* ── 팀별 문서 체크리스트 렌더링 (목록 카드 / 상세 화면 공용) — 미등록 항목은 빨간색으로 강조 ── */
+function _renderTeamDocChecklist(status) {
+  return _TEAM_DOC_GROUPS.map(function(group) {
+    var chips = group.items.map(function(it) {
+      return _docChip(it.label, status[it.key], null, true);
+    }).join('');
+    return '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">'
+      +   '<span style="font-size:10px;font-weight:700;color:var(--text2);width:32px;flex-shrink:0;">' + group.team + '</span>'
+      +   chips
+      + '</div>';
+  }).join('');
 }
 
 /* ── (구) Incoming Report 목록 — 호선별 문서 허브로 위임 (refreshAllViews 호환용) ── */
@@ -52,26 +112,8 @@ function refreshDocsVesselList() {
     var vessel      = DB.vessel_master.find(function(v){ return v.vessel_id === key; });
     var displayName = key === '(미지정)' ? '호선 미지정' : (vessel ? getVesselDisplayName(vessel) : key);
     var items       = shippedItems.filter(function(i){ return (i.vessel_assigned || '(미지정)') === key; });
-
-    /* 입고 건(incoming_id) 집합 */
-    var incomingSet = {};
-    items.forEach(function(i) {
-      var line = DB.incoming_line.find(function(l){ return l.mc_code === i.mc_code; });
-      if (line) incomingSet[line.incoming_id] = true;
-    });
-    var incIds = Object.keys(incomingSet);
-    var certs  = DB.inspection_cert.filter(function(c){ return incIds.indexOf(c.incoming_id) >= 0; });
-
-    var hasIncoming = incIds.length > 0;
-    var hasCert     = certs.some(function(c){ return !!c.file_name; });
-    var hasCOC      = certs.some(function(c){ return !!c.coc_file_name; });
-    var hasTrade    = certs.some(function(c){ return !!c.trade_file_name; });
-
-    var manualDocs = (DB.vessel_docs || []).filter(function(d){ return d.vessel_id === key; });
-    var hasFAT = manualDocs.some(function(d){ return d.doc_type === 'FAT'; });
-    var hasSW  = manualDocs.some(function(d){ return d.doc_type === 'SW_INSTALL'; });
-
-    var keyEsc = key.replace(/'/g, "\\'");
+    var status      = _vesselDocStatus(key);
+    var keyEsc      = key.replace(/'/g, "\\'");
 
     return '<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:rgba(255,255,255,.02);cursor:pointer;" onclick="openVesselDocHub(\'' + keyEsc + '\')">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'
@@ -81,14 +123,8 @@ function refreshDocsVesselList() {
       +   '</div>'
       +   '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openVesselDocHub(\'' + keyEsc + '\')">상세 보기 →</button>'
       + '</div>'
-      + '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">'
-      +   '<span style="font-size:10px;color:var(--text3);margin-right:2px;">문서 현황</span>'
-      +   _docChip('Incoming Report', hasIncoming)
-      +   _docChip('검사성적서', hasCert)
-      +   _docChip('COC', hasCOC)
-      +   _docChip('거래명세서', hasTrade)
-      +   _docChip('FAT', hasFAT)
-      +   _docChip('SW 설치', hasSW)
+      + '<div style="display:flex;flex-direction:column;gap:4px;">'
+      +   _renderTeamDocChecklist(status)
       + '</div>'
       + '</div>';
   }).join('');
@@ -112,13 +148,14 @@ function closeVesselDocHub() {
   if (listView)   listView.style.display = 'block';
 }
 
-/* ── 호선 문서 허브 — 자동 집계 문서(Incoming Report·검사성적서·COC·거래명세서) ── */
+/* ── 호선 문서 허브 — 상세 화면 렌더링 (SCM / QC / SW 팀별 문서) ── */
 function _renderVesselDocHub(vesselId) {
   var vessel      = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
   var displayName = vesselId === '(미지정)' ? '호선 미지정' : (vessel ? getVesselDisplayName(vessel) : vesselId);
   var titleEl = document.getElementById('docs-vessel-detail-title');
   if (titleEl) titleEl.textContent = displayName + ' — 문서 허브';
 
+  /* ── SCM 문서 (발행 PO → 입고 → 검사성적서 자동 연결) ── */
   var items = DB.inventory.filter(function(i){ return i.status === 'SHIPPED' && (i.vessel_assigned || '(미지정)') === vesselId; });
 
   /* incoming_id 별로 그룹화 */
@@ -130,74 +167,124 @@ function _renderVesselDocHub(vesselId) {
   });
   var incIds = Object.keys(incGroups);
 
-  var autoEl = document.getElementById('docs-auto-section');
-  if (autoEl) {
+  var scmEl = document.getElementById('docs-scm-section');
+  if (scmEl) {
     if (incIds.length === 0) {
-      autoEl.innerHTML = '<div class="empty-state">연결된 입고 문서가 없습니다.</div>';
+      scmEl.innerHTML = '<div class="empty-state">출고된 제품이 없거나 연결된 PO·입고 문서가 없습니다.</div>';
     } else {
-      autoEl.innerHTML = incIds.map(function(incId) {
-        var h = DB.incoming_header.find(function(x){ return x.incoming_id === incId; });
-        if (!h) return '';
-        var cert        = DB.inspection_cert.find(function(c){ return c.incoming_id === incId; });
-        var resultBadge = h.status === 'COMPLETE' ? 'badge-complete' : h.status === 'SHORT' ? 'badge-partial' : 'badge-open';
-
-        var hasCert  = !!(cert && cert.file_name);
-        var hasCOC   = !!(cert && cert.coc_file_name);
-        var hasTrade = !!(cert && cert.trade_file_name);
-
-        var certOnclick  = cert ? 'viewDoc(\'' + cert.cert_id + '\',\'cert\')'  : '';
-        var cocOnclick   = cert ? 'viewDoc(\'' + cert.cert_id + '\',\'coc\')'   : '';
-        var tradeOnclick = cert ? 'viewDoc(\'' + cert.cert_id + '\',\'trade\')' : '';
-
-        return '<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:rgba(255,255,255,.02);">'
-          + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'
-          +   '<div>'
-          +     '<span style="font-size:13px;font-weight:700;color:var(--text);">' + h.po_ref_no + '</span>'
-          +     '<span style="font-size:11px;color:var(--text3);margin-left:10px;">입고일: ' + h.incoming_date + '</span>'
-          +   '</div>'
-          +   '<div style="display:flex;gap:6px;align-items:center;">'
-          +     '<span style="font-size:11px;color:var(--text2);">' + h.total_scanned + '/' + h.ordered_qty + ' EA</span>'
-          +     '<span class="badge ' + resultBadge + '">' + h.status + '</span>'
-          +   '</div>'
-          + '</div>'
-          + '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">'
-          +   '<span style="font-size:10px;color:var(--text3);margin-right:2px;">첨부 서류</span>'
-          +   _docChip('Incoming Report', true, 'printIncomingReport(\'' + h.incoming_id + '\')')
-          +   _docChip('검사성적서', hasCert, certOnclick)
-          +   _docChip('COC', hasCOC, cocOnclick)
-          +   _docChip('거래명세서', hasTrade, tradeOnclick)
-          + '</div>'
-          + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-          +   '<button class="btn btn-outline btn-sm" onclick="printIncomingReport(\'' + h.incoming_id + '\')">Incoming Report 인쇄</button>'
-          +   '<button class="btn btn-accent btn-sm" onclick="openCertModal(\'' + h.incoming_id + '\',\'' + h.po_ref_no + '\',' + h.total_scanned + ')">'
-          +     (cert ? '서류 추가/수정' : '서류 첨부 (성적서 · COC · 거래명세서)')
-          +   '</button>'
-          + '</div>'
-          + '</div>';
-      }).join('');
+      scmEl.innerHTML = _renderScmDocTable(incIds);
     }
   }
 
-  _renderVesselManualDocs(vesselId);
+  /* ── QC 문서 (FAT) / SW 문서 (SW Installation Report) — 수기 첨부 ── */
+  _renderVesselManualDocsByType(vesselId, 'FAT',        'docs-qc-section', '등록된 FAT 문서가 없습니다. [+ FAT 문서 추가] 버튼으로 첨부하세요.');
+  _renderVesselManualDocsByType(vesselId, 'SW_INSTALL', 'docs-sw-section', '등록된 SW Installation Report가 없습니다. [+ SW 문서 추가] 버튼으로 첨부하세요.');
 }
 
-/* ── 호선 문서 허브 — 수기 첨부 문서(FAT·SW설치·기타) 목록 ── */
-function _renderVesselManualDocs(vesselId) {
-  var container = document.getElementById('docs-manual-section');
+/* ── SCM 문서 표 렌더링 — 입고 건(=PO 납품 단위) 1행, 제품/PO번호/입고일 + 첨부 서류
+   설계 의도:
+     · 검사성적서·COC·거래명세서는 입고 건당 1세트(inspection_cert, incoming_id 단위)로 자동 연결
+       → 발행 PO 데이터를 그대로 끌어와 재입력 없이(두 번 작업 X) 표시
+     · 상단 완료현황 요약 + 미비 서류 빨간색 강조 → 수십~수백 건도 빠르게 시각 확인
+     · 첨부 서류 확인은 칩(보기) 방식으로 QC·SW 파트와 동일하게 통일                  ── */
+function _renderScmDocTable(incIds) {
+  /* 완료현황 집계 */
+  var total = incIds.length, nCert = 0, nCOC = 0, nTrade = 0;
+  incIds.forEach(function(incId) {
+    var c = DB.inspection_cert.find(function(x){ return x.incoming_id === incId; });
+    if (c && c.file_name)       nCert++;
+    if (c && c.coc_file_name)   nCOC++;
+    if (c && c.trade_file_name) nTrade++;
+  });
+  var sumChip = function(label, n) {
+    var clr = n >= total ? 'var(--success)' : '#f87171';
+    return '<span style="font-size:11px;font-weight:600;color:' + clr + ';">' + label + ' ' + n + '/' + total + '</span>';
+  };
+  var summary = '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:9px 13px;margin-bottom:10px;border:1px solid var(--border);border-radius:8px;background:rgba(255,255,255,.02);">'
+    + '<span style="font-size:11px;font-weight:700;color:var(--text2);">입고 ' + total + '건</span>'
+    + sumChip('검사성적서', nCert) + sumChip('COC', nCOC) + sumChip('거래명세서', nTrade)
+    + '</div>';
+
+  var th = function(t, w) {
+    return '<th style="text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);font-size:10px;color:var(--text3);font-weight:700;white-space:nowrap;' + (w || '') + '">' + t + '</th>';
+  };
+  var td = function(c, extra) {
+    return '<td style="padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;' + (extra || '') + '">' + c + '</td>';
+  };
+
+  var rows = incIds.map(function(incId) {
+    var h = DB.incoming_header.find(function(x){ return x.incoming_id === incId; });
+    if (!h) return '';
+    var cert = DB.inspection_cert.find(function(c){ return c.incoming_id === incId; });
+
+    var hasCert  = !!(cert && cert.file_name);
+    var hasCOC   = !!(cert && cert.coc_file_name);
+    var hasTrade = !!(cert && cert.trade_file_name);
+
+    /* 제품 목록 (입고 라인 → 품목코드별 수량, 품명은 PO 라인에서 조회) */
+    var incLines = DB.incoming_line.filter(function(l){ return l.incoming_id === incId; });
+    var poLines  = DB.po_line.filter(function(l){ return l.po_id === h.po_id; });
+    var nameByCode = {};
+    poLines.forEach(function(l){ nameByCode[l.item_code] = l.description; });
+    var codes = [];
+    incLines.forEach(function(l){ if (codes.indexOf(l.item_code) < 0) codes.push(l.item_code); });
+    var productCell = codes.map(function(code) {
+      var qty = incLines.filter(function(l){ return l.item_code === code; }).length;
+      return '<div style="margin:1px 0;">' + (nameByCode[code] || code) + ' <span style="color:var(--text3);font-size:11px;">(' + qty + ' EA)</span></div>';
+    }).join('') || '<span style="color:var(--text3);">-</span>';
+
+    var certOnclick  = cert ? 'viewDoc(\'' + cert.cert_id + '\',\'cert\')'  : '';
+    var cocOnclick   = cert ? 'viewDoc(\'' + cert.cert_id + '\',\'coc\')'   : '';
+    var tradeOnclick = cert ? 'viewDoc(\'' + cert.cert_id + '\',\'trade\')' : '';
+
+    var docCell = '<div style="display:flex;gap:5px;flex-wrap:wrap;">'
+      + _docChip('Incoming Report', true, 'printIncomingReport(\'' + h.incoming_id + '\')')
+      + _docChip('검사성적서', hasCert, certOnclick, true)
+      + _docChip('COC', hasCOC, cocOnclick, true)
+      + _docChip('거래명세서', hasTrade, tradeOnclick, true)
+      + '</div>';
+
+    var actionCell = '<button class="btn btn-accent btn-sm" onclick="openCertModal(\'' + h.incoming_id + '\',\'' + h.po_ref_no + '\',' + h.total_scanned + ')">'
+      + (cert ? '수정' : '첨부') + '</button>';
+
+    var missing = !hasCert || !hasCOC || !hasTrade;
+    var rowStyle = missing ? 'background:rgba(248,113,113,0.05);' : '';
+
+    return '<tr style="' + rowStyle + '">'
+      + td(productCell, 'font-size:12px;font-weight:600;color:var(--text);min-width:160px;')
+      + td('<span style="font-size:12px;color:var(--text2);">' + h.po_ref_no + '</span>', 'white-space:nowrap;')
+      + td('<span style="font-size:12px;color:var(--text2);">' + h.incoming_date + '</span>', 'white-space:nowrap;')
+      + td(docCell)
+      + td(actionCell, 'white-space:nowrap;')
+      + '</tr>';
+  }).join('');
+
+  return summary
+    + '<div style="overflow-x:auto;">'
+    +   '<table style="width:100%;border-collapse:collapse;">'
+    +     '<thead><tr>'
+    +       th('제품', 'min-width:160px;') + th('PO 번호') + th('입고일') + th('첨부 서류') + th('작업')
+    +     '</tr></thead>'
+    +     '<tbody>' + rows + '</tbody>'
+    +   '</table>'
+    + '</div>';
+}
+
+/* ── 호선 문서 허브 — 팀별 수기 첨부 문서 목록 (docType으로 필터) ── */
+function _renderVesselManualDocsByType(vesselId, docType, containerId, emptyMsg) {
+  var container = document.getElementById(containerId);
   if (!container) return;
 
-  var docs = (DB.vessel_docs || []).filter(function(d){ return d.vessel_id === vesselId; });
+  var docs = (DB.vessel_docs || []).filter(function(d){ return d.vessel_id === vesselId && d.doc_type === docType; });
   if (docs.length === 0) {
-    container.innerHTML = '<div class="empty-state">첨부된 문서가 없습니다. [+ 문서 추가] 버튼으로 FAT · SW 설치 등 문서를 첨부하세요.</div>';
+    container.innerHTML = '<div class="empty-state">' + emptyMsg + '</div>';
     return;
   }
-
-  var typeLabels = { FAT: 'FAT 문서', SW_INSTALL: 'SW 설치 문서', ETC: '기타 문서' };
 
   container.innerHTML = docs.slice().reverse().map(function(d) {
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,.02);flex-wrap:wrap;gap:8px;">'
       + '<div>'
-      +   '<span class="badge badge-open" style="margin-right:8px;">' + (typeLabels[d.doc_type] || d.doc_type) + '</span>'
+      +   '<span class="badge badge-complete" style="margin-right:8px;">등록됨</span>'
       +   '<strong style="font-size:12px;">' + (d.doc_title || d.file_name || '-') + '</strong>'
       +   '<div style="font-size:10px;color:var(--text3);margin-top:4px;">' + (d.uploaded_by || '-') + ' · ' + (d.uploaded_at || '-') + (d.note ? ' · ' + d.note : '') + '</div>'
       + '</div>'
@@ -209,14 +296,23 @@ function _renderVesselManualDocs(vesselId) {
   }).join('');
 }
 
-/* ── 호선 문서 추가 모달 ── */
-function openVesselDocModal() {
+/* ── 호선 문서 추가 모달 (presetType: 'FAT' | 'SW_INSTALL' — 팀별 첨부 버튼에서 호출) ── */
+function openVesselDocModal(presetType) {
   if (!_docsVesselId) return;
+  var typeLabels = { FAT: 'FAT 문서', SW_INSTALL: 'SW Installation Report', ETC: '기타 문서' };
+  var type = presetType || 'FAT';
+
   document.getElementById('vessel-doc-modal-vessel-id').value = _docsVesselId;
-  document.getElementById('vessel-doc-type').value  = 'FAT';
+  document.getElementById('vessel-doc-type').value  = type;
   document.getElementById('vessel-doc-title').value = '';
   document.getElementById('vessel-doc-note').value  = '';
   document.getElementById('vessel-doc-file-label').textContent = '파일을 선택하세요';
+  /* 팀별 버튼으로 진입 시 문서 종류는 고정 — 선택 행 숨김 */
+  var typeRow = document.getElementById('vessel-doc-type-row');
+  if (typeRow) typeRow.style.display = presetType ? 'none' : '';
+  var modalTitle = document.getElementById('vessel-doc-modal-title');
+  if (modalTitle) modalTitle.textContent = (typeLabels[type] || '문서') + ' 추가';
+
   _vesselDocFileData = null;
   _vesselDocFileName = null;
   document.getElementById('vessel-doc-modal').classList.add('show');
@@ -262,7 +358,7 @@ function saveVesselDoc() {
   dbSave('vessel_docs');
 
   document.getElementById('vessel-doc-modal').classList.remove('show');
-  _renderVesselManualDocs(vesselId);
+  _renderVesselDocHub(vesselId);
   refreshDocsVesselList();
   notify('문서가 첨부되었습니다.', 'ok');
 }
@@ -285,7 +381,7 @@ function deleteVesselDoc(docId) {
   if (idx < 0) return;
   DB.vessel_docs.splice(idx, 1);
   dbSave('vessel_docs');
-  _renderVesselManualDocs(_docsVesselId);
+  _renderVesselDocHub(_docsVesselId);
   refreshDocsVesselList();
   notify('문서가 삭제되었습니다.', 'info');
 }

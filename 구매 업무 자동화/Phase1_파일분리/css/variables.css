@@ -4,51 +4,33 @@
    수정 시: 색상·폰트·테마 토큰만 여기서 관리
    ============================================================ */
 
-/* ── 다크 모드 (기본값) ── */
+/* ── 라이트 테마 (기본·고정) ──
+   다크 모드는 제거됨. 색상 조정은 이 :root 값만 수정.
+   레퍼런스 정합 시 핵심: --body-bg(페이지), --navy2(사이드바·상단바·카드 표면),
+   --card(카드), --accent(브랜드/링크), --text(본문) */
 :root {
-  --navy:       #0a1628;
-  --navy2:      #112240;
-  --navy3:      #1a3055;
-  --blue:       #1e6fc8;
-  --blue-lt:    #2d85e8;
-  --accent:     #00c9a7;
-  --accent2:    #00e5c0;
-  --purple:     #7c6ef5;
-  --purple-lt:  #9d94f7;
-  --teal:       #0f6e56;
-  --teal-lt:    #1d9e75;
-  --warn:       #f59e0b;
-  --danger:     #ef4444;
-  --success:    #22c55e;
-  --text:       #e8edf5;
-  --text2:      #8fa3be;
-  --text3:      #4a6080;
-  --border:     rgba(255,255,255,0.08);
-  --border2:    rgba(255,255,255,0.14);
-  --card:       rgba(17,34,64,0.9);
-  --input-bg:   rgba(255,255,255,0.05);
-  --body-bg:    #060e1c;
-}
-
-/* ── 라이트 모드 ── */
-/* 밝기 조절: --body-bg, --card, --navy2 값을 어둡게 할수록 덜 눈부심 */
-[data-theme="light"] {
-  --navy:       #b8ccdf;   /* 탭·헤더 아래 배경 */
-  --navy2:      #d4e0ee;   /* 헤더·탭 배경      ← 밝기 조절 핵심 */
-  --navy3:      #c2d4e8;   /* 테이블 헤더 배경  */
-  --text:       #1a2a40;   /* 본문 텍스트 색     */
-  --text2:      #3d5270;   /* 보조 텍스트 색     */
-  --text3:      #6080a0;   /* 흐린 텍스트 색     */
-  --border:     rgba(0,0,0,0.12);
-  --border2:    rgba(0,0,0,0.20);
-  --card:       rgba(210,225,242,0.92); /* 카드 배경 ← 밝기 조절 핵심 */
-  --input-bg:   rgba(0,0,0,0.07);       /* 입력창 배경 */
-  --warn:       #b45309;
-  --danger:     #b91c1c;
-  --success:    #15803d;
-  --purple:     #5b45d4;
+  --navy:       #f1f5f9;   /* slate-100 — 서브 표면 */
+  --navy2:      #ffffff;   /* 사이드바·상단바·카드 표면 */
+  --navy3:      #f8fafc;   /* slate-50 — 테이블 헤더 배경 */
+  --blue:       #1d4ed8;   /* blue-700 (레퍼런스 primary) */
+  --blue-lt:    #3b82f6;
+  --accent:     #1d4ed8;   /* ← 레퍼런스 강조색 = 블루 (oklch 0.379 0.146 265) */
+  --accent2:    #2563eb;
+  --purple:     #6d5ae6;
   --purple-lt:  #7c6ef5;
-  --body-bg:    #c8d8e8;   /* 페이지 전체 배경  ← 밝기 조절 핵심 */
+  --teal:       #0f766e;
+  --teal-lt:    #14b8a6;
+  --warn:       #b45309;
+  --danger:     #dc2626;
+  --success:    #16a34a;
+  --text:       #18181b;   /* zinc-900 — 본문/제목 (oklch 0.21) */
+  --text2:      #475569;   /* slate-600 — 보조 */
+  --text3:      #64748b;   /* slate-500 — 흐림/표 헤더 (oklch 0.551) */
+  --border:     #e2e8f0;   /* slate-200 (oklch 0.9 0.01 260) */
+  --border2:    #cbd5e1;   /* slate-300 */
+  --card:       #ffffff;
+  --input-bg:   #ffffff;
+  --body-bg:    #f8fafc;   /* slate-50 — 페이지 전체 배경 */
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -56,7 +38,7 @@
 body {
   background: var(--body-bg);
   color: var(--text);
-  font-family: 'Noto Sans KR','Segoe UI',sans-serif;
+  font-family: 'Noto Sans','Noto Sans KR',system-ui,Avenir,Helvetica,Arial,sans-serif;
   min-height: 100vh;
   font-size: 13px;
   line-height: 1.6;

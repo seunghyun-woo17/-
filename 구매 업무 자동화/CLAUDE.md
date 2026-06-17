@@ -20,8 +20,8 @@
 ### 미완성 / 예정
 - PostgreSQL DB 서버 (DELL XE3) — 미구축
 - Node.js 백엔드 API — 미개발
-- FAT 관리 탭 — 기획 완료, 미구현
 - ISO 9001 기준 호선별 문서 산출물 통합 저장 방식 — 정리 필요 (현재는 Incoming Report만 '문서 산출물' 탭에 위치)
+- **CX(설치·커미셔닝)·OP(시운전) 팀 확장** — 기획 단계. 호선 중심 데이터 모델 대폭 확장 필요 → 아래 "호선 중심 데이터 모델 확장" 절 및 `docs/DB_전환_3단계_로드맵.md` 4장 참고
 
 ---
 
@@ -39,7 +39,7 @@
 │   ├── 열기.bat                 ← 로컬 실행용
 │   ├── assets/signature.png1
 │   ├── css/
-│   │   ├── variables.css        ← CSS 변수, 다크/라이트 모드
+│   │   ├── variables.css        ← CSS 변수 (라이트 테마 고정 — 다크/토글 제거됨)
 │   │   ├── layout.css           ← 헤더, 탭, 레이아웃
 │   │   ├── components.css       ← 버튼, 카드, 테이블 등 공통 컴포넌트
 │   │   └── phases.css           ← Phase별 전용 스타일
@@ -52,9 +52,12 @@
 │       ├── phase0.js            ← 호선·BOM·안전재고 관리
 │       ├── phase1.js            ← PO 발행 (generatePORefNo 포함)
 │       ├── phase23.js           ← 입고 검수·QR 스캔·서류 첨부
-│       ├── phase4.js            ← Incoming Report·문서 관리
+│       ├── phase4.js            ← 호선별 문서 허브 (SCM/QC/SW 산출물)
 │       ├── phase5.js            ← 재고 현황·출고·대여
-│       └── dev/dev-mock.js      ← ⚠ 개발 전용 스캔 시뮬레이터 (서버 전환 전 삭제)
+│       ├── phase-inspection.js  ← 검사요청 탭
+│       ├── phase-cxop.js        ← CX/OP 호선 정보 조회·입력
+│       ├── phase-fat.js         ← QC FAT 관리 (선급별, 6단계, 히스토리)
+│       └── dev-mock.js          ← ⚠ 개발 전용 스캔 시뮬레이터 (서버 전환 전 삭제)
 ├── avikus_system_report.html    ← 백엔드 개발자용 명세 문서 (HTML)
 ├── legacy/                      ← 레거시 파일 (avikus_v2.html 등)
 └── exports/PO 파일/              ← 생성된 PO 문서
@@ -72,13 +75,15 @@
 
 4. **PO 번호 형식**: `A-PO-YYNNNN` (예: A-PO-260001). 연도 2자리 + 4자리 순번. 매년 0001부터 재시작. 서버 전환 후 반드시 서버에서 채번 (동시성 보장).
 
+5. **호선 데이터: 저장은 단일, 표현은 이원화**: 호선 1척 = 단일 마스터 레코드(single source of truth). 파트별로 호선 정보를 중복 저장하지 않음. 화면은 "파트별 입력 뷰 + 호선 360 종합 뷰" 둘 다 제공. (CX·OP 확장 대비 — 아래 절 참고)
+
 ---
 
 ## DB 테이블 목록 (현재 localStorage 기준)
 
 | 테이블 | 설명 |
 |--------|------|
-| `vessel_master` | 호선 마스터 (선급 컬럼 추가 예정) |
+| `vessel_master` | 호선 마스터. 설계: vessel_type/vessel_name/shipping_company/vessel_classes(CLASS)/ship_type(선종)/owner/flag/contract_date/delivery_date. CX·OP: yard/supply_product/construction_cost/dl_date/actual_delivery_date/series_no/seatrial_start·end/commission_start·end/cxop_remark |
 | `vessel_bom` | 호선별 BOM (필요 장비 목록) |
 | `vessel_notes` | 호선 특이사항 (품질/납기/SW/기타) |
 | `suppliers` | 업체 마스터 |
@@ -89,6 +94,18 @@
 | `incoming_line` | 입고 라인 (S/N별 스캔 기록) |
 | `inspection_cert` | 첨부 서류 (검사성적서·COC·거래명세서, 입고 건 단위) |
 | `outgoing_log` | 출고/대여/검사요청 이력 |
+| `vessel_docs` | 호선별 수기 첨부 문서 (FAT·SW설치·기타, vessel_id 단위) |
+| `fat_master` | FAT 관리 (호선+선급 단위, status 6단계, scm_ready_from/to·fat_date·applied_date·inspector·product·flag·yard·sn·result) |
+| `fat_history` | FAT 상태변경 자동 로그 (lifecycle, fat_id 단위) |
+| `fat_comment` | 선급 코멘트(지적사항) 구조화 — code·content·category·status·assignee·reg_date·done_date·note·file (완료율 자동) |
+| `fat_comment_codes` | 코멘트 코드 마스터 (ELEC-XXXX 재사용 카탈로그) |
+| `fat_ref_docs` | 선급별 FAT 참고문서 (프로세스/신청양식, class 단위) |
+| `med_cert` | MED 인증서 발급 현황 (MEDF/MEDB, Audit·OBT/FAT·발급상태) |
+
+### 추가 예정 테이블 (CX·OP 확장)
+| 테이블 | 설명 |
+|--------|------|
+| `vessel_milestone` | **신규** — 호선별 날짜 마일스톤(납품·D.L계약·실제인도·커미셔닝·시운전 등)을 행 단위로 관리. `milestone_code`/`owner_team`/`planned_date`/`actual_date`. 항목 증가에도 스키마 변경 불필요 |
 
 ---
 
@@ -104,20 +121,31 @@
 ├── [재고 TAB]   제품별 S/N 재고 (2단계 뷰)
 │   └── 품목 그룹 목록 → 드릴다운 → S/N 상세 + 출고/대여/검사요청 + 관리자 수기 등록
 │                                       ← phase5.js (refreshInventoryGroups 등, 구현 완료)
-├── [QC TAB]     FAT 관리               ← 기획 완료, 개발 예정
-└── [문서 산출물 TAB] Incoming Report 등 ISO 9001 문서 보관
-                                        ← phase4.js  (구현 완료, Incoming Report 이동)
+├── [QC TAB]     FAT 관리               ← phase-fat.js (구현 완료)
+├── [문서 산출물 TAB] 호선별 문서 허브 (SCM/QC/SW 팀별 산출물)
+│                                       ← phase4.js  (구현 완료)
+└── [CX/OP TAB]  호선 중심 설치·계약·커미셔닝·시운전 정보
+                                        ← phase-cxop.js (구현 완료)
 ```
+
+> **내비게이션**: 좌측 **아이콘 사이드바**(`.sidebar` > `.main-tabs` > `.main-tab`, 호버 시 `.nav-tip` 툴팁). 레이아웃은 `.layout`(flex) = `.sidebar` + `.content`(`.topbar` + main-sections). `switchMainTab(data-tab)` 로직은 동일. `data-tab`: design/scm/inventory/inspection/qc/docs/cxop
+> CSS: `css/layout.css` 의 "사이드바 레이아웃" 섹션
 
 ---
 
 ## 탭별 기능 요약
 
 ### 설계 TAB — 호선·BOM·특이사항 (phase0.js)
-- 신조/개조 호선 등록, 선급 입력 (FAT 연동용)
-- BOM 세대 템플릿(1세대·2세대) 적용 + 개별 품목 추가
-- 호선별 필요수량 vs 현재재고 실시간 비교, 부족 알람
-- 호선 특이사항 (품질/납기/SW/기타) 등록·필터·확인 처리
+- 신조/개조 호선 등록 — 선종/OWNER/FLAG/선급(CLASS, 복수 체크) 입력
+- BOM 세대 템플릿 적용 + 개별 품목 추가
+- 안전재고 현황: **제품별 집계 단일 뷰** (품목 클릭 → 호선별 필요 내역 드릴다운). 호선별 보기 토글은 제거됨
+- 호선 목록: **검색바**(호선명·선급·선종·OWNER·FLAG·코드) + 유형 필터(전체/신조/개조) + 건수 배지
+- 호선 목록 행: **호선명 클릭 → 상세 보기(360 뷰)** `openVesselDetail` (기본정보·요약·FAT·CX/OP·특이사항 집계). 버튼 **[정보수정]**(`editVessel`/`saveVesselEdit` — 호선 마스터 편집) · **[BOM]**(`openVesselBOMEditor`) · **[삭제]**
+- 호선 특이사항 (QC/SCM/SW/CX/OP/커미셔닝/설계/기타) 등록·필터·확인 처리
+
+### CX/OP TAB — 호선 중심 설치·계약·커미셔닝·시운전 (phase-cxop.js)
+- 호선별 CX/OP 현황 조회 테이블 (좌우 스크롤): 호선/구분/YARD/공급제품/선종/CLASS/OWNER/공사비용/D·L/실제인도일/Series/시운전·커미셔닝 시작·종료/REMARK
+- 행 **[입력/수정]** → 모달(`openCxopModal`/`saveCxop`)로 항목 기입. 데이터는 단일 `vessel_master`에 저장(설계 탭과 공유)
 
 ### SCM TAB — PO 발행 (phase1.js)
 - PO Ref No 자동생성 (`generatePORefNo()`)
@@ -142,16 +170,43 @@
 - 출고/대여/검사요청: 드릴다운 화면에서 체크박스 선택 → 액션 버튼 → 모달 확인 → 처리 (`openOutgoingModal`/`confirmOutgoing`)
 - 관리자 수기 재고 등록 (PIN: 1234, `toggleAdminPanel`/`addManualInventory`)
 
-### QC TAB — FAT 관리 (미구현)
-- 선급 입력된 호선의 FAT 대상 자동 추출
-- 출고 예정일 기반 기한 임박 알림 (30일 이내 팝업, 서버 전환 후 이메일)
-- FAT 완료 처리 및 결과 문서(PDF) 첨부
+### QC TAB — FAT 관리 (phase-fat.js, 구현 완료) — 서브탭 3개: FAT 진행 / 선급별 참고문서 / MED 인증서
+- **FAT 대상 자동 추출**: `vessel_classes`에 DNV·ABS 포함 호선 (대상 선급은 `FAT_TARGET_CLASSES` 배열로 확장). **선급별 분리** — 호선 1척이 DNV·ABS면 FAT 2건
+- **6단계 상태**: 대상 → SCM 가능 → QC 일정확정 → 검사신청 → 검사진행 → 완료
+- **SCM 가능 기간**: 시작~종료 수기 입력 + BOM 재고 충족률(`_fatBomCoverage`) 보조표시
+- **호선/검사 정보**: Product·Flag·Yard·Inspector(선급검사관)·S/N (Flag/Yard/Product는 설계 정보 자동 반영)
+- **선급 코멘트(지적사항) 구조화**: 코드(ELEC-XXXX)·내용·카테고리(Technical/Surveyor)·상태(OBT 전/진행중/완료)·담당자·등록일·완료일·비고 + 산출물 첨부 → **완료율 자동 산출** (현업 ABS FAT List 엑셀 기준)
+- **코멘트 코드 마스터**: 반복 코멘트를 코드로 등록 → 코멘트 추가 시 자동완성 (`fat_comment_codes`)
+- **선급별 참고문서**: DNV·ABS별 프로세스/신청양식 첨부·열람 (`fat_ref_docs`)
+- **MED 인증서 현황**: MEDF/MEDB 발급 현황(Audit·OBT/FAT·발급상태) 표·입력 (`med_cert`)
+- ※ 참고: `docs/선급별_FAT_OBT_프로세스_비교.pdf`는 MIP(Azure RMS) 암호화로 읽기 불가 → 탭에 직접 첨부 방식. 현업 엑셀은 `docs/FAT_참고자료/` 참고
 
 ### 문서 산출물 TAB — Incoming Report (phase4.js)
 - Incoming Report 자동 생성 (A4, PIC 이름 표시)
 - 서류 첨부: 검사성적서·COC·거래명세서 (3종 독립 관리)
 - 문서 관리 허브: 입고 건별 서류 상태 배지 표시 + 보기/인쇄
 - ※ 추후 ISO 9001 기준 호선별 문서 산출물(설계·QC 등) 통합 보관 위치로 확장 예정 (저장 방식 정리 필요)
+
+---
+
+## 호선 중심 데이터 모델 확장 (CX·OP — 2026-06 결정)
+
+설계→납품 프로세스에 **CX(설치·커미셔닝)·OP(시운전)** 팀 업무가 추가되면 호선 1척에 누적되는 항목이 매우 많아짐
+(설치업체, 공사비용, D.L 계약일, 실제 인도일, Series 호선, 커미셔닝 시작/종료, 시운전 시작/종료 등).
+
+**핵심 결정** — "파트별 저장 vs 전체 한 탭"은 양자택일이 아니라, 저장과 표현을 분리해서 둘 다 한다:
+
+| 구분 | 결정 |
+|------|------|
+| **저장(DB)** | 호선 1척 = 단일 마스터 레코드. 파트별 중복 저장 금지(데이터 drift 방지) |
+| **표현(화면)** | 파트별 입력 뷰(자기 소관 필드만 편집) + 호선 360 종합 뷰(전 항목 + 마일스톤 타임라인 조회) |
+
+- **스칼라 항목**(기준정보·설치업체·공사비용·FAT여부·비고) → `vessel_master` 컬럼
+- **날짜 마일스톤**(납품일·계약일·인도일·커미셔닝·시운전 등) → `vessel_milestone` 신규 자식 테이블(행 단위) → 항목 증가에도 스키마/화면 변경 최소화
+- EAV(키-값 무한 확장) 금지. `milestone_code`는 정의된 목록만 사용
+- 화면: 설계/SCM/QC + **CX·OP 탭 신규** + 호선 360 종합 뷰. 이미 만든 `phase4.js` 호선 문서 허브가 360 뷰의 축소판
+
+> 상세: `docs/DB_전환_3단계_로드맵.md` 4장 "호선 중심 데이터 모델 확장"
 
 ---
 

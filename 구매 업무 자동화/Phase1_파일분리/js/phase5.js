@@ -31,7 +31,7 @@ function refreshPhase5() {
       : DB.po_header.map(function(p) {
           var badge = p.status === 'OPEN' ? 'badge-open' : p.status === 'PARTIAL' ? 'badge-partial' : p.status === 'COMPLETE' ? 'badge-complete' : 'badge-cancel';
           var selected = (_selectedPOId === p.po_id);
-          return '<tr style="cursor:pointer;' + (selected ? 'background:rgba(0,201,167,.08);' : '') + '" onclick="selectPOForLineDetail(\'' + p.po_id + '\')"><td><strong>' + p.po_ref_no + '</strong></td><td>' + p.issue_date + '</td><td>' + p.due_date + '</td><td>' + p.supplier_code + '</td><td>' + p.vessel_code + '</td><td><span class="badge ' + badge + '">' + p.status + '</span></td></tr>';
+          return '<tr style="cursor:pointer;' + (selected ? 'background:rgba(29,78,216,.08);' : '') + '" onclick="selectPOForLineDetail(\'' + p.po_id + '\')"><td><strong>' + p.po_ref_no + '</strong></td><td>' + p.issue_date + '</td><td>' + p.due_date + '</td><td>' + p.supplier_code + '</td><td>' + p.vessel_code + '</td><td><span class="badge ' + badge + '">' + p.status + '</span></td></tr>';
         }).join('');
   }
 
@@ -95,6 +95,37 @@ function _renderPOLineDetail() {
 
 var _inventoryDetailItemCode = null;
 
+/* 부족 품목 모달용 캐시 (refreshInventoryGroups에서 갱신) */
+var _shortItemsCache = [];
+
+function openShortageModal() {
+  var titleEl = document.getElementById('inventory-shortage-modal-title');
+  if (titleEl) titleEl.textContent = '부족 품목 상세 — ' + _shortItemsCache.length + '종';
+  var tbody = document.getElementById('tbl-inv-shortage');
+  if (tbody) {
+    if (_shortItemsCache.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">부족 품목이 없습니다.</td></tr>';
+    } else {
+      tbody.innerHTML = _shortItemsCache.map(function(s) {
+        return '<tr style="cursor:pointer;" onclick="closeShortageModal();openInventoryDetail(\'' + s.code.replace(/'/g, "\\'") + '\')" title="클릭 시 S/N 상세">'
+          + '<td>' + (s.name || '<span style="color:var(--text3);">-</span>') + '</td>'
+          + '<td class="mono">' + s.code + '</td>'
+          + '<td style="text-align:center;">' + s.current + '</td>'
+          + '<td style="text-align:center;font-weight:600;">' + s.required + '</td>'
+          + '<td style="text-align:center;color:#f87171;font-weight:700;">' + s.shortage + '</td>'
+          + '</tr>';
+      }).join('');
+    }
+  }
+  var modal = document.getElementById('inventory-shortage-modal');
+  if (modal) modal.classList.add('show');
+}
+
+function closeShortageModal() {
+  var modal = document.getElementById('inventory-shortage-modal');
+  if (modal) modal.classList.remove('show');
+}
+
 function _inventoryStatusInfo(status) {
   if      (status === 'IN_STOCK')             return { label: '재고',   badgeClass: 'badge-stock' };
   else if (status === 'SHIPPED')              return { label: '출고',   badgeClass: 'badge-complete' };
@@ -107,27 +138,64 @@ function refreshInventoryGroups() {
   var stockCount = DB.inventory.filter(function(i){ return i.status === 'IN_STOCK'; }).length;
   var inspCount  = DB.inventory.filter(function(i){ return i.status === 'INSPECTION_REQUESTED'; }).length;
 
-  /* ── [재고] 탭 최상단 — 전체 품목 단위 BOM 안전재고 연동 통계 ── */
-  var requiredTotal = 0;
-  var shortageTotal = 0;
+  /* ── [재고] 탭 최상단 — 재고 상태 중심 요약 ──
+     · 재고 보유 품목 종류 : IN_STOCK 재고가 1개 이상인 품목코드 수
+     · 부족 품목           : BOM 필요수량 대비 현재고가 모자란 품목 (목록은 아래 스트립)
+     · 현재 재고 수량 / 검사요청                                              */
+  var inStockByCode = {};
+  var nameByCode    = {};
+  DB.inventory.forEach(function(i) {
+    if (i.item_code && i.item_name && !nameByCode[i.item_code]) nameByCode[i.item_code] = i.item_name;
+    if (i.status === 'IN_STOCK') {
+      var c = i.item_code || '(미지정)';
+      inStockByCode[c] = (inStockByCode[c] || 0) + 1;
+    }
+  });
+  var typesInStock = Object.keys(inStockByCode).length;
+
+  /* BOM 필요수량 품목별 합산 → 부족 품목 추출 */
   var bomGroups = {};
   DB.vessel_bom.forEach(function(bom) {
-    requiredTotal += bom.required_qty;
-    if (!bomGroups[bom.item_code]) bomGroups[bom.item_code] = 0;
-    bomGroups[bom.item_code] += bom.required_qty;
+    if (!bomGroups[bom.item_code]) bomGroups[bom.item_code] = { required: 0, name: bom.item_name || '' };
+    bomGroups[bom.item_code].required += bom.required_qty;
+    if (!bomGroups[bom.item_code].name && bom.item_name) bomGroups[bom.item_code].name = bom.item_name;
   });
+  var shortItems = [];
   Object.keys(bomGroups).forEach(function(code) {
-    var current = DB.inventory.filter(function(i){ return i.item_code === code && i.status === 'IN_STOCK'; }).length;
-    shortageTotal += Math.max(0, bomGroups[code] - current);
+    var current  = inStockByCode[code] || 0;
+    var required = bomGroups[code].required;
+    var shortage = Math.max(0, required - current);
+    if (shortage > 0) {
+      shortItems.push({ code: code, name: bomGroups[code].name || nameByCode[code] || '', current: current, required: required, shortage: shortage });
+    }
   });
-  var requiredEl = document.getElementById('stat-inv-required');
-  var shortageEl = document.getElementById('stat-inv-shortage');
+  shortItems.sort(function(a, b){ return b.shortage - a.shortage; });
+
+  var typesEl = document.getElementById('stat-inv-types');
+  var shortEl = document.getElementById('stat-inv-shortitems');
   var stockTopEl = document.getElementById('stat-inv-stock');
   var inspTopEl  = document.getElementById('stat-inv-insp');
-  if (requiredEl) requiredEl.textContent = requiredTotal;
-  if (shortageEl) shortageEl.textContent = shortageTotal;
+  if (typesEl)    typesEl.textContent    = typesInStock;
+  if (shortEl)    shortEl.textContent    = shortItems.length;
   if (stockTopEl) stockTopEl.textContent = stockCount;
   if (inspTopEl)  inspTopEl.textContent  = inspCount;
+
+  /* 부족 품목 — 상단은 한 줄 요약, 상세는 [상세 보기] 클릭 시 모달로 (가시성 확보) */
+  _shortItemsCache = shortItems;
+  var stripEl = document.getElementById('inventory-shortage-strip');
+  if (stripEl) {
+    if (DB.vessel_bom.length === 0) {
+      stripEl.innerHTML = '';
+    } else if (shortItems.length === 0) {
+      stripEl.innerHTML = '<div style="padding:9px 13px;border:1px solid var(--border);border-radius:8px;background:rgba(34,197,94,0.06);font-size:12px;color:var(--success);font-weight:600;">✓ 모든 BOM 품목 재고 충족</div>';
+    } else {
+      stripEl.innerHTML = '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 13px;border:1px solid rgba(248,113,113,0.35);border-radius:8px;background:rgba(248,113,113,0.06);">'
+        + '<span style="font-size:12px;font-weight:700;color:#f87171;">⚠ 부족 품목 ' + shortItems.length + '종</span>'
+        + '<span style="font-size:11px;color:var(--text2);">BOM 필요수량 대비 재고 부족</span>'
+        + '<button class="btn btn-outline btn-sm" style="margin-left:auto;border-color:rgba(248,113,113,0.5);color:#f87171;" onclick="openShortageModal()">상세 보기 →</button>'
+        + '</div>';
+    }
+  }
 
   var tblGroups = document.getElementById('tbl-inv-groups');
   if (tblGroups) {
@@ -583,7 +651,7 @@ function onOutgoingScanInput(val) {
   if (infoEl) {
     var info = _inventoryStatusInfo(item.status);
     infoEl.innerHTML =
-        '<div style="padding:12px;background:rgba(0,201,167,0.06);border:1px solid rgba(0,201,167,0.3);border-radius:8px;margin-bottom:12px;">'
+        '<div style="padding:12px;background:rgba(29,78,216,0.06);border:1px solid rgba(29,78,216,0.3);border-radius:8px;margin-bottom:12px;">'
       + '<div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:8px;">QR 스캔 성공 — 제품 정보 확인</div>'
       + '<div class="inspect-info-row"><span>품목명</span><strong>' + (item.item_name || '-') + '</strong></div>'
       + '<div class="inspect-info-row"><span>품목 코드</span><strong class="mono">' + item.item_code + '</strong></div>'

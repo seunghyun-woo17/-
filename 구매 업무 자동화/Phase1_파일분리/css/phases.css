@@ -10,7 +10,7 @@
 /* ── 스캔 단계 상태 표시 ── */
 .scan-status          { padding:14px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border:1px solid; font-weight:500; }
 .scan-status.idle     { background:rgba(74,96,128,.2);  border-color:var(--text3);   color:var(--text2); }
-.scan-status.po-done  { background:rgba(0,201,167,.1);  border-color:var(--accent);  color:var(--accent); }
+.scan-status.po-done  { background:rgba(29,78,216,.1);  border-color:var(--accent);  color:var(--accent); }
 .scan-status.error    { background:rgba(239,68,68,.1);  border-color:var(--danger);  color:#fca5a5; }
 .scan-status.success  { background:rgba(34,197,94,.1);  border-color:var(--success); color:#86efac; }
 
@@ -39,7 +39,7 @@ canvas#cam-canvas { display:none; }
 .scanned-sn   { color:var(--success); font-family:monospace; font-weight:600; }
 
 /* ── 품목 진행 카드 ── */
-.item-card       { border:1px solid rgba(0,201,167,.14); border-radius:12px; padding:14px; margin-bottom:10px; background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); }
+.item-card       { border:1px solid rgba(29,78,216,.14); border-radius:12px; padding:14px; margin-bottom:10px; background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); }
 .item-card-head  { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
 .item-card-title { font-size:14px; font-weight:700; }
 .item-card-code  { font-size:11px; color:var(--text3); margin-top:1px; }
@@ -180,7 +180,7 @@ canvas#cam-canvas { display:none; }
   transition: background .1s;
 }
 .vessel-dropdown-item:last-child { border-bottom: none; }
-.vessel-dropdown-item:hover { background: rgba(0,201,167,0.1); color: var(--accent); }
+.vessel-dropdown-item:hover { background: rgba(29,78,216,0.1); color: var(--accent); }
 .vessel-dropdown-empty {
   padding: 12px 14px;
   font-size: 12px;

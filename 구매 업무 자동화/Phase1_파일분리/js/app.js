@@ -9,9 +9,6 @@
    ============================================================ */
 'use strict';
 
-/* 테마는 DOMContentLoaded 전에 적용해야 깜빡임 없음 */
-initTheme();
-
 document.addEventListener('DOMContentLoaded', function() {
   initDates();
   checkProtocol();
@@ -25,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
   refreshPhase5();
   refreshInventoryGroups();
   refreshIncomingReports();
+  refreshCxopTab();
+  refreshFatTab();
   updateScanUI();
   updateDBStatus();
   /* admin 날짜 초기화 */
@@ -33,5 +32,17 @@ document.addEventListener('DOMContentLoaded', function() {
   /* 사용자 이름 표시 초기화 */
   var nameEl = document.getElementById('header-user-name');
   if (nameEl) nameEl.textContent = currentUserName || '이름 설정';
+  /* 상단바 시계 */
+  updateTopbarClock();
+  setInterval(updateTopbarClock, 30000);
   console.log('[Avikus v2.0] 앱 초기화 완료.');
 });
+
+/* ── 상단바 시계 (현지시각) ── */
+function updateTopbarClock() {
+  var el = document.getElementById('topbar-clock');
+  if (!el) return;
+  var d = new Date();
+  var p = function(n){ return String(n).padStart(2, '0'); };
+  el.textContent = '🕐 ' + d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}

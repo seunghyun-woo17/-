@@ -57,6 +57,35 @@ const DB = {
      uploaded_by : 첨부자 이름 (currentUserName)
      uploaded_at : 첨부 날짜 (today())              */
   vessel_docs:     [],  // VESSEL_DOCS            (문서 산출물 탭 — 호선별 수기 첨부)
+  /* FAT 관리 (QC 탭) — 선급별 분리: 호선 1척이 DNV·ABS면 FAT 2건
+     fat_id          : uid('FAT')
+     vessel_id       : vessel_master FK
+     class           : 'DNV' | 'ABS' (FAT 대상 선급)
+     status          : TARGET → SCM_READY → QC_SCHEDULED → APPLIED → IN_PROGRESS → COMPLETE
+     scm_ready_from/to : SCM이 알려주는 FAT 가능(대략) 기간 시작~종료 / scm_note
+     fat_date        : QC가 지정한 FAT일
+     applied_date    : 선급 검사신청일 / inspector(선급 검사관)
+     result          : 완료 결과 요약
+     product/flag/yard/sn : 현업 ABS FAT List 컬럼 (flag·yard·product는 vessel_master에서 자동 채움) */
+  fat_master:      [],  // FAT_MASTER
+  /* FAT 히스토리 — 시스템 상태변경 자동 로그 (lifecycle)
+     fat_id(FK), kind('comment'|'doc'|'status'), content, file_name, file_data, created_by, created_at */
+  fat_history:     [],  // FAT_HISTORY
+  /* 선급 코멘트(지적사항) — 구조화 (현업 ABS FAT List Sheet2 기준)
+     comment_id, fat_id(FK), code('ELEC-XXXX'), content, category('Technical'|'Surveyor'),
+     status('OBT 전'|'진행중'|'완료'), assignee(담당자), reg_date(등록일), done_date(완료일),
+     note(비고), file_name, file_data, created_at  →  완료율 = 완료수/전체 자동 산출 */
+  fat_comment:     [],  // FAT_COMMENT
+  /* 코멘트 코드 마스터 — 재사용 카탈로그 (Sheet3)
+     code('ELEC-XXXX'), content, category, note(적용 호선 등) */
+  fat_comment_codes: [], // FAT_COMMENT_CODES
+  /* 선급별 참고문서 — 프로세스/신청양식 (누구나 열람)
+     class('DNV'|'ABS'|...), doc_title, file_name, file_data, uploaded_by, uploaded_at */
+  fat_ref_docs:    [],  // FAT_REF_DOCS
+  /* MED 인증서 발급 현황 (List of MED Certificate) — 자유 텍스트 위주
+     med_id, no, order_old, cert_no, order_new, medf_cert_new, sn, audit, obt_fat,
+     medf_status, hull_no(호선), shipyard(yard), dl_vessel, medb_cert_no, remark */
+  med_cert:        [],  // MED_CERT
 };
 
 /* ── localStorage에서 DB 로드 (페이지 로드 시 1회 실행) ── */
@@ -175,6 +204,8 @@ function refreshAllViews() {
   refreshInventoryGroups();
   refreshIncomingReports();
   updateScanUI();
+  if (typeof refreshCxopTab === 'function') refreshCxopTab();
+  if (typeof refreshFatTab === 'function') refreshFatTab();
   var vv = document.getElementById('inventory-vessel-view');
   if (vv && vv.style.display !== 'none' && typeof refreshInventoryVesselView === 'function') {
     refreshInventoryVesselView();

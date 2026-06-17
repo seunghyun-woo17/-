@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,57 +18,67 @@
 </head>
 <body>
 
+<div class="layout">
+
 <!-- ================================================================
-     HEADER
+     SIDEBAR (아이콘 내비 · 호버 툴팁)
      ================================================================ -->
-<div class="header">
+<aside class="sidebar">
+  <div class="sidebar-logo" title="Avikus 부산사무소 ERP">A</div>
+  <div class="main-tabs">
+    <div class="main-tab active" data-tab="design" onclick="switchMainTab('design')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-tip">설계 · 호선/BOM/특이사항</span>
+    </div>
+    <div class="main-tab" data-tab="scm" onclick="switchMainTab('scm')">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="nav-tip">SCM · 구매/입고/출고</span>
+    </div>
+    <div class="main-tab" data-tab="inventory" onclick="switchMainTab('inventory')">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span class="nav-tip">재고 현황</span>
+    </div>
+    <div class="main-tab" data-tab="inspection" onclick="switchMainTab('inspection')">
+      <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+      <span class="nav-tip">검사요청 관리</span>
+    </div>
+    <div class="main-tab" data-tab="qc" onclick="switchMainTab('qc')">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="nav-tip">QC · FAT 관리</span>
+    </div>
+    <div class="main-tab" data-tab="docs" onclick="switchMainTab('docs')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="nav-tip">문서 산출물</span>
+    </div>
+    <div class="main-tab" data-tab="cxop" onclick="switchMainTab('cxop')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
+      <span class="nav-tip">CX/OP · 설치/커미셔닝/시운전</span>
+    </div>
+  </div>
+</aside>
+
+<div class="content">
+
+<!-- ================================================================
+     TOPBAR
+     ================================================================ -->
+<header class="topbar">
   <div class="logo">AVIKUS <span class="logo-sub">부산사무소 ERP</span></div>
-  <div class="db-status">
+  <div class="db-status" style="margin-left:8px;">
     <div class="db-dot" id="db-dot"></div>
     <span id="db-status-text">localStorage DB</span>
   </div>
-  <div class="header-badge">v2.0</div>
-  <div onclick="promptUserName()" title="클릭하여 이름 설정"
-       style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:4px 10px;border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);transition:border-color .2s;margin-left:4px;"
-       onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
-    <span>👤</span>
-    <span id="header-user-name">이름 설정</span>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+    <span id="topbar-clock" style="font-size:11px;color:var(--text3);"></span>
+    <div class="header-badge" style="margin-left:0;">v2.0</div>
+    <div onclick="promptUserName()" title="클릭하여 이름 설정"
+         style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:4px 10px;border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);transition:border-color .2s;"
+         onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+      <span>👤</span>
+      <span id="header-user-name">이름 설정</span>
+    </div>
   </div>
-  <button id="theme-toggle" onclick="toggleTheme()"
-          style="background:none;border:1px solid var(--border2);border-radius:20px;color:var(--text2);padding:4px 14px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s;margin-left:4px;">
-    ☀ 라이트 모드
-  </button>
-</div>
-
-<!-- ================================================================
-     MAIN TABS (설계 / SCM / QC)
-     ================================================================ -->
-<div class="main-tabs">
-  <div class="main-tab active" data-tab="design" onclick="switchMainTab('design')">
-    <span class="main-tab-badge design-badge">설계</span>
-    호선 · BOM · 특이사항
-  </div>
-  <div class="main-tab" data-tab="scm" onclick="switchMainTab('scm')">
-    <span class="main-tab-badge scm-badge">SCM</span>
-    구매 · 입고 · 발주 · 출고
-  </div>
-  <div class="main-tab" data-tab="inventory" onclick="switchMainTab('inventory')">
-    <span class="main-tab-badge scm-badge">재고</span>
-    재고 현황
-  </div>
-  <div class="main-tab" data-tab="inspection" onclick="switchMainTab('inspection')">
-    <span class="main-tab-badge insp-badge">검사</span>
-    검사요청 관리
-  </div>
-  <div class="main-tab" data-tab="qc" onclick="switchMainTab('qc')">
-    <span class="main-tab-badge qc-badge">QC</span>
-    FAT 관리
-  </div>
-  <div class="main-tab" data-tab="docs" onclick="switchMainTab('docs')">
-    <span class="main-tab-badge qc-badge">문서</span>
-    문서 산출물
-  </div>
-</div>
+</header>
 
 <!-- ================================================================
      MAIN SECTION: 설계 (호선 · BOM · 특이사항)
@@ -141,8 +151,23 @@
           </div>
         </div>
 
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>선종</label>
+            <input id="vessel-ship-type" placeholder="Container / LNGC ...">
+          </div>
+          <div class="form-group">
+            <label>OWNER</label>
+            <input id="vessel-owner" placeholder="HMM">
+          </div>
+          <div class="form-group">
+            <label>FLAG</label>
+            <input id="vessel-flag" placeholder="PANAMA / KOREA ...">
+          </div>
+        </div>
+
         <div class="form-group" style="margin-bottom:14px;">
-          <label>선급 <span style="font-size:10px;color:var(--text3);">(복수 선택 가능 — 없으면 미체크)</span></label>
+          <label>선급 (CLASS) <span style="font-size:10px;color:var(--text3);">(복수 선택 가능 — 없으면 미체크)</span></label>
           <div class="class-checkbox-group">
             <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="KR"> KR</label>
             <label class="class-checkbox-item"><input type="checkbox" name="vessel-class" value="BV"> BV</label>
@@ -292,35 +317,11 @@
 
   </div><!-- /design-main -->
 
-  <!-- ── 안전재고 현황 탭 ── -->
+  <!-- ── 안전재고 현황 탭 (제품별 집계 — 품목 클릭 시 호선별 필요 내역 드릴다운) ── -->
   <div class="design-section" id="design-safety">
 
-    <div style="display:flex;gap:6px;margin-bottom:10px;">
-      <button class="btn btn-accent btn-sm" id="btn-safety-view-vessel" onclick="switchSafetyView('vessel')">호선별 보기</button>
-      <button class="btn btn-outline btn-sm" id="btn-safety-view-item" onclick="switchSafetyView('item')">제품별 보기</button>
-    </div>
-
-    <!-- 호선별 보기 (기존: 호선 × 품목 행 단위) -->
-    <div id="safety-view-vessel">
-      <div class="card">
-        <div class="card-title purple">안전재고 현황 — 선박별 필요 vs 현재 재고</div>
-        <div class="db-wrap">
-          <table class="db-table">
-            <thead>
-              <tr>
-                <th>유형</th><th>호선명</th><th>품목 코드</th><th>품목명</th>
-                <th style="text-align:center;">필요</th><th style="text-align:center;">현재 재고</th>
-                <th style="text-align:center;">부족</th><th style="text-align:center;">상태</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="tbl-safety"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
     <!-- 제품별 보기 (품목 단위 집계 + 호선별 드릴다운) -->
-    <div id="safety-view-item" style="display:none;">
+    <div id="safety-view-item">
       <div class="card">
         <div class="card-title purple">안전재고 현황 — 제품별 집계 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">품목을 클릭하면 호선별 필요 내역을 확인할 수 있습니다</span></div>
         <div class="db-wrap">
@@ -358,7 +359,18 @@
   <!-- ── 호선 목록 탭 ── -->
   <div class="design-section" id="design-vessels">
     <div class="card">
-      <div class="card-title purple">등록된 호선 목록</div>
+      <div class="card-title purple">등록된 호선 목록 <span id="vessel-list-count" style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;"></span></div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+        <input id="vessel-search" oninput="refreshVesselList()" placeholder="🔍 호선명·선급·선종·OWNER·FLAG·호선코드 검색"
+               style="flex:1;min-width:240px;background:var(--input-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm vessel-filter-btn active btn-accent" data-vf="all"      onclick="filterVesselList('all')">전체</button>
+          <button class="btn btn-sm vessel-filter-btn btn-outline"      data-vf="newbuild" onclick="filterVesselList('newbuild')">신조</button>
+          <button class="btn btn-sm vessel-filter-btn btn-outline"      data-vf="retrofit" onclick="filterVesselList('retrofit')">개조</button>
+        </div>
+      </div>
+
       <div class="db-wrap">
         <table class="db-table">
           <thead>
@@ -445,6 +457,93 @@
       <li>☑ 새 모델을 추가했다면 L·M·N열에 완제품코드 매핑도 추가했나요?</li>
       <li>☑ 저장 후 <b>같은 파일을 [BOM 엑셀 업로드]에서 다시 선택</b>했나요?</li>
     </ul>
+  </div>
+</div>
+
+<!-- 호선 BOM 확인·수정 모달 (호선 목록에서 호선명/수정 클릭 시) -->
+<div class="modal-bg" id="vessel-bom-modal">
+  <div class="modal" style="max-width:640px;max-height:88vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span id="vessel-bom-modal-title">호선 BOM 품목</span>
+      <button class="modal-close" onclick="document.getElementById('vessel-bom-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="vessel-bom-modal-vessel-id">
+    <div class="notice notice-purple" style="font-size:11px;margin-bottom:10px;">
+      이 호선에 등록된 BOM(필요 장비) 품목입니다. 수정·추가·삭제 후 <b>[저장]</b>을 클릭하면 호선 BOM이 갱신되고 안전재고에 반영됩니다.
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+      <button class="btn btn-outline btn-sm" onclick="addVesselBOMEditRow()">+ 행 추가</button>
+    </div>
+    <div id="vessel-bom-edit-rows"></div>
+    <div class="btn-row" style="justify-content:flex-end;margin-top:14px;">
+      <button class="btn btn-outline" onclick="document.getElementById('vessel-bom-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-purple" onclick="saveVesselBOMEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 호선 정보 수정 모달 -->
+<div class="modal-bg" id="vessel-edit-modal">
+  <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span id="vessel-edit-title">호선 정보 수정</span>
+      <button class="modal-close" onclick="document.getElementById('vessel-edit-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="vessel-edit-id">
+
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>선박 유형</label>
+      <div class="vessel-type-toggle">
+        <input type="radio" name="ve-type" id="ve-type-newbuild" value="newbuild" checked onchange="onVesselEditTypeChange()">
+        <label for="ve-type-newbuild">신조선박</label>
+        <input type="radio" name="ve-type" id="ve-type-retrofit" value="retrofit" onchange="onVesselEditTypeChange()">
+        <label for="ve-type-retrofit">개조선박</label>
+      </div>
+    </div>
+
+    <div id="ve-company-wrap" style="display:none;margin-bottom:10px;">
+      <div class="form-group"><label>선사</label><input id="ve-company" placeholder="HMM"></div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group"><label>호선명</label><input id="ve-name"></div>
+      <div class="form-group"><label>계약일</label><input type="date" id="ve-date"></div>
+      <div class="form-group"><label>납품 예정일</label><input type="date" id="ve-delivery"></div>
+    </div>
+
+    <div class="form-grid-3">
+      <div class="form-group"><label>선종</label><input id="ve-ship-type"></div>
+      <div class="form-group"><label>OWNER</label><input id="ve-owner"></div>
+      <div class="form-group"><label>FLAG</label><input id="ve-flag"></div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>선급 (CLASS)</label>
+      <div class="class-checkbox-group">
+        <label class="class-checkbox-item"><input type="checkbox" name="ve-class" value="KR"> KR</label>
+        <label class="class-checkbox-item"><input type="checkbox" name="ve-class" value="BV"> BV</label>
+        <label class="class-checkbox-item"><input type="checkbox" name="ve-class" value="DNV"> DNV</label>
+        <label class="class-checkbox-item"><input type="checkbox" name="ve-class" value="ABS"> ABS</label>
+        <label class="class-checkbox-item"><input type="checkbox" name="ve-class" value="LR"> LR</label>
+        <label class="class-checkbox-item"><input type="checkbox" name="ve-class" value="NK"> NK</label>
+      </div>
+    </div>
+
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('vessel-edit-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-purple" onclick="saveVesselEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 호선 상세 보기 모달 (360 뷰) -->
+<div class="modal-bg" id="vessel-detail-modal">
+  <div class="modal" style="max-width:720px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span id="vessel-detail-title">호선 상세</span>
+      <button class="modal-close" onclick="document.getElementById('vessel-detail-modal').classList.remove('show')">×</button>
+    </div>
+    <div id="vessel-detail-body"></div>
   </div>
 </div>
 
@@ -971,11 +1070,14 @@
   </div>
 
   <div class="stats-row" id="inventory-stats">
-    <div class="stat-card"><div class="stat-label">전체 품목 필요 재고</div> <div class="stat-val accent" id="stat-inv-required">0</div></div>
-    <div class="stat-card"><div class="stat-label">부족 재고</div>          <div class="stat-val warn"   id="stat-inv-shortage">0</div></div>
-    <div class="stat-card"><div class="stat-label">현재 재고</div>          <div class="stat-val"        id="stat-inv-stock">0</div></div>
+    <div class="stat-card"><div class="stat-label">재고 보유 품목 종류</div> <div class="stat-val accent" id="stat-inv-types">0</div></div>
+    <div class="stat-card" style="cursor:pointer;" onclick="openShortageModal()" title="클릭 시 부족 품목 상세"><div class="stat-label">부족 품목 ▸</div> <div class="stat-val warn"   id="stat-inv-shortitems">0</div></div>
+    <div class="stat-card"><div class="stat-label">현재 재고 수량</div>      <div class="stat-val"        id="stat-inv-stock">0</div></div>
     <div class="stat-card"><div class="stat-label">검사요청</div>           <div class="stat-val blue"   id="stat-inv-insp">0</div></div>
   </div>
+
+  <!-- 부족 품목 빠른 확인 스트립 -->
+  <div id="inventory-shortage-strip" style="margin-bottom:12px;"></div>
 
   <!-- ── 제품별 뷰 ── -->
   <div id="inventory-product-view">
@@ -1204,16 +1306,83 @@
      MAIN SECTION: QC (FAT 관리)
      ================================================================ -->
 <div class="main-section" id="main-qc">
+<div class="sub-tabs-bar">
+  <div class="sub-tabs">
+    <div class="sub-tab active" onclick="switchQcTab('fat')"><span class="tab-phase tp-0">FAT</span> FAT 진행 현황</div>
+    <div class="sub-tab" onclick="switchQcTab('ref')"><span class="tab-phase tp-0">문서</span> 선급별 참고문서</div>
+    <div class="sub-tab" onclick="switchQcTab('med')"><span class="tab-phase tp-0">MED</span> MED 인증서</div>
+  </div>
+</div>
 <div class="main">
 
-  <div style="text-align:center; padding:60px 40px; color:var(--text2);">
-    <div style="font-size:52px; margin-bottom:16px; opacity:.25;">🔍</div>
-    <div style="font-size:20px; font-weight:700; margin-bottom:8px; color:var(--text);">QC — FAT 관리</div>
-    <div style="font-size:13px; margin-bottom:12px;">기획 완료 · 개발 예정</div>
-    <div style="font-size:12px; color:var(--text3); max-width:460px; margin:0 auto; line-height:1.9;">
-      선급(KR, BV, DNV 등)이 입력된 호선의 FAT 대상 자동 추출<br>
-      출고 예정일 기반 기한 임박 알림<br>
-      FAT 완료 처리 및 결과 문서(PDF) 첨부
+  <!-- ── FAT 진행 현황 ── -->
+  <div class="qc-section" id="qc-fat">
+
+    <div class="notice notice-amber" style="font-size:11px;">
+      <strong>FAT 대상:</strong> 선급 <strong>DNV·ABS</strong>가 지정된 호선이 자동 추출됩니다.
+      SCM 가능기간(BOM 충족률 참고) → QC FAT일·검사신청 → 진행·완료 순으로 관리하며,
+      선급 코멘트(지적사항)는 코드(ELEC-XXXX)·상태별로 구조화 기록되어 <strong>완료율이 자동 산출</strong>됩니다.
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">FAT 대상</div>  <div class="stat-val accent" id="fat-stat-target">0</div></div>
+      <div class="stat-card"><div class="stat-label">검사신청</div>  <div class="stat-val"        id="fat-stat-applied">0</div></div>
+      <div class="stat-card"><div class="stat-label">검사진행</div>  <div class="stat-val warn"   id="fat-stat-progress">0</div></div>
+      <div class="stat-card"><div class="stat-label">완료</div>      <div class="stat-val blue"   id="fat-stat-complete">0</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">FAT 대상·진행 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">행 클릭 시 상세·히스토리</span></div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>호선</th><th>선급</th><th>납품예정일</th><th>BOM 충족률</th><th>SCM 가능기간</th><th>QC FAT일</th><th>코멘트 완료율</th><th>상태</th><th></th>
+          </tr></thead>
+          <tbody id="tbl-fat"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="fat-detail-card" style="display:none;">
+      <div class="card-title" style="flex-wrap:wrap;">
+        <span id="fat-detail-title">FAT 상세</span>
+        <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="closeFatDetail()">← 목록으로</button>
+      </div>
+      <div id="fat-detail-body"></div>
+    </div>
+
+  </div><!-- /qc-fat -->
+
+  <!-- ── 선급별 참고문서 ── -->
+  <div class="qc-section" id="qc-ref" style="display:none;">
+    <div class="notice notice-blue" style="font-size:11px;">
+      <strong>선급별 참고문서:</strong> 선급(DNV·ABS)별 FAT/OBT 프로세스·신청양식을 첨부해 두면 누구나 열람할 수 있습니다.
+      (선급마다 산출물·양식이 다르므로 선급별로 구분 보관)
+    </div>
+    <div class="card">
+      <div class="card-title">선급별 FAT 참고문서</div>
+      <div id="fat-ref-list"></div>
+    </div>
+  </div>
+
+  <!-- ── MED 인증서 발급 현황 ── -->
+  <div class="qc-section" id="qc-med" style="display:none;">
+    <div class="notice notice-blue" style="font-size:11px;">
+      <strong>MED 인증서:</strong> MEDF/MEDB 인증서 발급 현황(Audit·OBT/FAT·발급상태)을 관리합니다. 표가 넓으면 좌우로 스크롤하세요.
+    </div>
+    <div class="card">
+      <div class="card-title" style="flex-wrap:wrap;">
+        <span>MED 인증서 발급 현황</span>
+        <button class="btn btn-accent btn-sm" style="margin-left:auto;" onclick="openMedModal()">+ 행 추가</button>
+      </div>
+      <div class="db-wrap">
+        <table class="db-table" style="white-space:nowrap;">
+          <thead><tr>
+            <th>No</th><th>Cert No.</th><th>MEDF(new)</th><th>S/N</th><th>Audit</th><th>OBT/FAT</th><th>MEDF</th><th>호선</th><th>Yard</th><th>D/L</th><th></th>
+          </tr></thead>
+          <tbody id="tbl-med"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -1230,8 +1399,8 @@
 
   <div class="notice notice-amber">
     <strong>호선별 문서 허브:</strong> 출고된 제품의 호선을 클릭하면 해당 호선과 관련된 모든 문서를 확인할 수 있습니다.
-    Incoming Report·검사성적서·COC·거래명세서는 입고/출고 처리 시 자동으로 연결되며,
-    FAT·SW 설치 문서 등 추가 서류는 호선 상세 화면에서 직접 첨부합니다.
+    팀별 산출 문서 — <strong>SCM</strong>: Incoming Report·검사성적서·COC·거래명세서(입고/출고 시 자동 연결),
+    <strong>QC</strong>: FAT 문서, <strong>SW</strong>: SW Installation Report (호선 상세 화면에서 직접 첨부).
   </div>
 
   <!-- 호선 목록 뷰 -->
@@ -1249,25 +1418,76 @@
         <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="closeVesselDocHub()">← 목록으로</button>
       </div>
 
-      <!-- 자동 집계 문서 -->
-      <div style="margin-bottom:4px;">
-        <div style="font-size:11px;font-weight:700;color:var(--text2);padding:4px 0 10px;">자동 집계 문서 — Incoming Report · 검사성적서 · COC · 거래명세서</div>
-        <div id="docs-auto-section"></div>
+      <!-- SCM 문서 (PO 기준 자동 연결) -->
+      <div style="margin-bottom:22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <span style="font-size:12px;font-weight:800;color:var(--accent);">SCM 문서</span>
+          <span style="font-size:11px;color:var(--text3);">발행 PO 기준 자동 연결 — 입고 건별 Incoming Report · 검사성적서 · COC · 거래명세서 (미비 서류는 빨간색)</span>
+        </div>
+        <div id="docs-scm-section"></div>
       </div>
 
-      <!-- 추가 첨부 문서 -->
-      <div style="margin-top:20px;">
+      <!-- QC 문서 (FAT) -->
+      <div style="margin-bottom:22px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-          <div style="font-size:11px;font-weight:700;color:var(--text2);">추가 첨부 문서 — FAT · SW 설치 · 기타</div>
-          <button class="btn btn-accent btn-sm" onclick="openVesselDocModal()">+ 문서 추가</button>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:12px;font-weight:800;color:var(--accent);">QC 문서</span>
+            <span style="font-size:11px;color:var(--text3);">FAT 문서</span>
+          </div>
+          <button class="btn btn-accent btn-sm" onclick="openVesselDocModal('FAT')">+ FAT 문서 추가</button>
         </div>
-        <div id="docs-manual-section"></div>
+        <div id="docs-qc-section"></div>
+      </div>
+
+      <!-- SW 문서 (SW Installation Report) -->
+      <div style="margin-bottom:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:12px;font-weight:800;color:var(--accent);">SW 문서</span>
+            <span style="font-size:11px;color:var(--text3);">SW Installation Report</span>
+          </div>
+          <button class="btn btn-accent btn-sm" onclick="openVesselDocModal('SW_INSTALL')">+ SW 문서 추가</button>
+        </div>
+        <div id="docs-sw-section"></div>
       </div>
     </div>
   </div>
 
 </div><!-- /main (문서 산출물) -->
 </div><!-- /main-docs -->
+
+
+<!-- ================================================================
+     MAIN SECTION: CX/OP (호선 중심 설치·계약·커미셔닝·시운전 정보)
+     JS 로직: js/phase-cxop.js
+     ================================================================ -->
+<div class="main-section" id="main-cxop">
+<div class="main">
+
+  <div class="notice notice-amber" style="font-size:11px;">
+    <strong>CX/OP 호선 정보:</strong> 호선 중심으로 설치·계약·커미셔닝·시운전 정보를 한눈에 조회합니다.
+    호선은 <strong>[설계]</strong> 탭에서 등록되며(단일 호선 마스터 공유), 각 행의 <strong>[입력/수정]</strong> 버튼으로 CX/OP 항목을 기입합니다.
+  </div>
+
+  <div class="card">
+    <div class="card-title">호선별 CX/OP 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">표가 넓으면 좌우로 스크롤하세요</span></div>
+    <div class="db-wrap">
+      <table class="db-table" style="white-space:nowrap;">
+        <thead>
+          <tr>
+            <th>호선</th><th>구분</th><th>YARD</th><th>공급제품</th><th>선종</th><th>CLASS</th><th>OWNER</th>
+            <th>공사비용</th><th>D/L</th><th>실제 인도일</th><th>Series</th>
+            <th>시운전 시작</th><th>시운전 종료</th><th>커미셔닝 시작</th><th>커미셔닝 종료</th><th>REMARK</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tbl-cxop"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main (CX/OP) -->
+</div><!-- /main-cxop -->
+
 
 <!-- ================================================================
      MODAL: QR 인식 결과
@@ -1441,16 +1661,16 @@
 <div class="modal-bg" id="vessel-doc-modal">
   <div class="modal" style="max-width:480px;">
     <div class="modal-title">
-      <span>문서 추가</span>
+      <span id="vessel-doc-modal-title">문서 추가</span>
       <button class="modal-close" onclick="document.getElementById('vessel-doc-modal').classList.remove('show')">×</button>
     </div>
     <input type="hidden" id="vessel-doc-modal-vessel-id">
 
-    <div class="form-group">
+    <div class="form-group" id="vessel-doc-type-row">
       <label>문서 종류</label>
       <select id="vessel-doc-type">
         <option value="FAT">FAT 문서</option>
-        <option value="SW_INSTALL">SW 설치 문서</option>
+        <option value="SW_INSTALL">SW Installation Report</option>
         <option value="ETC">기타 문서</option>
       </select>
     </div>
@@ -1481,8 +1701,191 @@
   </div>
 </div>
 
+<!-- 부족 품목 상세 모달 (재고 탭 상단 [상세 보기] / 부족 품목 카드 클릭) -->
+<div class="modal-bg" id="inventory-shortage-modal">
+  <div class="modal" style="max-width:680px;max-height:88vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span id="inventory-shortage-modal-title">부족 품목 상세</span>
+      <button class="modal-close" onclick="document.getElementById('inventory-shortage-modal').classList.remove('show')">×</button>
+    </div>
+    <div class="notice notice-amber" style="font-size:11px;margin-bottom:10px;">
+      BOM 필요수량 대비 현재 재고가 부족한 품목입니다. 행을 클릭하면 해당 품목 S/N 상세로 이동합니다.
+    </div>
+    <div class="db-wrap">
+      <table class="db-table">
+        <thead><tr>
+          <th>품목명</th><th>품목 코드</th>
+          <th style="text-align:center;">현재 재고</th><th style="text-align:center;">필요</th><th style="text-align:center;">부족</th>
+        </tr></thead>
+        <tbody id="tbl-inv-shortage"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CX/OP 정보 입력 모달 -->
+<div class="modal-bg" id="cxop-modal">
+  <div class="modal" style="max-width:660px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span id="cxop-modal-title">CX/OP 정보 입력</span>
+      <button class="modal-close" onclick="document.getElementById('cxop-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="cxop-modal-vessel-id">
+    <div id="cxop-modal-sub" style="font-size:11px;color:var(--text3);margin-bottom:12px;"></div>
+
+    <div class="form-grid-3">
+      <div class="form-group"><label>선종</label><input id="cxop-ship-type" placeholder="Container / LNGC ..."></div>
+      <div class="form-group"><label>OWNER</label><input id="cxop-owner" placeholder="HMM"></div>
+      <div class="form-group"><label>YARD</label><input id="cxop-yard" placeholder="HD현대중공업 ..."></div>
+      <div class="form-group"><label>공급제품</label><input id="cxop-supply-product" placeholder="HiNAS Control ..."></div>
+      <div class="form-group"><label>공사비용</label><input id="cxop-cost" placeholder="예: 120,000,000"></div>
+      <div class="form-group"><label>Series 호선번호</label><input id="cxop-series" placeholder="예: 3445"></div>
+      <div class="form-group"><label>D/L (계약일)</label><input id="cxop-dl" type="date"></div>
+      <div class="form-group"><label>실제 인도일</label><input id="cxop-actual-delivery" type="date"></div>
+      <div class="form-group"><label>커미셔닝 시작</label><input id="cxop-commission-start" type="date"></div>
+      <div class="form-group"><label>커미셔닝 종료</label><input id="cxop-commission-end" type="date"></div>
+      <div class="form-group"><label>시운전 시작</label><input id="cxop-seatrial-start" type="date"></div>
+      <div class="form-group"><label>시운전 종료</label><input id="cxop-seatrial-end" type="date"></div>
+    </div>
+
+    <div class="form-group" style="margin-top:6px;">
+      <label>REMARK</label>
+      <input id="cxop-remark" placeholder="비고">
+    </div>
+
+    <div class="btn-row" style="justify-content:flex-end;margin-top:10px;">
+      <button class="btn btn-outline" onclick="document.getElementById('cxop-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-success" onclick="saveCxop()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 선급별 FAT 참고문서 추가 모달 -->
+<div class="modal-bg" id="fat-ref-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">
+      <span id="fat-ref-modal-title">선급 참고문서 추가</span>
+      <button class="modal-close" onclick="document.getElementById('fat-ref-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="fat-ref-modal-class">
+    <div class="form-group">
+      <label>문서 제목</label>
+      <input id="fat-ref-title" placeholder="예: DNV FAT 신청 양식 / OBT 프로세스">
+    </div>
+    <div class="form-group">
+      <label>파일 첨부 <span style="font-size:10px;color:var(--text3);">(PDF·이미지·문서 — 5MB 이하)</span></label>
+      <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--input-bg);border:1px dashed var(--border2);border-radius:8px;cursor:pointer;">
+        <input type="file" accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx" onchange="onFatRefFileChange(this)" style="display:none;">
+        <span style="font-size:18px;">📎</span>
+        <span id="fat-ref-file-label" style="font-size:12px;color:var(--text2);">파일을 선택하세요</span>
+      </label>
+    </div>
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('fat-ref-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-success" onclick="saveFatRefDoc()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAT 선급 코멘트 추가/수정 모달 -->
+<div class="modal-bg" id="fat-comment-modal">
+  <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span id="fat-comment-modal-title">코멘트 추가</span>
+      <button class="modal-close" onclick="document.getElementById('fat-comment-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="fat-comment-edit-id">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>코드 (ELEC-XXXX)</label>
+        <input id="fat-comment-code" list="fat-code-list" placeholder="코드 선택/입력" oninput="onFatCommentCodeChange()">
+        <datalist id="fat-code-list"></datalist>
+      </div>
+      <div class="form-group"><label>카테고리</label><select id="fat-comment-category"></select></div>
+    </div>
+    <div class="form-group">
+      <label>코멘트 내용 *</label>
+      <input id="fat-comment-content" placeholder="예: S/T or OBT Surveyor 참석">
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>상태</label><select id="fat-comment-status"></select></div>
+      <div class="form-group"><label>담당자</label><input id="fat-comment-assignee"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>등록일</label><input type="date" id="fat-comment-reg"></div>
+      <div class="form-group"><label>완료일</label><input type="date" id="fat-comment-done"></div>
+    </div>
+    <div class="form-group"><label>비고</label><input id="fat-comment-note"></div>
+    <div class="form-group">
+      <label>산출물 첨부 <span style="font-size:10px;color:var(--text3);">(선택, 5MB 이하)</span></label>
+      <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--input-bg);border:1px dashed var(--border2);border-radius:8px;cursor:pointer;">
+        <input type="file" accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx" onchange="onFatCommentFile(this)" style="display:none;">
+        <span style="font-size:18px;">📎</span>
+        <span id="fat-comment-file-label" style="font-size:12px;color:var(--text2);">산출물 첨부 (선택)</span>
+      </label>
+    </div>
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('fat-comment-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-success" onclick="saveFatComment()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAT 코멘트 코드 마스터 모달 -->
+<div class="modal-bg" id="fat-code-modal">
+  <div class="modal" style="max-width:620px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span>코멘트 코드 마스터 (ELEC-XXXX)</span>
+      <button class="modal-close" onclick="document.getElementById('fat-code-modal').classList.remove('show')">×</button>
+    </div>
+    <div class="notice notice-blue" style="font-size:11px;margin-bottom:10px;">반복되는 선급 코멘트를 코드로 등록해두면, 코멘트 추가 시 코드 선택만으로 내용·카테고리가 자동완성됩니다.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;">
+      <div class="form-group" style="flex:0 0 120px;"><label>코드</label><input id="fat-code-new-code" placeholder="ELEC-0119"></div>
+      <div class="form-group" style="flex:1;min-width:180px;"><label>내용</label><input id="fat-code-new-content" placeholder="S/T or OBT Surveyor 참석"></div>
+      <div class="form-group" style="flex:0 0 130px;"><label>카테고리</label>
+        <select id="fat-code-new-category"><option>Technical</option><option>Surveyor</option></select></div>
+      <button class="btn btn-accent btn-sm" onclick="addFatCode()" style="height:36px;">추가</button>
+    </div>
+    <div id="fat-code-list-body"></div>
+  </div>
+</div>
+
+<!-- MED 인증서 추가/수정 모달 -->
+<div class="modal-bg" id="med-modal">
+  <div class="modal" style="max-width:680px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-title">
+      <span id="med-modal-title">MED 인증서 추가</span>
+      <button class="modal-close" onclick="document.getElementById('med-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="med-modal-id">
+    <div class="form-grid-3">
+      <div class="form-group"><label>No</label><input id="med-no"></div>
+      <div class="form-group"><label>Order(old)</label><input id="med-order_old"></div>
+      <div class="form-group"><label>Cert. No.</label><input id="med-cert_no"></div>
+      <div class="form-group"><label>Order(new)</label><input id="med-order_new"></div>
+      <div class="form-group"><label>MEDF Cert.(new)</label><input id="med-medf_cert_new"></div>
+      <div class="form-group"><label>S/N</label><input id="med-sn"></div>
+      <div class="form-group"><label>Audit</label><input id="med-audit" placeholder="날짜/FAT/OBT"></div>
+      <div class="form-group"><label>OBT/FAT</label><input id="med-obt_fat" placeholder="날짜/FAT/OBT"></div>
+      <div class="form-group"><label>MEDF 상태</label><input id="med-medf_status" placeholder="Waiting(HO)/Draft/날짜"></div>
+      <div class="form-group"><label>호선(Hull No)</label><input id="med-hull_no"></div>
+      <div class="form-group"><label>Yard</label><input id="med-shipyard"></div>
+      <div class="form-group"><label>D/L of vessel</label><input id="med-dl_vessel"></div>
+      <div class="form-group"><label>MEDB Cert No.</label><input id="med-medb_cert_no"></div>
+      <div class="form-group"><label>비고</label><input id="med-remark"></div>
+    </div>
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('med-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-success" onclick="saveMed()">저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- 알림 토스트 -->
 <div class="notif" id="notif"></div>
+
+</div><!-- /content -->
+</div><!-- /layout -->
 
 <!-- ================================================================
      JS 로딩 순서 (의존성 순서 엄수)
@@ -1497,6 +1900,8 @@
 <script src="js/phase4.js"></script>
 <script src="js/phase5.js"></script>
 <script src="js/phase-inspection.js"></script>
+<script src="js/phase-cxop.js"></script>
+<script src="js/phase-fat.js"></script>
 <script src="js/app.js"></script>
 
 <!-- ================================================================
