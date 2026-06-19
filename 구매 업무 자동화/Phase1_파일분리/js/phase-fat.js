@@ -52,7 +52,7 @@ function _fatBomCoverage(vesselId) {
 function _fatCoverageHTML(vesselId) {
   var c = _fatBomCoverage(vesselId);
   if (c.pct === null) return '<span style="color:var(--text3);">BOM 미등록</span>';
-  var color = c.pct >= 100 ? 'var(--success)' : c.pct >= 70 ? 'var(--warn)' : '#f87171';
+  var color = c.pct >= 100 ? 'var(--success)' : c.pct >= 70 ? 'var(--warn)' : 'var(--danger)';
   return '<span style="color:' + color + ';font-weight:600;">' + c.okItems + '/' + c.items + ' (' + c.pct + '%)</span>';
 }
 
@@ -77,7 +77,7 @@ function _fatCommentProgress(fatId) {
 function _fatProgressHTML(fatId) {
   var p = _fatCommentProgress(fatId);
   if (p.total === 0) return '<span style="color:var(--text3);">-</span>';
-  var color = p.pct >= 100 ? 'var(--success)' : p.pct >= 50 ? 'var(--warn)' : '#f87171';
+  var color = p.pct >= 100 ? 'var(--success)' : p.pct >= 50 ? 'var(--warn)' : 'var(--danger)';
   return '<span style="color:' + color + ';font-weight:600;">' + p.done + '/' + p.total + ' (' + p.pct + '%)</span>';
 }
 
@@ -183,7 +183,7 @@ function _renderFatDetail() {
       + '<span class="badge ' + info.cls + '">' + info.label + '</span>';
   }
   var body = document.getElementById('fat-detail-body'); if (!body) return;
-  var box = 'padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:12px;background:rgba(255,255,255,.02);';
+  var box = 'padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:12px;background:#f3f5f9;';
   var lab = 'font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;';
   var inp = 'background:var(--input-bg);border:1px solid var(--border2);border-radius:7px;padding:7px 10px;color:var(--text);font-size:12px;';
   var fld = function(label, id, val, w){ return '<div style="display:flex;flex-direction:column;gap:3px;">'
@@ -249,7 +249,7 @@ function _renderFatDetail() {
           + '<td class="mono" style="font-size:11px;">' + (c.code || '-') + '</td>'
           + '<td>' + (c.content || '') + '</td>'
           + '<td style="font-size:11px;color:var(--text3);">' + (c.category || '') + '</td>'
-          + '<td><span class="badge" style="background:rgba(255,255,255,.06);color:' + (stColor[c.status] || 'var(--text2)') + ';">' + (c.status || '') + '</span></td>'
+          + '<td><span class="badge" style="background:#f3f5f9;color:' + (stColor[c.status] || 'var(--text2)') + ';">' + (c.status || '') + '</span></td>'
           + '<td>' + (c.assignee || '-') + '</td>'
           + '<td style="font-size:11px;">' + (c.reg_date || '-') + '</td>'
           + '<td style="font-size:11px;">' + (c.done_date || '-') + '</td>'
@@ -455,7 +455,7 @@ function refreshFatRefDocs() {
     var items = docs.length === 0
       ? '<div class="empty-state" style="padding:10px;">등록된 참고문서가 없습니다.</div>'
       : docs.slice().reverse().map(function(d) {
-          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:7px;background:rgba(255,255,255,.02);gap:8px;flex-wrap:wrap;">'
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:7px;background:#f3f5f9;gap:8px;flex-wrap:wrap;">'
             + '<div><strong style="font-size:12px;">' + (d.doc_title || d.file_name) + '</strong>'
             +   '<div style="font-size:10px;color:var(--text3);margin-top:3px;">' + (d.file_name || '') + ' · ' + (d.uploaded_by || '-') + ' · ' + (d.uploaded_at || '-') + '</div></div>'
             + '<div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="viewFatRefDoc(\'' + d.ref_id + '\')">보기</button>'

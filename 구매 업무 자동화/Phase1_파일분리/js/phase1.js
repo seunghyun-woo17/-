@@ -252,6 +252,59 @@ function refreshPOList() {
   }
 }
 
+/* ══════════════════════════════════════════════════════════
+   발행된 PO 목록 (전체 · 검색 + 페이지네이션) — [발행된 PO] 탭
+   ══════════════════════════════════════════════════════════ */
+function refreshPoListTab() {
+  var tbody   = document.getElementById('tbl-po-all');
+  if (!tbody) return;
+  var pagerEl = document.getElementById('pager-po-all');
+  var countEl = document.getElementById('po-all-count');
+
+  if (DB.po_header.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">발행된 PO가 없습니다.</td></tr>';
+    if (pagerEl) pagerEl.innerHTML = '';
+    if (countEl) countEl.textContent = '';
+    return;
+  }
+
+  var term = ((document.getElementById('po-all-search') || {}).value || '').trim().toLowerCase();
+  var list = DB.po_header.slice().reverse().filter(function(p) {
+    if (!term) return true;
+    var hay = [p.po_ref_no, p.supplier_code, p.supplier_name, p.vessel_name, p.vessel_code, p.status]
+      .filter(Boolean).join(' ').toLowerCase();
+    return hay.indexOf(term) !== -1;
+  });
+
+  if (countEl) countEl.textContent = list.length + ' / ' + DB.po_header.length + '건';
+
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">검색 조건에 맞는 PO가 없습니다.</td></tr>';
+    if (pagerEl) pagerEl.innerHTML = '';
+    return;
+  }
+
+  var info = paginate(list, 'po-all');
+  tbody.innerHTML = info.slice.map(function(p) {
+    var lines = DB.po_line.filter(function(l){ return l.po_id === p.po_id; });
+    var badge = p.status === 'OPEN' ? 'badge-open' : p.status === 'PARTIAL' ? 'badge-partial' : p.status === 'COMPLETE' ? 'badge-complete' : 'badge-cancel';
+    return '<tr>'
+      + '<td><strong>' + p.po_ref_no + '</strong></td>'
+      + '<td>' + p.issue_date + '</td>'
+      + '<td>' + p.due_date + '</td>'
+      + '<td>' + p.supplier_code + '</td>'
+      + '<td>' + (p.vessel_name || p.vessel_code || '-') + '</td>'
+      + '<td style="text-align:center;">' + lines.length + '건</td>'
+      + '<td><span class="badge ' + badge + '">' + p.status + '</span></td>'
+      + '<td style="text-align:right;white-space:nowrap;">'
+      +   '<button class="btn btn-outline btn-sm" onclick="showPODocument(\'' + p.po_id + '\')">PO 보기</button> '
+      +   '<button class="btn btn-outline btn-sm" onclick="showPOQR(\'' + p.po_id + '\')">QR 보기</button>'
+      + '</td>'
+      + '</tr>';
+  }).join('');
+  if (pagerEl) pagerEl.innerHTML = buildPager('po-all', info, 'refreshPoListTab');
+}
+
 /* ── PO 문서 보기 ── */
 function showPODocument(poId) {
   var po    = DB.po_header.find(function(p){ return p.po_id === poId; });

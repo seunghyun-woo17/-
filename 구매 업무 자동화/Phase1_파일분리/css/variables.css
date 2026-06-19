@@ -1,36 +1,65 @@
 /* ============================================================
    variables.css
-   역할: CSS 변수(:root), 다크/라이트 모드 테마, 전역 reset, body
-   수정 시: 색상·폰트·테마 토큰만 여기서 관리
+   역할: CSS 변수(:root), 라이트 테마, 전역 reset, body
+   수정 시: 색상·폰트·테마·레이아웃 토큰만 여기서 관리
+   디자인 레퍼런스: HiNAS 365 (clean SaaS 대시보드)
    ============================================================ */
 
-/* ── 라이트 테마 (기본·고정) ──
-   다크 모드는 제거됨. 색상 조정은 이 :root 값만 수정.
-   레퍼런스 정합 시 핵심: --body-bg(페이지), --navy2(사이드바·상단바·카드 표면),
-   --card(카드), --accent(브랜드/링크), --text(본문) */
 :root {
-  --navy:       #f1f5f9;   /* slate-100 — 서브 표면 */
-  --navy2:      #ffffff;   /* 사이드바·상단바·카드 표면 */
-  --navy3:      #f8fafc;   /* slate-50 — 테이블 헤더 배경 */
-  --blue:       #1d4ed8;   /* blue-700 (레퍼런스 primary) */
+  /* ── 표면(surface) ── */
+  --body-bg:    #f6f7f9;   /* 페이지 전체 배경 */
+  --card:       #ffffff;   /* 카드 표면 */
+  --navy2:      #ffffff;   /* 사이드바·상단바·카드 표면 (호환용 별칭) */
+  --navy3:      #f8fafc;   /* 테이블 헤더 배경 */
+  --navy:       #f1f5f9;   /* 서브 표면 / 흐린 버튼 */
+  --input-bg:   #ffffff;
+
+  /* ── 브랜드 / 강조 ── */
+  --accent:     #2563eb;   /* primary 블루 (링크·활성) */
+  --accent2:    #1d4ed8;   /* primary hover */
+  --accent-soft:#eef2ff;   /* 활성 메뉴 배경 (연한 인디고) */
+  --blue:       #2563eb;
   --blue-lt:    #3b82f6;
-  --accent:     #1d4ed8;   /* ← 레퍼런스 강조색 = 블루 (oklch 0.379 0.146 265) */
-  --accent2:    #2563eb;
   --purple:     #6d5ae6;
   --purple-lt:  #7c6ef5;
+  --purple-soft:#f1eefe;
   --teal:       #0f766e;
   --teal-lt:    #14b8a6;
-  --warn:       #b45309;
+
+  /* ── 상태색 (텍스트는 진하게: 라이트 배경 가독성) ── */
+  --warn:       #d97706;
+  --warn-soft:  #fef3e2;
   --danger:     #dc2626;
+  --danger-soft:#fdecec;
   --success:    #16a34a;
-  --text:       #18181b;   /* zinc-900 — 본문/제목 (oklch 0.21) */
+  --success-soft:#e8f6ec;
+  --rose:       #e11d48;
+  --rose-soft:  #fdeef1;
+
+  /* ── 텍스트 ── */
+  --text:       #0f172a;   /* slate-900 — 제목/본문 */
   --text2:      #475569;   /* slate-600 — 보조 */
-  --text3:      #64748b;   /* slate-500 — 흐림/표 헤더 (oklch 0.551) */
-  --border:     #e2e8f0;   /* slate-200 (oklch 0.9 0.01 260) */
-  --border2:    #cbd5e1;   /* slate-300 */
-  --card:       #ffffff;
-  --input-bg:   #ffffff;
-  --body-bg:    #f8fafc;   /* slate-50 — 페이지 전체 배경 */
+  --text3:      #8895a7;   /* 표 헤더/라벨 (흐림) */
+  --text4:      #aab2bf;   /* 상대시간 등 가장 흐린 보조 */
+
+  /* ── 보더 ── */
+  --border:     #eceff3;   /* 표 행·구분선 (아주 옅음) */
+  --border2:    #dde2e9;   /* 입력·버튼 외곽 */
+
+  /* ── 레이아웃 ── */
+  --sidebar-w:           224px;  /* 펼침 */
+  --sidebar-w-collapsed: 64px;   /* 접힘(아이콘 레일) */
+
+  /* ── 라운드 ── */
+  --radius:     12px;
+  --radius-md:  10px;
+  --radius-sm:  8px;
+  --radius-pill:999px;
+
+  /* ── 그림자 ── */
+  --shadow-sm:  0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06);
+  --shadow-md:  0 4px 14px rgba(16,24,40,.07);
+  --shadow-pop: 0 12px 34px rgba(16,24,40,.16);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -38,9 +67,18 @@
 body {
   background: var(--body-bg);
   color: var(--text);
-  font-family: 'Noto Sans','Noto Sans KR',system-ui,Avenir,Helvetica,Arial,sans-serif;
+  font-family: 'Noto Sans','Noto Sans KR','Pretendard',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
   min-height: 100vh;
   font-size: 13px;
   line-height: 1.6;
-  transition: background .25s, color .25s;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+::selection { background: rgba(37,99,235,.16); }
+
+/* 스크롤바 (깔끔한 회색) */
+::-webkit-scrollbar        { width:10px; height:10px; }
+::-webkit-scrollbar-thumb  { background:#d4dae2; border-radius:8px; border:2px solid var(--body-bg); }
+::-webkit-scrollbar-thumb:hover { background:#bcc5d1; }
+::-webkit-scrollbar-track  { background:transparent; }

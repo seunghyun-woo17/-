@@ -25,7 +25,7 @@ var _vesselDocFileName = null;
 /* ── 공통 문서 상태 칩 빌더 (warn: 미등록 시 빨간색으로 강조) ── */
 function _docChip(label, has, onclick, warn) {
   var clr = has ? 'rgba(34,197,94,0.15);color:var(--success)'
-          : (warn ? 'rgba(248,113,113,0.12);color:#f87171' : 'rgba(255,255,255,0.04);color:var(--text3)');
+          : (warn ? 'rgba(248,113,113,0.12);color:var(--danger)' : '#f3f5f9;color:var(--text3)');
   var dot = has ? '● ' : '○ ';
   var style = 'padding:3px 9px;border-radius:4px;font-size:10px;font-weight:600;background:' + clr + ';' + (has && onclick ? 'cursor:pointer;' : '');
   return '<span style="' + style + '"' + (has && onclick ? ' onclick="' + onclick + '"' : '') + ' title="' + (has ? '클릭하여 보기' : '미등록') + '">' + dot + label + '</span>';
@@ -115,7 +115,7 @@ function refreshDocsVesselList() {
     var status      = _vesselDocStatus(key);
     var keyEsc      = key.replace(/'/g, "\\'");
 
-    return '<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:rgba(255,255,255,.02);cursor:pointer;" onclick="openVesselDocHub(\'' + keyEsc + '\')">'
+    return '<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:#f3f5f9;cursor:pointer;" onclick="openVesselDocHub(\'' + keyEsc + '\')">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'
       +   '<div>'
       +     '<span style="font-size:13px;font-weight:700;color:var(--text);">' + displayName + '</span>'
@@ -197,10 +197,10 @@ function _renderScmDocTable(incIds) {
     if (c && c.trade_file_name) nTrade++;
   });
   var sumChip = function(label, n) {
-    var clr = n >= total ? 'var(--success)' : '#f87171';
+    var clr = n >= total ? 'var(--success)' : 'var(--danger)';
     return '<span style="font-size:11px;font-weight:600;color:' + clr + ';">' + label + ' ' + n + '/' + total + '</span>';
   };
-  var summary = '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:9px 13px;margin-bottom:10px;border:1px solid var(--border);border-radius:8px;background:rgba(255,255,255,.02);">'
+  var summary = '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:9px 13px;margin-bottom:10px;border:1px solid var(--border);border-radius:8px;background:#f3f5f9;">'
     + '<span style="font-size:11px;font-weight:700;color:var(--text2);">입고 ' + total + '건</span>'
     + sumChip('검사성적서', nCert) + sumChip('COC', nCOC) + sumChip('거래명세서', nTrade)
     + '</div>';
@@ -282,7 +282,7 @@ function _renderVesselManualDocsByType(vesselId, docType, containerId, emptyMsg)
   }
 
   container.innerHTML = docs.slice().reverse().map(function(d) {
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,.02);flex-wrap:wrap;gap:8px;">'
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:#f3f5f9;flex-wrap:wrap;gap:8px;">'
       + '<div>'
       +   '<span class="badge badge-complete" style="margin-right:8px;">등록됨</span>'
       +   '<strong style="font-size:12px;">' + (d.doc_title || d.file_name || '-') + '</strong>'

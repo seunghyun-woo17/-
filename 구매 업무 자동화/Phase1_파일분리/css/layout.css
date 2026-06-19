@@ -1,209 +1,225 @@
 /* ============================================================
    layout.css
-   역할: 헤더, 탭, 메인 레이아웃, 섹션 전환, 반응형
-   수정 시: 전체 구조·네비게이션 변경은 여기서만
+   역할: 전체 레이아웃, 접이식 사이드바, 상단바, 서브탭, 섹션 전환
+   디자인 레퍼런스: HiNAS 365 (좌측 그룹형 사이드바 + 클린 상단바)
+   ──────────────────────────────────────────────────────────
+   사이드바 2-state:
+     · 기본       = 펼침 (.sidebar)            텍스트 라벨 + 그룹
+     · .collapsed = 아이콘 레일               좌측하단 버튼으로 토글
    ============================================================ */
 
-/* ── 헤더 ── */
-.header {
-  background:var(--navy2);
-  border-bottom:1px solid var(--border2);
-  padding:13px 24px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  position:sticky;
-  top:0;
-  z-index:50;
-}
-.logo       { font-size:17px; font-weight:700; color:var(--accent); letter-spacing:1px; }
-.logo-sub   { color:var(--text2); font-size:12px; font-weight:400; margin-left:6px; }
-.header-badge {
-  margin-left:auto;
-  background:rgba(29,78,216,0.13);
-  color:var(--accent);
-  font-size:11px;
-  padding:4px 10px;
-  border-radius:20px;
-  border:1px solid rgba(29,78,216,0.3);
-}
-.db-status  { font-size:11px; color:var(--text3); display:flex; align-items:center; gap:5px; }
-.db-dot     { width:7px; height:7px; border-radius:50%; background:var(--success); }
-
-/* ── 탭 ── */
-.tabs {
-  display:flex;
-  background:var(--navy2);
-  border-bottom:1px solid var(--border);
-  padding:0 20px;
-  overflow-x:auto;
-  gap:0;
-}
-.tab {
-  padding:13px 18px;
-  font-size:12px;
-  color:var(--text2);
-  cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:all .2s;
-  white-space:nowrap;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  flex-shrink:0;
-}
-.tab:hover      { color:var(--text); }
-.tab.active     { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
-.tab-phase      { font-size:10px; padding:1px 6px; border-radius:10px; font-weight:700; }
-.tp-0  { background:rgba(124,110,245,0.2); color:var(--purple-lt); }
-.tp-1  { background:rgba(30,111,200,0.2);  color:#60a5fa; }
-.tp-23 { background:rgba(29,158,117,0.2);  color:#6ee7b7; }
-.tp-5  { background:rgba(29,78,216,0.15);  color:var(--accent); }
-.tp-4  { background:rgba(245,158,11,0.2);  color:#fcd34d; }
-
-/* ── 메인 레이아웃 ── */
-.main           { padding:22px 24px; max-width:1120px; margin:0 auto; }
-.section        { display:none; }
-.section.active { display:block; }
-
-/* ── 메인 탭 (설계 / SCM / QC) ── */
-.main-tabs {
-  display: flex;
-  background: var(--navy2);
-  border-bottom: 2px solid var(--border);
-  padding: 0 20px;
-  gap: 0;
-}
-.main-tab {
-  padding: 15px 26px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text2);
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  transition: all .2s;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.main-tab:hover { color: var(--text); }
-.main-tab[data-tab="design"].active { color: var(--purple-lt); border-bottom-color: var(--purple-lt); }
-.main-tab[data-tab="scm"].active    { color: #60a5fa;           border-bottom-color: #60a5fa; }
-.main-tab[data-tab="qc"].active     { color: #f472b6;           border-bottom-color: #f472b6; }
-.main-tab-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 10px;
-}
-.design-badge { background: rgba(124,110,245,0.2); color: var(--purple-lt); }
-.scm-badge    { background: rgba(30,111,200,0.2);  color: #60a5fa; }
-.insp-badge   { background: rgba(245,158,11,0.2);  color: #fcd34d; }
-.qc-badge     { background: rgba(236,72,153,0.2);  color: #f472b6; }
-
-/* ── SCM 서브탭 ── */
-.sub-tabs-bar {
-  background: rgba(0,0,0,0.18);
-  border-bottom: 1px solid var(--border);
-}
-.sub-tabs {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  overflow-x: auto;
-  gap: 0;
-}
-.sub-tab {
-  padding: 10px 16px;
-  font-size: 12px;
-  color: var(--text3);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all .2s;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.sub-tab:hover  { color: var(--text2); }
-.sub-tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
-
-/* ── 메인 섹션 ── */
-.main-section        { display: none; }
-.main-section.active { display: block; }
-
-/* ── 설계 하위 섹션 ── */
-.design-section        { display: none; }
-.design-section.active { display: block; }
+/* ── 전체 골격 ── */
+.layout  { display:flex; align-items:stretch; min-height:100vh; }
+.content { flex:1; min-width:0; display:flex; flex-direction:column; }
 
 /* ============================================================
-   사이드바 레이아웃 (아이콘 내비 + 호버 툴팁)  — 2026-06 UI 개편
-   기존 .main-tabs(상단 가로탭) → 좌측 세로 아이콘 레일로 재정의
+   사이드바
    ============================================================ */
-.layout   { display:flex; align-items:stretch; min-height:100vh; }
-.sidebar  {
-  width:62px; flex-shrink:0; background:var(--navy2);
-  border-right:1px solid var(--border2);
-  display:flex; flex-direction:column; align-items:center;
-  padding:12px 0; gap:4px; position:sticky; top:0; height:100vh; z-index:60;
+.sidebar {
+  width:var(--sidebar-w); flex-shrink:0;
+  background:var(--card);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  padding:14px 12px 10px;
+  position:sticky; top:0; height:100vh; z-index:60;
+  transition:width .18s ease;
 }
+.sidebar.collapsed { width:var(--sidebar-w-collapsed); padding:14px 8px 10px; }
+
+/* ── 브랜드 헤더 ── */
+.sidebar-head {
+  display:flex; align-items:center; gap:11px;
+  padding:4px 6px 14px; margin-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.sidebar.collapsed .sidebar-head { justify-content:center; padding:4px 0 14px; }
 .sidebar-logo {
-  width:38px; height:38px; border-radius:11px;
-  background:linear-gradient(135deg, var(--accent), #0891b2);
-  color:#fff; font-weight:800; font-size:17px;
-  display:flex; align-items:center; justify-content:center; margin-bottom:10px;
+  width:38px; height:38px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
 }
-.content  { flex:1; min-width:0; display:flex; flex-direction:column; }
+.sidebar-logo img { width:100%; height:100%; object-fit:contain; display:block; }
+.sidebar-brand        { display:flex; flex-direction:column; line-height:1.25; overflow:hidden; }
+.sidebar-brand-name   { font-size:14px; font-weight:800; color:var(--text); letter-spacing:.2px; white-space:nowrap; }
+.sidebar-brand-sub    { font-size:11px; color:var(--text3); white-space:nowrap; }
+.sidebar.collapsed .sidebar-brand { display:none; }
 
-/* main-tabs 컨테이너를 세로 아이콘 레일로 재정의 (switchMainTab 로직은 그대로 사용) */
+/* ── 네비 그룹 ── */
 .main-tabs {
-  flex-direction:column; background:transparent; border:none; padding:0; gap:6px; width:100%; align-items:center;
+  flex:1; display:flex; flex-direction:column;
+  gap:2px; padding:8px 0; overflow-y:auto; overflow-x:hidden;
+  background:transparent; border:none; width:100%; align-items:stretch;
 }
+.nav-group-label {
+  font-size:10.5px; font-weight:700; color:var(--text3);
+  text-transform:uppercase; letter-spacing:.08em;
+  padding:14px 12px 6px;
+}
+.nav-group-label:first-child { padding-top:4px; }
+.sidebar.collapsed .nav-group-label {
+  font-size:0; padding:10px 0 6px; margin:0 10px;
+  border-top:1px solid var(--border);
+}
+.sidebar.collapsed .main-tabs > .nav-group-label:first-child { border-top:none; padding-top:2px; }
+
+/* ── 네비 항목 ── */
 .main-tab {
-  position:relative; width:46px; height:46px; padding:0; margin:0;
-  border:none; border-bottom:none; border-radius:13px;
-  justify-content:center; gap:0; color:var(--text3);
+  position:relative;
+  display:flex; align-items:center; gap:11px;
+  padding:9px 12px; margin:0;
+  border:none; border-radius:var(--radius-md);
+  color:var(--text2); cursor:pointer;
+  font-size:13px; font-weight:500;
+  transition:background .14s, color .14s;
+  white-space:nowrap;
 }
-.main-tab svg            { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:2; }
-.main-tab .main-tab-badge{ display:none; }
-.main-tab:hover          { color:var(--text); background:rgba(255,255,255,.07); }
-.main-tab.active                       { color:var(--accent);    background:rgba(29,78,216,.15); border-bottom:none; }
-.main-tab[data-tab="design"].active    { color:var(--purple-lt); background:rgba(124,110,245,.18); border-bottom:none; }
-.main-tab[data-tab="scm"].active       { color:#60a5fa;          background:rgba(96,165,250,.18);  border-bottom:none; }
-.main-tab[data-tab="qc"].active        { color:#f472b6;          background:rgba(244,114,182,.18); border-bottom:none; }
+.main-tab:hover { background:var(--navy3); color:var(--text); }
+.main-tab.active {
+  background:var(--accent-soft); color:var(--accent); font-weight:700;
+}
+/* 좌측 통일 강조색 (레퍼런스: 단일 accent) — 섹션별 색상 제거 */
+.main-tab[data-tab="design"].active,
+.main-tab[data-tab="scm"].active,
+.main-tab[data-tab="qc"].active { color:var(--accent); background:var(--accent-soft); border-bottom:none; }
 
-/* 호버 툴팁 */
+.nav-ico  { width:20px; height:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.nav-ico svg { width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+.nav-text { flex:1; overflow:hidden; text-overflow:ellipsis; }
+
+/* 접힘 상태: 아이콘만 */
+.sidebar.collapsed .main-tab { justify-content:center; padding:11px 0; width:44px; margin:0 auto; gap:0; }
+.sidebar.collapsed .nav-text { display:none; }
+
+/* 구버전 배지 숨김 (호환) */
+.main-tab .main-tab-badge { display:none; }
+
+/* ── 호버 툴팁 (접힘 상태에서만) ── */
 .nav-tip {
-  position:absolute; left:56px; top:50%; transform:translateY(-50%);
-  background:var(--navy); color:var(--text); border:1px solid var(--border2);
-  padding:6px 11px; border-radius:8px; font-size:12px; font-weight:500; white-space:nowrap;
-  opacity:0; pointer-events:none; transition:opacity .14s; z-index:70;
-  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  position:absolute; left:calc(100% + 10px); top:50%; transform:translateY(-50%);
+  background:#1e293b; color:#fff;
+  padding:6px 11px; border-radius:7px; font-size:12px; font-weight:500; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity .14s; z-index:80;
+  box-shadow:var(--shadow-pop);
 }
-.main-tab:hover .nav-tip { opacity:1; }
+.sidebar:not(.collapsed) .nav-tip { display:none; }
+.sidebar.collapsed .main-tab:hover .nav-tip { opacity:1; }
 
-/* 상단바 (헤더 → 콘텐츠 영역 내부로 이동) */
-.topbar {
-  display:flex; align-items:center; gap:12px;
-  padding:11px 22px; background:var(--navy2);
-  border-bottom:1px solid var(--border2); position:sticky; top:0; z-index:50;
+/* ── 사이드바 푸터 (펼치기/접기 버튼) ── */
+.sidebar-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 8px 4px; margin-top:6px;
+  border-top:1px solid var(--border);
 }
+.sidebar.collapsed .sidebar-footer { justify-content:center; }
+.sidebar-version { font-size:11px; color:var(--text4); font-weight:600; }
+.sidebar.collapsed .sidebar-version { display:none; }
+.sidebar-toggle {
+  width:32px; height:32px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent; border:1px solid var(--border2); color:var(--text2);
+  cursor:pointer; transition:all .14s;
+}
+.sidebar-toggle:hover { background:var(--navy3); color:var(--accent); border-color:var(--accent); }
+.sidebar-toggle svg { width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:transform .18s; }
+.sidebar.collapsed .sidebar-toggle svg { transform:rotate(180deg); }
+
+/* ============================================================
+   상단바
+   ============================================================ */
+.topbar {
+  display:flex; align-items:center; gap:14px;
+  height:56px; padding:0 28px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:50;
+}
+.db-status { font-size:11.5px; color:var(--text3); display:flex; align-items:center; gap:6px; font-weight:500; }
+.db-dot    { width:7px; height:7px; border-radius:50%; background:var(--success); box-shadow:0 0 0 3px rgba(22,163,74,.14); }
+
+.topbar-right { margin-left:auto; display:flex; align-items:center; gap:14px; }
+.topbar-clock {
+  display:flex; flex-direction:column; align-items:flex-end; line-height:1.3;
+}
+.topbar-clock .clk-label { font-size:10px; color:var(--text4); font-weight:600; letter-spacing:.04em; }
+.topbar-clock .clk-time  { font-size:12.5px; color:var(--text2); font-weight:600; }
+.topbar-icon-btn {
+  width:36px; height:36px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent; border:1px solid var(--border); color:var(--text2);
+  cursor:pointer; position:relative; transition:all .14s;
+}
+.topbar-icon-btn:hover { background:var(--navy3); color:var(--accent); border-color:var(--border2); }
+.topbar-icon-btn svg   { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+.topbar-icon-btn .dot  { position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--danger); border:1.5px solid var(--card); }
+.topbar-avatar {
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--accent), #6366f1); color:#fff;
+  font-size:12px; font-weight:700; cursor:pointer; letter-spacing:.3px;
+  box-shadow:0 3px 9px rgba(37,99,235,.3); transition:transform .12s;
+}
+.topbar-avatar:hover { transform:translateY(-1px); }
+
+/* ============================================================
+   메인 / 섹션 전환
+   ============================================================ */
+/* 풀 와이드 (레퍼런스와 동일). min-width:0 으로 표/긴 텍스트 오버플로 방지 */
+.main           { padding:24px 28px; width:100%; min-width:0; }
+.section        { display:none; }
+.section.active { display:block; }
+.main-section        { display:none; }
+.main-section.active { display:block; }
+.design-section        { display:none; }
+.design-section.active { display:block; }
+.cxop-section          { display:none; }
+.cxop-section.active   { display:block; }
+
+/* ── 서브탭 (SCM·설계 내부) ── */
+.sub-tabs-bar {
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+}
+.sub-tabs {
+  padding:0 28px;
+  display:flex; overflow-x:auto; overflow-y:hidden; gap:4px;
+  scrollbar-width:none;          /* Firefox: 가로 스크롤바도 숨김 */
+}
+.sub-tabs::-webkit-scrollbar { height:0; width:0; }  /* Chrome: 스크롤바 숨김 */
+.sub-tab {
+  padding:13px 4px; margin-right:18px;
+  font-size:13px; color:var(--text2); cursor:pointer;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+  transition:color .15s, border-color .15s;
+  white-space:nowrap; display:flex; align-items:center; gap:7px; flex-shrink:0; font-weight:500;
+}
+.sub-tab:hover  { color:var(--text); }
+.sub-tab.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:700; }
+
+/* 서브탭 안의 단계 배지 (tp-*) */
+.tab-phase  { font-size:10px; padding:2px 7px; border-radius:var(--radius-pill); font-weight:700; }
+.tp-0  { background:var(--purple-soft);  color:var(--purple); }
+.tp-1  { background:var(--accent-soft);  color:var(--accent); }
+.tp-23 { background:var(--success-soft); color:var(--success); }
+.tp-5  { background:var(--accent-soft);  color:var(--accent); }
+.tp-4  { background:var(--warn-soft);    color:var(--warn); }
+
+/* ── 페이지 제목 (레퍼런스 "납품 호선 리스트" 스타일) ── */
+.page-title { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-.2px; margin-bottom:16px; }
+
+/* ============================================================
+   레거시 호환 (구 .header/.logo — 일부 잔존 마크업 대비)
+   ============================================================ */
+.logo     { font-size:15px; font-weight:800; color:var(--text); letter-spacing:.3px; }
+.logo-sub { color:var(--text3); font-size:12px; font-weight:500; margin-left:6px; }
 
 /* ── 반응형 ── */
 @media(max-width:680px) {
-  .main                                    { padding:14px; }
+  .main                                   { padding:16px 14px; }
   .form-grid, .form-grid-3, .form-grid-4  { grid-template-columns:1fr; }
-  .stats-row                               { grid-template-columns:1fr 1fr; }
-  .inspect-grid                            { grid-template-columns:1fr; }
-  .item-metrics                            { grid-template-columns:1fr 1fr 1fr; }
-  .sidebar                                 { width:52px; }
-  .main-tab                                { width:40px; height:40px; }
-  .sub-tabs                                { padding:0 8px; }
-  .sub-tab                                 { padding:9px 10px; font-size:11px; }
-  .qr-box                                  { flex-direction:column; }
+  .stats-row                              { grid-template-columns:1fr 1fr; }
+  .inspect-grid                           { grid-template-columns:1fr; }
+  .item-metrics                           { grid-template-columns:1fr 1fr 1fr; }
+  .sidebar:not(.collapsed)                { position:fixed; box-shadow:var(--shadow-pop); }
+  .sub-tabs                               { padding:0 14px; }
+  .qr-box                                 { flex-direction:column; }
 }

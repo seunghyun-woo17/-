@@ -117,7 +117,7 @@ function renderInspectionSummary() {
     + '<span style="color:var(--text2);">전체 스캔 진행률</span>'
     + '<strong style="color:' + barColor + ';">' + totalScanned + ' / ' + totalOrdered + ' EA (' + barPct + '%)</strong>'
     + '</div>'
-    + '<div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;">'
+    + '<div style="height:6px;background:#f3f5f9;border-radius:3px;overflow:hidden;">'
     + '<div style="height:100%;width:' + barPct + '%;background:' + barColor + ';border-radius:3px;transition:width .4s;"></div>'
     + '</div>';
   }
@@ -143,7 +143,7 @@ function renderInspectionSummary() {
   + '<strong style="color:' + (scanState.phase === 'SCAN_PRODUCTS' ? 'var(--accent)' : 'var(--success)') + ';">'
   + (scanState.phase === 'SCAN_PRODUCTS' ? '스캔 활성화' : '완료') + '</strong></div>'
   + '<div class="inspect-info-row"><span>진행률</span><strong style="color:' + (remaining===0?'var(--success)':'var(--accent)') + ';">' + totalScanned + '/' + totalOrdered + ' (' + progress + '%)</strong></div>'
-  + (itemSummary ? '<div style="margin-top:6px;padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border:1px solid var(--border);">' + itemSummary + '</div>' : '')
+  + (itemSummary ? '<div style="margin-top:6px;padding:6px 8px;background:#f3f5f9;border-radius:6px;border:1px solid var(--border);">' + itemSummary + '</div>' : '')
   + '<div class="inspect-info-row" style="margin-top:4px;"><span>세션 ID</span><strong style="font-family:monospace;font-size:10px;">' + (scanState.sessionId || '-') + '</strong></div>';
 
   var progress_arr = getItemProgress();
@@ -682,7 +682,7 @@ function generateBatchQRs() {
   var grid = document.getElementById('batch-qr-grid');
   allItems.forEach(function(item) {
     var cell = document.createElement('div');
-    cell.style.cssText = 'text-align:center;padding:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;';
+    cell.style.cssText = 'text-align:center;padding:10px;background:#f3f5f9;border:1px solid var(--border);border-radius:8px;';
     cell.innerHTML = '<div id="bqr-' + item.sn.replace(/[^a-zA-Z0-9]/g,'') + '" style="display:inline-block;background:#fff;padding:5px;border-radius:4px;"></div>'
       + '<div style="font-size:9px;color:var(--text3);margin-top:4px;font-family:monospace;word-break:break-all;">' + item.sn + '</div>'
       + '<div style="font-size:9px;color:var(--text3);">' + item.itemCode + '</div>';

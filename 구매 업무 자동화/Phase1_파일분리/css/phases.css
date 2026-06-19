@@ -9,10 +9,10 @@
 
 /* ── 스캔 단계 상태 표시 ── */
 .scan-status          { padding:14px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border:1px solid; font-weight:500; }
-.scan-status.idle     { background:rgba(74,96,128,.2);  border-color:var(--text3);   color:var(--text2); }
-.scan-status.po-done  { background:rgba(29,78,216,.1);  border-color:var(--accent);  color:var(--accent); }
-.scan-status.error    { background:rgba(239,68,68,.1);  border-color:var(--danger);  color:#fca5a5; }
-.scan-status.success  { background:rgba(34,197,94,.1);  border-color:var(--success); color:#86efac; }
+.scan-status.idle     { background:var(--navy3);        border-color:var(--border2); color:var(--text2); }
+.scan-status.po-done  { background:var(--accent-soft);  border-color:var(--accent);  color:var(--accent); }
+.scan-status.error    { background:var(--danger-soft);  border-color:var(--danger);  color:var(--danger); }
+.scan-status.success  { background:var(--success-soft); border-color:var(--success); color:var(--success); }
 
 /* ── 검수 단계 행 ── */
 .step-row   { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; margin-bottom:8px; border:1px solid var(--border); background:var(--input-bg); }
@@ -39,13 +39,13 @@ canvas#cam-canvas { display:none; }
 .scanned-sn   { color:var(--success); font-family:monospace; font-weight:600; }
 
 /* ── 품목 진행 카드 ── */
-.item-card       { border:1px solid rgba(29,78,216,.14); border-radius:12px; padding:14px; margin-bottom:10px; background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); }
-.item-card-head  { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-.item-card-title { font-size:14px; font-weight:700; }
-.item-card-code  { font-size:11px; color:var(--text3); margin-top:1px; }
-.item-card-state { font-size:11px; font-weight:700; padding:5px 10px; border-radius:999px; }
+.item-card       { border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:10px; background:var(--card); box-shadow:var(--shadow-sm); }
+.item-card-head  { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.item-card-title { font-size:14px; font-weight:700; color:var(--text); }
+.item-card-code  { font-size:11px; color:var(--text3); margin-top:2px; }
+.item-card-state { font-size:11px; font-weight:700; padding:5px 11px; border-radius:999px; }
 .item-metrics    { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
-.metric-box      { text-align:center; padding:12px 6px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); }
+.metric-box      { text-align:center; padding:13px 6px; border-radius:10px; background:var(--navy3); border:1px solid var(--border); }
 .metric-label    { font-size:10px; color:var(--text3); margin-bottom:4px; }
 .metric-value    { font-size:24px; font-weight:700; line-height:1; }
 .metric-box.ordered .metric-value { color:var(--text); }

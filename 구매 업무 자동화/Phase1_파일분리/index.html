@@ -21,39 +21,69 @@
 <div class="layout">
 
 <!-- ================================================================
-     SIDEBAR (아이콘 내비 · 호버 툴팁)
+     SIDEBAR (접이식 · 기본 아이콘 레일 / 펼침 시 그룹형 텍스트 라벨)
+     좌측 하단 토글 버튼으로 펼치기·접기 (상태는 localStorage 기억)
      ================================================================ -->
-<aside class="sidebar">
-  <div class="sidebar-logo" title="Avikus 부산사무소 ERP">A</div>
-  <div class="main-tabs">
+<aside class="sidebar collapsed" id="sidebar">
+
+  <div class="sidebar-head">
+    <div class="sidebar-logo"><img src="assets/avikus-logo.png" alt="Avikus"></div>
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-name">AVIKUS ERP</div>
+      <div class="sidebar-brand-sub">부산사무소</div>
+    </div>
+  </div>
+
+  <nav class="main-tabs">
+
+    <div class="nav-group-label">호선 관리</div>
     <div class="main-tab active" data-tab="design" onclick="switchMainTab('design')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span class="nav-text">설계 · 호선/BOM</span>
       <span class="nav-tip">설계 · 호선/BOM/특이사항</span>
     </div>
+    <div class="main-tab" data-tab="cxop" onclick="switchMainTab('cxop')">
+      <span class="nav-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg></span>
+      <span class="nav-text">CX/OP · 설치/시운전</span>
+      <span class="nav-tip">CX/OP · 설치/커미셔닝/시운전</span>
+    </div>
+
+    <div class="nav-group-label">구매 · 물류</div>
     <div class="main-tab" data-tab="scm" onclick="switchMainTab('scm')">
-      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="nav-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+      <span class="nav-text">SCM · 구매/입고</span>
       <span class="nav-tip">SCM · 구매/입고/출고</span>
     </div>
     <div class="main-tab" data-tab="inventory" onclick="switchMainTab('inventory')">
-      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+      <span class="nav-text">재고 현황</span>
       <span class="nav-tip">재고 현황</span>
     </div>
     <div class="main-tab" data-tab="inspection" onclick="switchMainTab('inspection')">
-      <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+      <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></span>
+      <span class="nav-text">검사요청 관리</span>
       <span class="nav-tip">검사요청 관리</span>
     </div>
+
+    <div class="nav-group-label">품질 · 문서</div>
     <div class="main-tab" data-tab="qc" onclick="switchMainTab('qc')">
-      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+      <span class="nav-text">QC · FAT 관리</span>
       <span class="nav-tip">QC · FAT 관리</span>
     </div>
     <div class="main-tab" data-tab="docs" onclick="switchMainTab('docs')">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+      <span class="nav-text">문서 산출물</span>
       <span class="nav-tip">문서 산출물</span>
     </div>
-    <div class="main-tab" data-tab="cxop" onclick="switchMainTab('cxop')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
-      <span class="nav-tip">CX/OP · 설치/커미셔닝/시운전</span>
-    </div>
+
+  </nav>
+
+  <div class="sidebar-footer">
+    <span class="sidebar-version">v2.0</span>
+    <button class="sidebar-toggle" onclick="toggleSidebar()" title="사이드바 펼치기 / 접기" aria-label="사이드바 토글">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg>
+    </button>
   </div>
 </aside>
 
@@ -63,20 +93,19 @@
      TOPBAR
      ================================================================ -->
 <header class="topbar">
-  <div class="logo">AVIKUS <span class="logo-sub">부산사무소 ERP</span></div>
-  <div class="db-status" style="margin-left:8px;">
+  <div class="db-status">
     <div class="db-dot" id="db-dot"></div>
     <span id="db-status-text">localStorage DB</span>
   </div>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
-    <span id="topbar-clock" style="font-size:11px;color:var(--text3);"></span>
-    <div class="header-badge" style="margin-left:0;">v2.0</div>
-    <div onclick="promptUserName()" title="클릭하여 이름 설정"
-         style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:4px 10px;border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);transition:border-color .2s;"
-         onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
-      <span>👤</span>
-      <span id="header-user-name">이름 설정</span>
+  <div class="topbar-right">
+    <div class="topbar-clock" id="topbar-clock">
+      <span class="clk-label">LOCAL</span>
+      <span class="clk-time">--</span>
     </div>
+    <button class="topbar-icon-btn" title="알림" aria-label="알림">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
+    <div class="topbar-avatar" id="header-user-name" onclick="promptUserName()" title="클릭하여 이름 설정">설정</div>
   </div>
 </header>
 
@@ -149,6 +178,10 @@
             <label>납품 예정일</label>
             <input id="vessel-delivery" type="date">
           </div>
+          <div class="form-group">
+            <label>IMO Number</label>
+            <input id="vessel-imo" placeholder="예: 9876543" maxlength="20">
+          </div>
         </div>
 
         <div class="form-grid-3">
@@ -202,7 +235,8 @@
         </div>
 
         <div class="notice notice-purple" style="margin-bottom:10px;font-size:11px;">
-          <strong>BOM 선택:</strong> 엑셀 업로드 후 구분·모델 선택 → 불러오기. 불러온 후 수정·삭제 가능합니다.
+          <strong>BOM 선택:</strong> 엑셀 업로드 후 구분·모델 선택 → 불러오기. 불러온 후 수정·삭제 가능합니다.<br>
+          <strong>다중 모델:</strong> 한 호선에 모델이 2개 이상 적용되면, 모델별로 불러오기·전체 등록을 반복하세요. 적용 모델이 자동 누적되어 호선 목록에 함께 표시됩니다.
         </div>
 
         <div class="form-group" style="margin-bottom:12px;">
@@ -313,6 +347,7 @@
           <tbody id="tbl-notes"></tbody>
         </table>
       </div>
+      <div id="pager-notes"></div>
     </div>
 
   </div><!-- /design-main -->
@@ -324,6 +359,8 @@
     <div id="safety-view-item">
       <div class="card">
         <div class="card-title purple">안전재고 현황 — 제품별 집계 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">품목을 클릭하면 호선별 필요 내역을 확인할 수 있습니다</span></div>
+        <input id="safety-search" type="text" placeholder="🔍 품목 코드 또는 품목명으로 검색..." oninput="refreshSafetyStockByItem()"
+               style="width:100%;max-width:360px;margin-bottom:12px;padding:8px 11px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;background:var(--input-bg);color:var(--text);">
         <div class="db-wrap">
           <table class="db-table">
             <thead>
@@ -362,7 +399,7 @@
       <div class="card-title purple">등록된 호선 목록 <span id="vessel-list-count" style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;"></span></div>
 
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
-        <input id="vessel-search" oninput="refreshVesselList()" placeholder="🔍 호선명·선급·선종·OWNER·FLAG·호선코드 검색"
+        <input id="vessel-search" oninput="resetPager('vessels');refreshVesselList()" placeholder="🔍 호선명·선급·선종·OWNER·FLAG·호선코드 검색"
                style="flex:1;min-width:240px;background:var(--input-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none;">
         <div style="display:flex;gap:6px;">
           <button class="btn btn-sm vessel-filter-btn active btn-accent" data-vf="all"      onclick="filterVesselList('all')">전체</button>
@@ -374,11 +411,12 @@
       <div class="db-wrap">
         <table class="db-table">
           <thead>
-            <tr><th>유형</th><th>호선명</th><th>선급</th><th>계약일</th><th>납품 예정일</th><th>BOM</th><th>특이사항</th><th></th></tr>
+            <tr><th>유형</th><th>호선명</th><th>제품(모델)</th><th>선급</th><th>계약일</th><th>납품 예정일</th><th>BOM</th><th>특이사항</th><th></th></tr>
           </thead>
           <tbody id="tbl-vessels"></tbody>
         </table>
       </div>
+      <div id="pager-vessels"></div>
     </div>
   </div><!-- /design-vessels -->
 
@@ -509,6 +547,7 @@
       <div class="form-group"><label>호선명</label><input id="ve-name"></div>
       <div class="form-group"><label>계약일</label><input type="date" id="ve-date"></div>
       <div class="form-group"><label>납품 예정일</label><input type="date" id="ve-delivery"></div>
+      <div class="form-group"><label>IMO Number</label><input id="ve-imo" placeholder="예: 9876543" maxlength="20"></div>
     </div>
 
     <div class="form-grid-3">
@@ -558,6 +597,9 @@
   <div class="sub-tabs">
     <div class="sub-tab active" onclick="switchTab('phase1')">
       <span class="tab-phase tp-1">PO</span> PO 발행
+    </div>
+    <div class="sub-tab" onclick="switchTab('polist')">
+      <span class="tab-phase tp-1">목록</span> 발행된 PO
     </div>
     <div class="sub-tab" onclick="switchTab('phase23')">
       <span class="tab-phase tp-23">입고</span> 입고 검수
@@ -777,6 +819,30 @@
 
 
 <!-- ================================================================
+     SECTION: 발행된 PO 목록 (전체 — 검색 + 페이지네이션)
+     JS 로직: js/phase1.js (refreshPoListTab)
+     ================================================================ -->
+<div class="section" id="sec-polist">
+  <div class="card">
+    <div class="card-title blue">발행된 PO 목록 <span id="po-all-count" style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;"></span></div>
+    <div style="margin-bottom:12px;">
+      <input id="po-all-search" oninput="resetPager('po-all');refreshPoListTab()" placeholder="🔍 PO번호·업체·호선·상태 검색"
+             style="width:100%;max-width:360px;background:var(--input-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none;">
+    </div>
+    <div class="db-wrap">
+      <table class="db-table">
+        <thead>
+          <tr><th>PO 번호</th><th>발행일</th><th>납기일</th><th>공급업체</th><th>적용 호선</th><th style="text-align:center;">품목</th><th>상태</th><th style="text-align:right;">관리</th></tr>
+        </thead>
+        <tbody id="tbl-po-all"></tbody>
+      </table>
+    </div>
+    <div id="pager-po-all"></div>
+  </div>
+</div>
+
+
+<!-- ================================================================
      SECTION: PHASE 2/3 — 납품 + 입고 검수 스캔
      JS 로직: js/phase23.js
      ================================================================ -->
@@ -784,7 +850,7 @@
 
   <div class="notice notice-amber" id="scan-env-notice">
     <strong>카메라 QR 스캔 환경 안내:</strong>
-    현재 환경: <strong id="protocol-info" style="color:#fcd34d;">확인 중...</strong><br>
+    현재 환경: <strong id="protocol-info" style="color:var(--warn);">확인 중...</strong><br>
     모바일 카메라 스캔은 <strong>HTTPS 환경에서만 작동</strong>합니다.
     file:// 또는 http:// 에서는 카메라 API가 차단됩니다.
     HTTPS 환경이 아닐 경우 아래 <strong>수동 입력</strong> 방식을 사용하세요.
@@ -967,6 +1033,7 @@
         <tbody id="tbl-po"></tbody>
       </table>
     </div>
+    <div id="pager-po-history"></div>
   </div>
 
   <div class="card" id="po-line-detail-card" style="display:none;">
@@ -1087,7 +1154,7 @@
       <div class="card-title">제품별 재고 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">품목을 클릭하면 S/N 상세로 이동합니다</span></div>
       <div class="db-wrap">
         <table class="db-table">
-          <thead><tr><th>품목 코드</th><th>품목명</th><th style="text-align:center;">전체</th><th style="text-align:center;">재고</th><th style="text-align:center;">출고</th><th style="text-align:center;">대여중</th><th style="text-align:center;">검사요청</th><th></th></tr></thead>
+          <thead><tr><th>품목 코드</th><th>품목명</th><th style="text-align:center;">전체</th><th style="text-align:center;">재고</th><th style="text-align:center;">출고</th><th style="text-align:center;">대여중</th><th style="text-align:center;">검사요청</th><th style="text-align:center;">불량</th><th></th></tr></thead>
           <tbody id="tbl-inv-groups"></tbody>
         </table>
       </div>
@@ -1224,7 +1291,7 @@
 
     <div class="card">
       <div class="card-title">
-        <span style="background:rgba(245,158,11,0.2);color:#fcd34d;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-right:6px;">QC</span>
+        <span style="background:rgba(245,158,11,0.2);color:var(--warn);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-right:6px;">QC</span>
         검수요청 현황
       </div>
       <div class="db-wrap">
@@ -1243,7 +1310,7 @@
 
     <div class="card">
       <div class="card-title">
-        <span style="background:rgba(30,111,200,0.2);color:#60a5fa;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-right:6px;">SW</span>
+        <span style="background:rgba(30,111,200,0.2);color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-right:6px;">SW</span>
         검수요청 현황
       </div>
       <div class="db-wrap">
@@ -1291,15 +1358,67 @@
       <table class="db-table">
         <thead><tr>
           <th>시리얼 번호 (S/N)</th><th>요청일</th><th>팀</th><th>Due Date</th><th>메모</th>
-          <th style="text-align:center;">상태</th><th>완료일 / 검사자</th>
+          <th style="text-align:center;">상태</th><th style="text-align:right;">완료일 / 검사자</th>
         </tr></thead>
         <tbody id="tbl-insp-detail"></tbody>
       </table>
     </div>
+    <div id="pager-insp-detail"></div>
   </div>
 
 </div><!-- /main (검사요청) -->
 </div><!-- /main-inspection -->
+
+<!-- 검사 완료 처리 모달 (정상/불량/메모) -->
+<div class="modal-bg" id="insp-result-modal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-title">
+      <span>검사 완료 처리</span>
+      <button class="modal-close" onclick="document.getElementById('insp-result-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="insp-result-log-id">
+    <input type="hidden" id="insp-result-team">
+    <input type="hidden" id="insp-result-item">
+    <div id="insp-result-sn" style="font-size:12px;color:var(--text2);margin-bottom:12px;"></div>
+
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>검사 결과</label>
+      <div style="display:flex;gap:8px;">
+        <label class="class-checkbox-item" style="flex:1;justify-content:center;"><input type="radio" name="insp-result" value="PASS" checked> 정상</label>
+        <label class="class-checkbox-item" style="flex:1;justify-content:center;"><input type="radio" name="insp-result" value="FAIL"> 불량</label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>검사자</label>
+      <input id="insp-result-inspector" placeholder="검사자 이름">
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>메모 <span style="font-size:10px;color:var(--text3);">(불량 사유·조치 등)</span></label>
+      <textarea id="insp-result-memo" rows="3" placeholder="메모를 입력하세요"></textarea>
+    </div>
+    <div class="notice notice-amber" style="font-size:11px;margin-bottom:12px;">
+      ‘불량’ 선택 시 해당 S/N 재고 상태가 <strong>불량(DEFECT)</strong>으로 변경되어 가용 재고에서 제외됩니다.
+    </div>
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('insp-result-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-success" onclick="saveInspectionResult()">완료 처리</button>
+    </div>
+  </div>
+</div>
+
+<!-- 검사 상세 보기 모달 (행 클릭) -->
+<div class="modal-bg" id="insp-detail-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">
+      <span>검사 상세</span>
+      <button class="modal-close" onclick="document.getElementById('insp-detail-modal').classList.remove('show')">×</button>
+    </div>
+    <div id="insp-detail-body" style="font-size:12px;"></div>
+    <div class="btn-row" style="justify-content:flex-end;margin-top:12px;">
+      <button class="btn btn-outline" onclick="document.getElementById('insp-detail-modal').classList.remove('show')">닫기</button>
+    </div>
+  </div>
+</div>
 
 
 <!-- ================================================================
@@ -1462,27 +1581,114 @@
      JS 로직: js/phase-cxop.js
      ================================================================ -->
 <div class="main-section" id="main-cxop">
+<div class="sub-tabs-bar">
+  <div class="sub-tabs">
+    <div class="sub-tab active" onclick="switchCxopTab('list')">
+      <span class="tab-phase tp-0">현황</span> CX/OP 현황
+    </div>
+    <div class="sub-tab" onclick="switchCxopTab('input')">
+      <span class="tab-phase tp-0">입력</span> 입력 / 수정
+    </div>
+  </div>
+</div>
 <div class="main">
 
-  <div class="notice notice-amber" style="font-size:11px;">
-    <strong>CX/OP 호선 정보:</strong> 호선 중심으로 설치·계약·커미셔닝·시운전 정보를 한눈에 조회합니다.
-    호선은 <strong>[설계]</strong> 탭에서 등록되며(단일 호선 마스터 공유), 각 행의 <strong>[입력/수정]</strong> 버튼으로 CX/OP 항목을 기입합니다.
+  <!-- ── CX/OP 현황 (조회 — 설계 호선목록과 동일 디자인) ── -->
+  <div class="cxop-section active" id="cxop-list">
+
+    <div class="notice notice-amber" style="font-size:11px;">
+      <strong>CX/OP 호선 정보:</strong> 호선 중심으로 설치·계약·커미셔닝·시운전 정보를 한눈에 조회합니다.
+      호선은 <strong>[설계]</strong> 탭에서 등록되며(단일 호선 마스터 공유), <strong>[입력 / 수정]</strong> 탭에서 수기 입력 또는 Excel 일괄 매핑으로 항목을 기입합니다.
+    </div>
+
+    <div class="card">
+      <div class="card-title purple">호선별 CX/OP 현황 <span id="cxop-list-count" style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;"></span></div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+        <input id="cxop-search" oninput="resetPager('cxop');refreshCxopTab()" placeholder="🔍 호선명·선급·선종·OWNER·YARD·공급제품 검색"
+               style="flex:1;min-width:240px;background:var(--input-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm cxop-filter-btn active btn-accent" data-cf="all"      onclick="filterCxopList('all')">전체</button>
+          <button class="btn btn-sm cxop-filter-btn btn-outline"        data-cf="newbuild" onclick="filterCxopList('newbuild')">신조</button>
+          <button class="btn btn-sm cxop-filter-btn btn-outline"        data-cf="retrofit" onclick="filterCxopList('retrofit')">개조</button>
+        </div>
+      </div>
+
+      <div class="db-wrap">
+        <table class="db-table" style="white-space:nowrap;">
+          <thead>
+            <tr>
+              <th>호선</th><th>구분</th><th>YARD</th><th>공급제품</th><th>선종</th><th>CLASS</th><th>OWNER</th>
+              <th>공사비용</th><th>D/L</th><th>실제 인도일</th><th>Series</th>
+              <th>시운전 시작</th><th>시운전 종료</th><th>커미셔닝 시작</th><th>커미셔닝 종료</th><th>REMARK</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="tbl-cxop"></tbody>
+        </table>
+      </div>
+      <div id="pager-cxop"></div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">호선별 CX/OP 현황 <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">표가 넓으면 좌우로 스크롤하세요</span></div>
-    <div class="db-wrap">
-      <table class="db-table" style="white-space:nowrap;">
-        <thead>
-          <tr>
-            <th>호선</th><th>구분</th><th>YARD</th><th>공급제품</th><th>선종</th><th>CLASS</th><th>OWNER</th>
-            <th>공사비용</th><th>D/L</th><th>실제 인도일</th><th>Series</th>
-            <th>시운전 시작</th><th>시운전 종료</th><th>커미셔닝 시작</th><th>커미셔닝 종료</th><th>REMARK</th><th></th>
-          </tr>
-        </thead>
-        <tbody id="tbl-cxop"></tbody>
-      </table>
+  <!-- ── CX/OP 입력 / 수정 (수기 + Excel 매핑) ── -->
+  <div class="cxop-section" id="cxop-input">
+
+    <!-- 수기 입력 -->
+    <div class="card" id="cxop-input-form-card">
+      <div class="card-title purple">수기 입력 / 수정</div>
+      <div class="notice notice-amber" style="font-size:11px;margin-bottom:12px;">
+        대상 호선을 선택하면 현재 값이 채워집니다. 구분(신조/개조)·선급(CLASS)은 <strong>[설계]</strong> 탭에서 관리합니다.
+      </div>
+
+      <div class="form-group" style="margin-bottom:6px;">
+        <label>대상 호선 선택</label>
+        <select id="cxi-vessel" onchange="onCxopInputVesselChange()">
+          <option value="">-- 호선 선택 --</option>
+        </select>
+      </div>
+      <div id="cxi-sub" style="font-size:11px;color:var(--text3);margin-bottom:12px;"></div>
+
+      <div class="form-grid-3">
+        <div class="form-group"><label>선종</label><input id="cxi-ship-type" placeholder="Container / LNGC ..."></div>
+        <div class="form-group"><label>OWNER</label><input id="cxi-owner" placeholder="HMM"></div>
+        <div class="form-group"><label>YARD</label><input id="cxi-yard" placeholder="HD현대중공업 ..."></div>
+        <div class="form-group"><label>공급제품</label><input id="cxi-supply-product" placeholder="HiNAS Control ..."></div>
+        <div class="form-group"><label>공사비용</label><input id="cxi-cost" placeholder="예: 120,000,000"></div>
+        <div class="form-group"><label>Series 호선번호</label><input id="cxi-series" placeholder="예: 3445"></div>
+        <div class="form-group"><label>D/L (계약일)</label><input id="cxi-dl" type="date"></div>
+        <div class="form-group"><label>실제 인도일</label><input id="cxi-actual-delivery" type="date"></div>
+        <div class="form-group"><label>커미셔닝 시작</label><input id="cxi-commission-start" type="date"></div>
+        <div class="form-group"><label>커미셔닝 종료</label><input id="cxi-commission-end" type="date"></div>
+        <div class="form-group"><label>시운전 시작</label><input id="cxi-seatrial-start" type="date"></div>
+        <div class="form-group"><label>시운전 종료</label><input id="cxi-seatrial-end" type="date"></div>
+      </div>
+
+      <div class="form-group" style="margin-top:6px;">
+        <label>REMARK</label>
+        <input id="cxi-remark" placeholder="비고">
+      </div>
+
+      <div class="btn-row" style="justify-content:flex-end;margin-top:10px;">
+        <button class="btn btn-success" onclick="saveCxopInline()">저장</button>
+      </div>
     </div>
+
+    <!-- Excel 일괄 매핑 -->
+    <div class="card">
+      <div class="card-title purple">Excel 일괄 매핑</div>
+      <div class="notice notice-purple" style="font-size:11px;margin-bottom:12px;">
+        <strong>고정 템플릿</strong>을 내려받아 작성 후 업로드하세요. 첫 행은 헤더(호선명·YARD·공급제품·공사비용·D/L 등)입니다.<br>
+        <strong>호선명</strong>으로 기존 호선을 찾아 CX/OP 항목만 업데이트합니다. (일치하는 호선이 없는 행은 건너뜀)
+      </div>
+      <div class="btn-row" style="margin-bottom:12px;">
+        <button class="btn btn-outline btn-sm" onclick="downloadCxopTemplate()">⬇ 템플릿 다운로드</button>
+      </div>
+      <div class="form-group">
+        <label>Excel 업로드 <span id="cxop-excel-status" style="font-size:10px;color:var(--text3);margin-left:6px;">미업로드</span></label>
+        <input type="file" id="cxop-excel-input" accept=".xlsx,.xls" onchange="onCxopExcelUpload(this)">
+      </div>
+    </div>
+
   </div>
 
 </div><!-- /main (CX/OP) -->
@@ -1596,7 +1802,7 @@
       <button class="modal-close" onclick="document.getElementById('batch-sn-modal').classList.remove('show')">×</button>
     </div>
     <input type="hidden" id="batch-sn-modal-item">
-    <div style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:6px;" id="batch-sn-modal-desc"></div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 10px;background:#f3f5f9;border-radius:6px;" id="batch-sn-modal-desc"></div>
     <div id="batch-sn-modal-boxes"></div>
     <div class="btn-row" style="justify-content:flex-end;margin-top:8px;">
       <button class="btn btn-outline" onclick="document.getElementById('batch-sn-modal').classList.remove('show')">취소</button>
@@ -1719,43 +1925,6 @@
         </tr></thead>
         <tbody id="tbl-inv-shortage"></tbody>
       </table>
-    </div>
-  </div>
-</div>
-
-<!-- CX/OP 정보 입력 모달 -->
-<div class="modal-bg" id="cxop-modal">
-  <div class="modal" style="max-width:660px;max-height:90vh;overflow-y:auto;">
-    <div class="modal-title">
-      <span id="cxop-modal-title">CX/OP 정보 입력</span>
-      <button class="modal-close" onclick="document.getElementById('cxop-modal').classList.remove('show')">×</button>
-    </div>
-    <input type="hidden" id="cxop-modal-vessel-id">
-    <div id="cxop-modal-sub" style="font-size:11px;color:var(--text3);margin-bottom:12px;"></div>
-
-    <div class="form-grid-3">
-      <div class="form-group"><label>선종</label><input id="cxop-ship-type" placeholder="Container / LNGC ..."></div>
-      <div class="form-group"><label>OWNER</label><input id="cxop-owner" placeholder="HMM"></div>
-      <div class="form-group"><label>YARD</label><input id="cxop-yard" placeholder="HD현대중공업 ..."></div>
-      <div class="form-group"><label>공급제품</label><input id="cxop-supply-product" placeholder="HiNAS Control ..."></div>
-      <div class="form-group"><label>공사비용</label><input id="cxop-cost" placeholder="예: 120,000,000"></div>
-      <div class="form-group"><label>Series 호선번호</label><input id="cxop-series" placeholder="예: 3445"></div>
-      <div class="form-group"><label>D/L (계약일)</label><input id="cxop-dl" type="date"></div>
-      <div class="form-group"><label>실제 인도일</label><input id="cxop-actual-delivery" type="date"></div>
-      <div class="form-group"><label>커미셔닝 시작</label><input id="cxop-commission-start" type="date"></div>
-      <div class="form-group"><label>커미셔닝 종료</label><input id="cxop-commission-end" type="date"></div>
-      <div class="form-group"><label>시운전 시작</label><input id="cxop-seatrial-start" type="date"></div>
-      <div class="form-group"><label>시운전 종료</label><input id="cxop-seatrial-end" type="date"></div>
-    </div>
-
-    <div class="form-group" style="margin-top:6px;">
-      <label>REMARK</label>
-      <input id="cxop-remark" placeholder="비고">
-    </div>
-
-    <div class="btn-row" style="justify-content:flex-end;margin-top:10px;">
-      <button class="btn btn-outline" onclick="document.getElementById('cxop-modal').classList.remove('show')">취소</button>
-      <button class="btn btn-success" onclick="saveCxop()">저장</button>
     </div>
   </div>
 </div>

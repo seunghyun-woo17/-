@@ -17,8 +17,34 @@ function promptUserName() {
   if (name === null) return;
   currentUserName = name.trim();
   localStorage.setItem('avikus_user_name', currentUserName);
+  updateHeaderUser();
+}
+
+/* ── 상단바 아바타(이니셜) 갱신 ── */
+function updateHeaderUser() {
   var el = document.getElementById('header-user-name');
-  if (el) el.textContent = currentUserName || '이름 설정';
+  if (!el) return;
+  var n = (currentUserName || '').trim();
+  el.textContent = n ? n.slice(0, 2) : '설정';
+  el.title = n ? (n + ' · 클릭하여 변경') : '클릭하여 이름 설정';
+}
+
+/* ── 사이드바 펼치기 / 접기 (상태 localStorage 기억) ── */
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  if (!sb) return;
+  var collapsed = sb.classList.toggle('collapsed');
+  localStorage.setItem('avikus_sidebar_collapsed', collapsed ? '1' : '0');
+}
+
+/* ── 저장된 사이드바 상태 복원 (기본: 접힘 = 아이콘 레일) ── */
+function restoreSidebarState() {
+  var sb = document.getElementById('sidebar');
+  if (!sb) return;
+  var v = localStorage.getItem('avikus_sidebar_collapsed');
+  // 저장값이 '0'(펼침)일 때만 펼침, 그 외(미설정·'1')는 접힘 유지
+  if (v === '0') sb.classList.remove('collapsed');
+  else           sb.classList.add('collapsed');
 }
 
 /* ── 메인 탭 전환 (설계 / SCM / QC) ── */
@@ -43,15 +69,62 @@ function switchTab(id) {
   if (scm) {
     scm.querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
     scm.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
-    var subTabs = ['phase1','phase23','phase5','outgoing'];
+    var subTabs = ['phase1','polist','phase23','phase5','outgoing'];
     var idx     = subTabs.indexOf(id);
     if (idx >= 0) scm.querySelectorAll('.sub-tab')[idx].classList.add('active');
   }
   var sec = document.getElementById('sec-' + id);
   if (sec) sec.classList.add('active');
+  if (id === 'polist')    { refreshPoListTab(); }
   if (id === 'phase5')    { refreshPhase5(); }
   if (id === 'outgoing')  { refreshOutgoingStockList(); }
 }
+
+/* ══════════════════════════════════════════════════════════
+   페이지네이션 (페이지 번호식 · 15행/페이지) — 긴 목록 공용
+     paginate(items, name) → { slice, page, pages, total, start }
+     buildPager(name, info, '렌더함수명') → 페이지 버튼 HTML
+     gotoPage / resetPager 는 검색·필터·페이지 이동에서 사용
+   ══════════════════════════════════════════════════════════ */
+var PAGE_SIZE = 15;
+var _pagerState = {};
+
+function paginate(items, name) {
+  var page  = _pagerState[name] || 1;
+  var total = items.length;
+  var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (page > pages) page = pages;
+  _pagerState[name] = page;
+  var start = (page - 1) * PAGE_SIZE;
+  return { slice: items.slice(start, start + PAGE_SIZE), page: page, pages: pages, total: total, start: start };
+}
+
+function buildPager(name, info, renderFn) {
+  if (!info || info.pages <= 1) return '';
+  var cur = info.page, pages = info.pages;
+  var b = function(label, page, o) {
+    o = o || {};
+    if (o.disabled) return '<button class="pager-btn" disabled>' + label + '</button>';
+    return '<button class="pager-btn' + (o.active ? ' active' : '') + '" onclick="gotoPage(\'' + name + '\',' + page + ',\'' + renderFn + '\')">' + label + '</button>';
+  };
+  var html = '<div class="pager">';
+  html += b('이전', cur - 1, { disabled: cur <= 1 });
+  var lo = Math.max(1, cur - 2), hi = Math.min(pages, cur + 2);
+  if (lo > 1) { html += b('1', 1); if (lo > 2) html += '<span class="pager-gap">…</span>'; }
+  for (var p = lo; p <= hi; p++) html += b(String(p), p, { active: p === cur });
+  if (hi < pages) { if (hi < pages - 1) html += '<span class="pager-gap">…</span>'; html += b(String(pages), pages); }
+  html += b('다음', cur + 1, { disabled: cur >= pages });
+  html += '<span class="pager-total">총 ' + info.total + '건 · ' + cur + '/' + pages + '쪽</span>';
+  html += '</div>';
+  return html;
+}
+
+function gotoPage(name, page, renderFn) {
+  _pagerState[name] = page;
+  if (typeof window[renderFn] === 'function') window[renderFn]();
+}
+
+function resetPager(name) { _pagerState[name] = 1; }
 
 /* ── 알림 토스트 ── */
 function notify(msg, type) {
@@ -81,15 +154,15 @@ function checkProtocol() {
   if (!el) return;
   if (proto === 'https:') {
     el.textContent = 'HTTPS — 카메라 QR 스캔 사용 가능';
-    el.style.color = '#86efac';
+    el.style.color = 'var(--success)';
     var notice = document.getElementById('scan-env-notice');
     if (notice) notice.style.display = 'none';
   } else if (proto === 'file:') {
     el.textContent = 'file:// 로컬 파일 — 카메라 사용 불가 (수동 입력 사용)';
-    el.style.color = '#fca5a5';
+    el.style.color = 'var(--danger)';
   } else {
     el.textContent = 'HTTP — 모바일 카메라 불가 (수동 입력 사용)';
-    el.style.color = '#fde68a';
+    el.style.color = 'var(--warn)';
   }
 }
 

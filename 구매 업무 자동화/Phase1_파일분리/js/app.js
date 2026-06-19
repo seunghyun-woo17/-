@@ -29,9 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
   /* admin 날짜 초기화 */
   var admDate = document.getElementById('adm-date');
   if (admDate && !admDate.value) admDate.value = today();
-  /* 사용자 이름 표시 초기화 */
-  var nameEl = document.getElementById('header-user-name');
-  if (nameEl) nameEl.textContent = currentUserName || '이름 설정';
+  /* 사용자 아바타(이니셜) 초기화 */
+  updateHeaderUser();
+  /* 사이드바 펼침/접힘 상태 복원 */
+  restoreSidebarState();
   /* 상단바 시계 */
   updateTopbarClock();
   setInterval(updateTopbarClock, 30000);
@@ -44,5 +45,9 @@ function updateTopbarClock() {
   if (!el) return;
   var d = new Date();
   var p = function(n){ return String(n).padStart(2, '0'); };
-  el.textContent = '🕐 ' + d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  var label = el.querySelector('.clk-label');
+  var time  = el.querySelector('.clk-time');
+  var str = d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) + '  ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  if (time) { time.textContent = str; if (label) label.textContent = 'LOCAL'; }
+  else      { el.textContent = str; }
 }

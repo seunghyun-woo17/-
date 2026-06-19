@@ -51,6 +51,7 @@ function addVessel() {
   var shipType = (document.getElementById('vessel-ship-type') || {}).value || '';
   var owner    = (document.getElementById('vessel-owner') || {}).value || '';
   var flag     = (document.getElementById('vessel-flag') || {}).value || '';
+  var imo      = (document.getElementById('vessel-imo') || {}).value || '';
 
   if (!name) { notify('호선명을 입력해주세요.', 'err'); return; }
   if (type === 'retrofit' && !company) { notify('개조선박은 선사명을 입력해주세요.', 'err'); return; }
@@ -71,8 +72,10 @@ function addVessel() {
     ship_type:        shipType.trim(),
     owner:            owner.trim(),
     flag:             flag.trim(),
+    imo_number:       imo.trim(),
     contract_date:    date,
     delivery_date:    delivery,
+    products:         [],
     registered_at:    today()
   });
 
@@ -86,7 +89,7 @@ function addVessel() {
   if (document.getElementById('vessel-shipping-company')) {
     document.getElementById('vessel-shipping-company').value = '';
   }
-  ['vessel-ship-type','vessel-owner','vessel-flag'].forEach(function(id){
+  ['vessel-ship-type','vessel-owner','vessel-flag','vessel-imo'].forEach(function(id){
     var el = document.getElementById(id); if (el) el.value = '';
   });
   document.querySelectorAll('input[name="vessel-class"]').forEach(function(el){ el.checked = false; });
@@ -373,6 +376,45 @@ function assignVesselProductCode(vesselId, gubun, model) {
   notify('호선코드 자동 생성: ' + vessel.vessel_code + ' (완제품코드 ' + productCode + ')', 'ok');
 }
 
+/* BOM 등록 시 호선에 적용 제품(모델) 누적 — 한 호선 다중 모델 지원 (중복 제거)
+   공급제품(supply_product)은 적용 모델명 나열로 자동 동기화 */
+function addVesselProduct(vesselId, gubun, model) {
+  var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
+  if (!vessel || !model) return;
+  if (!vessel.products) vessel.products = [];
+  var key = normalizeModelKey(model);
+  var dup = vessel.products.some(function(p){ return p.gubun === gubun && normalizeModelKey(p.model) === key; });
+  if (!dup) {
+    vessel.products.push({ gubun: gubun, model: model, product_code: getProductCodeForModel(gubun, model) || '' });
+  }
+  vessel.supply_product = vessel.products.map(function(p){ return p.model; }).join(', ');
+  dbSave('vessel_master');
+}
+
+/* 호선의 적용 제품(모델) 표시 문자열 */
+function getVesselProductsLabel(vessel) {
+  var ps = (vessel && vessel.products) ? vessel.products : [];
+  if (ps.length) return ps.map(function(p){ return p.model; }).join(', ');
+  return vessel && vessel.supply_product ? vessel.supply_product : '';
+}
+
+/* 호선의 적용 모델 배열 (products[] 우선, 없으면 supply_product 분해) */
+function getVesselModels(vessel) {
+  var ps = (vessel && vessel.products) ? vessel.products : [];
+  if (ps.length) return ps.map(function(p){ return p.model; });
+  if (vessel && vessel.supply_product) {
+    return vessel.supply_product.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+  }
+  return [];
+}
+
+/* 호선 적용 제품(모델) — 목록용 HTML (2개 이상이면 줄바꿈으로 표시) */
+function getVesselProductsHTML(vessel) {
+  var models = getVesselModels(vessel);
+  if (!models.length) return '<span style="color:var(--text3);">-</span>';
+  return models.join('<br>');
+}
+
 function renderBOMEditor(items) {
   var wrap = document.getElementById('bom-editor-wrap');
   if (!wrap) return;
@@ -417,13 +459,15 @@ function saveBOMItems() {
   if (!vesselId) { notify('대상 호선을 먼저 선택하세요.', 'err'); return; }
   var rows = document.querySelectorAll('.bom-editor-row');
   if (rows.length === 0) { notify('등록할 품목이 없습니다.', 'err'); return; }
+  var bomGubun = _lastLoadedBomSelection ? _lastLoadedBomSelection.gubun : '';
+  var bomModel = _lastLoadedBomSelection ? _lastLoadedBomSelection.model : '';
   var count = 0;
   rows.forEach(function(row) {
     var code = row.querySelector('.bom-e-code').value.trim();
     var name = row.querySelector('.bom-e-name').value.trim();
     var qty  = parseInt(row.querySelector('.bom-e-qty').value) || 0;
     if (!code || qty < 1) return;
-    DB.vessel_bom.push({ bom_id: uid('BOM'), vessel_id: vesselId, item_code: code, item_name: name, required_qty: qty, registered_date: today(), shortage_ack: false, shortage_ack_at: null });
+    DB.vessel_bom.push({ bom_id: uid('BOM'), vessel_id: vesselId, item_code: code, item_name: name, required_qty: qty, gubun: bomGubun, model: bomModel, registered_date: today(), shortage_ack: false, shortage_ack_at: null });
     count++;
   });
   if (count === 0) { notify('유효한 품목이 없습니다.', 'err'); return; }
@@ -431,8 +475,11 @@ function saveBOMItems() {
   refreshSafetyStock(true);
   if (_lastLoadedBomSelection) {
     assignVesselProductCode(vesselId, _lastLoadedBomSelection.gubun, _lastLoadedBomSelection.model);
+    addVesselProduct(vesselId, _lastLoadedBomSelection.gubun, _lastLoadedBomSelection.model);
     _lastLoadedBomSelection = null;
   }
+  refreshVesselList();
+  if (typeof refreshCxopTab === 'function') refreshCxopTab();
   document.getElementById('bom-editor-wrap').style.display = 'none';
   document.getElementById('bom-save-all-btn').style.display = 'none';
   notify(count + '개 BOM 품목 등록 완료', 'ok');
@@ -521,6 +568,7 @@ function filterNotes(category) {
   document.querySelectorAll('.note-filter-btn').forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-filter') === category);
   });
+  resetPager('notes');
   refreshSpecialNotes();
 }
 
@@ -543,14 +591,16 @@ function refreshSpecialNotes() {
   };
   notes = notes.slice().sort(function(a, b){ return (order[a.category]||9) - (order[b.category]||9); });
 
+  var pagerEl = document.getElementById('pager-notes');
   if (notes.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">등록된 특이사항이 없습니다.</td></tr>'; return;
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">등록된 특이사항이 없습니다.</td></tr>';
+    if (pagerEl) pagerEl.innerHTML = ''; return;
   }
 
   var catColor = {
-    'QC': '#fcd34d', 'SCM': '#f87171', 'SW': '#60a5fa',
+    'QC': 'var(--warn)', 'SCM': 'var(--danger)', 'SW': 'var(--accent)',
     'CX': '#34d399', 'OP': '#fb923c', '커미셔닝': '#c084fc', '설계': '#a3e635', '기타': '#94a3b8',
-    '품질-QC': '#fcd34d', '납기-SCM': '#f87171', '품질': '#fcd34d', '납기': '#f87171'
+    '품질-QC': 'var(--warn)', '납기-SCM': 'var(--danger)', '품질': 'var(--warn)', '납기': 'var(--danger)'
   };
   var teamLabel = {
     'QC': 'QC팀 확인', 'SCM': 'SCM팀 확인', 'SW': 'SW팀 확인',
@@ -558,7 +608,8 @@ function refreshSpecialNotes() {
     '품질-QC': 'QC팀 확인', '납기-SCM': 'SCM팀 확인', '품질': 'QC팀 확인', '납기': 'SCM팀 확인'
   };
 
-  tbody.innerHTML = notes.map(function(n) {
+  var info = paginate(notes, 'notes');
+  tbody.innerHTML = info.slice.map(function(n) {
     var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === n.vessel_id; });
     var color  = catColor[n.category] || '#94a3b8';
     var verifiedHTML = n.verified
@@ -569,13 +620,14 @@ function refreshSpecialNotes() {
       : '';
     return '<tr>'
       + '<td>' + (vessel ? getVesselDisplayName(vessel) : '-') + '<br><span style="font-size:9px;color:var(--text3);">' + (vessel ? getVesselTypeLabel(vessel.vessel_type) : '') + '</span></td>'
-      + '<td><span class="badge" style="background:rgba(255,255,255,.08);color:' + color + ';border:1px solid ' + color + ';">' + n.category + '</span></td>'
+      + '<td><span class="badge" style="background:#f3f5f9;color:' + color + ';border:1px solid ' + color + ';">' + n.category + '</span></td>'
       + '<td>' + n.content + '</td>'
       + '<td>' + n.created_at + '</td>'
       + '<td>' + verifiedHTML + confirmBtn + '</td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="deleteSpecialNote(\'' + n.note_id + '\')">삭제</button></td>'
+      + '<td style="text-align:right;"><button class="btn btn-outline btn-sm" onclick="deleteSpecialNote(\'' + n.note_id + '\')">삭제</button></td>'
       + '</tr>';
   }).join('');
+  if (pagerEl) pagerEl.innerHTML = buildPager('notes', info, 'refreshSpecialNotes');
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -665,7 +717,19 @@ function refreshSafetyStockByItem() {
     if (!groups[key].item_name && bom.item_name) groups[key].item_name = bom.item_name;
   });
 
-  tbody.innerHTML = Object.keys(groups).sort().map(function(key) {
+  var term = ((document.getElementById('safety-search') || {}).value || '').trim().toLowerCase();
+  var keys = Object.keys(groups).sort().filter(function(key) {
+    if (!term) return true;
+    var g = groups[key];
+    return key.toLowerCase().indexOf(term) !== -1
+        || (g.item_name || '').toLowerCase().indexOf(term) !== -1;
+  });
+  if (keys.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">검색 조건에 맞는 품목이 없습니다.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = keys.map(function(key) {
     var g         = groups[key];
     var current   = DB.inventory.filter(function(i){ return i.item_code === key && i.status === 'IN_STOCK'; }).length;
     var shortage  = Math.max(0, g.required - current);
@@ -742,6 +806,7 @@ function filterVesselList(type) {
   document.querySelectorAll('.vessel-filter-btn').forEach(function(b){
     b.classList.toggle('active', b.getAttribute('data-vf') === type);
   });
+  resetPager('vessels');
   refreshVesselList();
 }
 
@@ -763,38 +828,46 @@ function refreshVesselList() {
   var countEl = document.getElementById('vessel-list-count');
   if (countEl) countEl.textContent = list.length + ' / ' + DB.vessel_master.length + '척';
 
+  var pagerEl = document.getElementById('pager-vessels');
   if (DB.vessel_master.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">등록된 호선이 없습니다.</td></tr>'; return;
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">등록된 호선이 없습니다.</td></tr>';
+    if (pagerEl) pagerEl.innerHTML = ''; return;
   }
   if (list.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">검색 조건에 맞는 호선이 없습니다.</td></tr>'; return;
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">검색 조건에 맞는 호선이 없습니다.</td></tr>';
+    if (pagerEl) pagerEl.innerHTML = ''; return;
   }
-  tbody.innerHTML = list.map(function(v) {
+  var info = paginate(list, 'vessels');
+  tbody.innerHTML = info.slice.map(function(v) {
     var bomCount  = DB.vessel_bom.filter(function(b){ return b.vessel_id === v.vessel_id; }).length;
     var noteCount = DB.vessel_notes.filter(function(n){ return n.vessel_id === v.vessel_id; }).length;
     var typeLabel = getVesselTypeLabel(v.vessel_type);
     var typeBadge = v.vessel_type === 'retrofit'
       ? '<span class="badge" style="background:rgba(124,110,245,.15);color:var(--purple-lt);">' + typeLabel + '</span>'
-      : '<span class="badge" style="background:rgba(30,111,200,.15);color:#60a5fa;">' + typeLabel + '</span>';
+      : '<span class="badge" style="background:rgba(30,111,200,.15);color:var(--accent);">' + typeLabel + '</span>';
     var classes    = v.vessel_classes || [];
     var classBadges = classes.length > 0
-      ? classes.map(function(c){ return '<span class="badge" style="background:rgba(29,78,216,.12);color:var(--accent);margin-right:3px;font-size:10px;">' + c + '</span>'; }).join('')
+      ? '<span style="display:inline-flex;gap:3px;white-space:nowrap;">'
+        + classes.map(function(c){ return '<span class="badge" style="background:rgba(29,78,216,.12);color:var(--accent);font-size:10px;">' + c + '</span>'; }).join('')
+        + '</span>'
       : '<span style="color:var(--text3);font-size:11px;">-</span>';
     return '<tr>'
       + '<td>' + typeBadge + '</td>'
       + '<td><span style="cursor:pointer;color:var(--accent);text-decoration:underline;" onclick="openVesselDetail(\'' + v.vessel_id + '\')" title="클릭 시 호선 상세 보기">' + getVesselDisplayName(v) + '</span></td>'
+      + '<td style="line-height:1.65;">' + getVesselProductsHTML(v) + '</td>'
       + '<td>' + classBadges + '</td>'
       + '<td>' + (v.contract_date || '-') + '</td>'
       + '<td>' + (v.delivery_date || '-') + '</td>'
       + '<td style="text-align:center;cursor:pointer;" onclick="openVesselBOMEditor(\'' + v.vessel_id + '\')">' + bomCount + '개</td>'
       + '<td style="text-align:center;">' + (noteCount > 0 ? '<span class="badge badge-partial">' + noteCount + '건</span>' : '-') + '</td>'
-      + '<td style="white-space:nowrap;">'
+      + '<td style="white-space:nowrap;text-align:right;">'
       +   '<button class="btn btn-outline btn-sm" onclick="editVessel(\'' + v.vessel_id + '\')">정보수정</button> '
       +   '<button class="btn btn-outline btn-sm" onclick="openVesselBOMEditor(\'' + v.vessel_id + '\')">BOM</button> '
       +   '<button class="btn btn-outline btn-sm" onclick="deleteVessel(\'' + v.vessel_id + '\')">삭제</button>'
       + '</td>'
       + '</tr>';
   }).join('');
+  if (pagerEl) pagerEl.innerHTML = buildPager('vessels', info, 'refreshVesselList');
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -820,6 +893,7 @@ function editVessel(vesselId) {
   set('ve-ship-type', v.ship_type);
   set('ve-owner', v.owner);
   set('ve-flag', v.flag);
+  set('ve-imo', v.imo_number);
   set('ve-date', v.contract_date);
   set('ve-delivery', v.delivery_date);
 
@@ -859,6 +933,7 @@ function saveVesselEdit() {
   v.ship_type        = document.getElementById('ve-ship-type').value.trim();
   v.owner            = document.getElementById('ve-owner').value.trim();
   v.flag             = document.getElementById('ve-flag').value.trim();
+  v.imo_number       = document.getElementById('ve-imo').value.trim();
   v.contract_date    = document.getElementById('ve-date').value;
   v.delivery_date    = document.getElementById('ve-delivery').value;
   v.vessel_classes   = Array.from(document.querySelectorAll('input[name="ve-class"]:checked')).map(function(el){ return el.value; });
@@ -886,7 +961,7 @@ function openVesselDetail(vesselId) {
 }
 
 function _renderVesselDetail(v) {
-  var box = 'padding:13px 15px;border:1px solid var(--border);border-radius:10px;margin-bottom:12px;background:rgba(255,255,255,.02);';
+  var box = 'padding:13px 15px;border:1px solid var(--border);border-radius:10px;margin-bottom:12px;background:#f3f5f9;';
   var lab = 'font-size:11px;font-weight:700;color:var(--text2);margin-bottom:9px;';
   var dash = '<span style="color:var(--text3);">-</span>';
 
@@ -901,7 +976,8 @@ function _renderVesselDetail(v) {
     + (v.vessel_type === 'retrofit' ? info('선사', v.shipping_company) : '')
     + info('호선명', v.vessel_name) + info('선종', v.ship_type) + info('OWNER', v.owner) + info('FLAG', v.flag)
     + info('선급(CLASS)', classes) + info('계약일', v.contract_date) + info('납품예정일', v.delivery_date)
-    + info('호선코드', v.vessel_code)
+    + info('IMO No', v.imo_number) + info('호선코드', v.vessel_code)
+    + info('제품(모델)', (v.products || []).map(function(p){ return p.model; }).join(', '))
     + '</div></div>';
 
   /* 요약 칩 (BOM/재고/특이사항/문서) */
@@ -915,12 +991,12 @@ function _renderVesselDetail(v) {
   var shippedCnt = invAssigned.filter(function(i){ return i.status === 'SHIPPED'; }).length;
   var noteCnt = DB.vessel_notes.filter(function(n){ return n.vessel_id === v.vessel_id; }).length;
   var docCnt  = (DB.vessel_docs || []).filter(function(d){ return d.vessel_id === v.vessel_id; }).length;
-  var chip = function(label, n, color){ return '<span style="display:inline-flex;gap:6px;align-items:center;padding:6px 11px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);font-size:11px;">'
+  var chip = function(label, n, color){ return '<span style="display:inline-flex;gap:6px;align-items:center;padding:6px 11px;border-radius:8px;background:#f3f5f9;border:1px solid var(--border);font-size:11px;">'
     + label + ' <strong style="color:' + (color || 'var(--text)') + ';">' + n + '</strong></span>'; };
   var summary = '<div style="' + box + '"><div style="' + lab + '">요약</div>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
     + chip('BOM 품목', boms.length, 'var(--accent)')
-    + chip('부족 품목', shortage, shortage > 0 ? '#f87171' : 'var(--success)')
+    + chip('부족 품목', shortage, shortage > 0 ? 'var(--danger)' : 'var(--success)')
     + chip('배정 재고', invAssigned.length)
     + chip('출고', shippedCnt)
     + chip('특이사항', noteCnt, noteCnt > 0 ? 'var(--warn)' : 'var(--text3)')

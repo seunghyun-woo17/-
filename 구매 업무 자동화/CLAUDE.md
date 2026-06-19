@@ -89,7 +89,7 @@
 | `suppliers` | 업체 마스터 |
 | `po_header` | 발주서 헤더 |
 | `po_line` | 발주서 라인 (품목별) |
-| `inventory` | 재고 (S/N 단위, status: IN_STOCK/SHIPPED/RENTED/INSPECTION_REQUESTED) |
+| `inventory` | 재고 (S/N 단위, status: IN_STOCK/SHIPPED/RENTED/INSPECTION_REQUESTED/**DEFECT**). DEFECT=검사 불량 처리 → 가용재고(IN_STOCK)에서 제외 |
 | `incoming_header` | 입고 헤더 (COMPLETE/SHORT/OVER) |
 | `incoming_line` | 입고 라인 (S/N별 스캔 기록) |
 | `inspection_cert` | 첨부 서류 (검사성적서·COC·거래명세서, 입고 건 단위) |
@@ -116,6 +116,7 @@
 ├── [설계 TAB]   호선·BOM·특이사항      ← phase0.js  (구현 완료)
 ├── [SCM TAB]    구매·입고
 │   ├── PO 발행                         ← phase1.js  (구현 완료)
+│   ├── 발행된 PO                       ← phase1.js  `refreshPoListTab()` (전체 PO 목록·검색·페이지네이션)
 │   ├── 입고 검수                       ← phase23.js (구현 완료)
 │   └── 발주·입고 이력                  ← phase5.js  (PO/입고 DB 조회 전용, 구현 완료)
 ├── [재고 TAB]   제품별 S/N 재고 (2단계 뷰)
@@ -128,8 +129,9 @@
                                         ← phase-cxop.js (구현 완료)
 ```
 
-> **내비게이션**: 좌측 **아이콘 사이드바**(`.sidebar` > `.main-tabs` > `.main-tab`, 호버 시 `.nav-tip` 툴팁). 레이아웃은 `.layout`(flex) = `.sidebar` + `.content`(`.topbar` + main-sections). `switchMainTab(data-tab)` 로직은 동일. `data-tab`: design/scm/inventory/inspection/qc/docs/cxop
-> CSS: `css/layout.css` 의 "사이드바 레이아웃" 섹션
+> **내비게이션**: 좌측 **접이식 사이드바**(`#sidebar.sidebar`). 기본은 **접힘**(`.collapsed` = 아이콘 레일, 호버 시 `.nav-tip` 툴팁), 좌측하단 토글 버튼(`toggleSidebar()`)으로 **펼침**(그룹 라벨 `.nav-group-label` + `.nav-text` 텍스트 라벨). 상태는 localStorage(`avikus_sidebar_collapsed`)에 저장, 로드 시 `restoreSidebarState()`로 복원 (둘 다 `js/utils.js`). 구조: `.sidebar`(`.sidebar-head` 브랜드 + `.main-tabs` > `.main-tab` + `.sidebar-footer` 토글) / `.content`(`.topbar` + main-sections). `switchMainTab(data-tab)` 로직 동일. `data-tab`: design/scm/inventory/inspection/qc/docs/cxop
+> 디자인 레퍼런스: **HiNAS 365** (clean SaaS 대시보드, 단일 블루 accent). 색상 토큰은 `css/variables.css`(`--accent`/`--accent-soft`/`--border`/그림자·라운드·사이드바 너비), 사이드바·상단바는 `css/layout.css`, 테이블·카드·배지는 `css/components.css`. 2026-06 UI 개편 시 다크 테마 잔재(흰배경 위 흰 rgba·옅은 글씨) 정리 완료
+> **공용 페이지네이션**(`js/utils.js`): `paginate(list, name)` + `buildPager(name, info, '렌더함수명')` + `gotoPage`/`resetPager`. 15행/페이지. `<div id="pager-XXX">`에 주입. 적용: 호선목록(vessels)·특이사항(notes)·CX/OP(cxop)·발행PO(po-all)·발주이력(po-history)·검사상세(insp-detail). 검색·필터 핸들러에서 `resetPager(name)`로 1쪽 리셋
 
 ---
 
@@ -143,9 +145,10 @@
 - 호선 목록 행: **호선명 클릭 → 상세 보기(360 뷰)** `openVesselDetail` (기본정보·요약·FAT·CX/OP·특이사항 집계). 버튼 **[정보수정]**(`editVessel`/`saveVesselEdit` — 호선 마스터 편집) · **[BOM]**(`openVesselBOMEditor`) · **[삭제]**
 - 호선 특이사항 (QC/SCM/SW/CX/OP/커미셔닝/설계/기타) 등록·필터·확인 처리
 
-### CX/OP TAB — 호선 중심 설치·계약·커미셔닝·시운전 (phase-cxop.js)
-- 호선별 CX/OP 현황 조회 테이블 (좌우 스크롤): 호선/구분/YARD/공급제품/선종/CLASS/OWNER/공사비용/D·L/실제인도일/Series/시운전·커미셔닝 시작·종료/REMARK
-- 행 **[입력/수정]** → 모달(`openCxopModal`/`saveCxop`)로 항목 기입. 데이터는 단일 `vessel_master`에 저장(설계 탭과 공유)
+### CX/OP TAB — 호선 중심 설치·계약·커미셔닝·시운전 (phase-cxop.js) — 서브탭 2개: 현황 / 입력·수정
+- **[현황]** `refreshCxopTab` — 설계 호선목록과 동일 디자인(카드+검색바+유형필터 전체/신조/개조+건수배지). 좌우 스크롤 테이블: 호선/구분/YARD/공급제품/선종/CLASS/OWNER/공사비용/D·L/실제인도일/Series/시운전·커미셔닝 시작·종료/REMARK. 행 **[입력/수정]** → 입력 탭으로 전환 + 해당 호선 자동 선택(`editCxopInput`)
+- **[입력/수정]** — ① 수기: 호선 선택(`cxi-vessel`) → 인라인 폼(`cxi-*`) → `saveCxopInline`. ② Excel 일괄 매핑: 고정 템플릿 다운로드(`downloadCxopTemplate`) → 업로드(`onCxopExcelUpload`/`applyCxopExcel`). **호선명으로 기존 호선 매칭, CX/OP 스칼라만 업데이트**(미일치 행은 건너뜀). 헤더→필드 매핑은 `_CXOP_HMAP`
+- 구분(신조/개조)·선급(CLASS)은 [설계] 탭에서만 관리. 데이터는 단일 `vessel_master`에 저장(설계 탭과 공유). 서브탭 전환 `switchCxopTab(list|input)`, 필터 `filterCxopList`
 
 ### SCM TAB — PO 발행 (phase1.js)
 - PO Ref No 자동생성 (`generatePORefNo()`)
@@ -169,6 +172,13 @@
 - ② 품목 클릭 시 드릴다운 → 해당 품목의 S/N 단위 상세 테이블(`tbl-inv-detail`) 표시
 - 출고/대여/검사요청: 드릴다운 화면에서 체크박스 선택 → 액션 버튼 → 모달 확인 → 처리 (`openOutgoingModal`/`confirmOutgoing`)
 - 관리자 수기 재고 등록 (PIN: 1234, `toggleAdminPanel`/`addManualInventory`)
+- 그룹 집계 컬럼: 전체/재고/출고/대여중/검사요청/**불량(DEFECT)**
+
+### 검사요청 TAB (phase-inspection.js) — `outgoing_log` action=INSPECTION_REQUESTED
+- 팀별(QC/SW/공통) 품목 집계 → [상세보기] 드릴다운(`openInspectionDetail`)
+- **검사완료**: 행 [검사완료] → 모달(`openInspectionResultModal`/`saveInspectionResult`)에서 **정상/불량·검사자·메모** 입력. 불량이면 해당 S/N `inventory.status='DEFECT'`로 변경(가용재고 제외). 로그 필드: `result`('PASS'|'FAIL')·`inspector`·`inspection_memo`·`completed`·`completed_date`
+- **행 클릭** → 검사 상세 모달(`openInspectionLogDetail`): 정상/불량·검사자·완료일·메모 등 확인
+- 상세 헤더 "완료일/검사자" 우측정렬, 목록 페이지네이션(`insp-detail`)
 
 ### QC TAB — FAT 관리 (phase-fat.js, 구현 완료) — 서브탭 3개: FAT 진행 / 선급별 참고문서 / MED 인증서
 - **FAT 대상 자동 추출**: `vessel_classes`에 DNV·ABS 포함 호선 (대상 선급은 `FAT_TARGET_CLASSES` 배열로 확장). **선급별 분리** — 호선 1척이 DNV·ABS면 FAT 2건

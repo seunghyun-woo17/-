@@ -24,15 +24,21 @@ function refreshPhase5() {
   if (statOpen) statOpen.textContent = DB.po_header.filter(function(p){ return p.status === 'OPEN' || p.status === 'PARTIAL'; }).length;
 
   /* ── PO_HEADER 테이블 ── */
-  var tblPO = document.getElementById('tbl-po');
+  var tblPO   = document.getElementById('tbl-po');
+  var pagerPO = document.getElementById('pager-po-history');
   if (tblPO) {
-    tblPO.innerHTML = DB.po_header.length === 0
-      ? '<tr><td colspan="6" class="empty-state">데이터 없음</td></tr>'
-      : DB.po_header.map(function(p) {
+    if (DB.po_header.length === 0) {
+      tblPO.innerHTML = '<tr><td colspan="6" class="empty-state">데이터 없음</td></tr>';
+      if (pagerPO) pagerPO.innerHTML = '';
+    } else {
+      var poInfo = paginate(DB.po_header.slice().reverse(), 'po-history');
+      tblPO.innerHTML = poInfo.slice.map(function(p) {
           var badge = p.status === 'OPEN' ? 'badge-open' : p.status === 'PARTIAL' ? 'badge-partial' : p.status === 'COMPLETE' ? 'badge-complete' : 'badge-cancel';
           var selected = (_selectedPOId === p.po_id);
           return '<tr style="cursor:pointer;' + (selected ? 'background:rgba(29,78,216,.08);' : '') + '" onclick="selectPOForLineDetail(\'' + p.po_id + '\')"><td><strong>' + p.po_ref_no + '</strong></td><td>' + p.issue_date + '</td><td>' + p.due_date + '</td><td>' + p.supplier_code + '</td><td>' + p.vessel_code + '</td><td><span class="badge ' + badge + '">' + p.status + '</span></td></tr>';
         }).join('');
+      if (pagerPO) pagerPO.innerHTML = buildPager('po-history', poInfo, 'refreshPhase5');
+    }
   }
 
   /* ── PO_LINE 테이블 (선택된 PO로 드릴다운 필터링) ── */
@@ -112,7 +118,7 @@ function openShortageModal() {
           + '<td class="mono">' + s.code + '</td>'
           + '<td style="text-align:center;">' + s.current + '</td>'
           + '<td style="text-align:center;font-weight:600;">' + s.required + '</td>'
-          + '<td style="text-align:center;color:#f87171;font-weight:700;">' + s.shortage + '</td>'
+          + '<td style="text-align:center;color:var(--danger);font-weight:700;">' + s.shortage + '</td>'
           + '</tr>';
       }).join('');
     }
@@ -131,6 +137,7 @@ function _inventoryStatusInfo(status) {
   else if (status === 'SHIPPED')              return { label: '출고',   badgeClass: 'badge-complete' };
   else if (status === 'RENTED')               return { label: '대여중', badgeClass: 'badge-partial' };
   else if (status === 'INSPECTION_REQUESTED') return { label: '검사요청', badgeClass: 'badge-open' };
+  else if (status === 'DEFECT')               return { label: '불량',   badgeClass: 'badge-short' };
   return { label: status, badgeClass: 'badge-stock' };
 }
 
@@ -190,9 +197,9 @@ function refreshInventoryGroups() {
       stripEl.innerHTML = '<div style="padding:9px 13px;border:1px solid var(--border);border-radius:8px;background:rgba(34,197,94,0.06);font-size:12px;color:var(--success);font-weight:600;">✓ 모든 BOM 품목 재고 충족</div>';
     } else {
       stripEl.innerHTML = '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 13px;border:1px solid rgba(248,113,113,0.35);border-radius:8px;background:rgba(248,113,113,0.06);">'
-        + '<span style="font-size:12px;font-weight:700;color:#f87171;">⚠ 부족 품목 ' + shortItems.length + '종</span>'
+        + '<span style="font-size:12px;font-weight:700;color:var(--danger);">⚠ 부족 품목 ' + shortItems.length + '종</span>'
         + '<span style="font-size:11px;color:var(--text2);">BOM 필요수량 대비 재고 부족</span>'
-        + '<button class="btn btn-outline btn-sm" style="margin-left:auto;border-color:rgba(248,113,113,0.5);color:#f87171;" onclick="openShortageModal()">상세 보기 →</button>'
+        + '<button class="btn btn-outline btn-sm" style="margin-left:auto;border-color:rgba(248,113,113,0.5);color:var(--danger);" onclick="openShortageModal()">상세 보기 →</button>'
         + '</div>';
     }
   }
@@ -200,12 +207,12 @@ function refreshInventoryGroups() {
   var tblGroups = document.getElementById('tbl-inv-groups');
   if (tblGroups) {
     if (DB.inventory.length === 0) {
-      tblGroups.innerHTML = '<tr><td colspan="8" class="empty-state">데이터 없음 — 입고 완료 처리 후 재고가 등록됩니다.</td></tr>';
+      tblGroups.innerHTML = '<tr><td colspan="9" class="empty-state">데이터 없음 — 입고 완료 처리 후 재고가 등록됩니다.</td></tr>';
     } else {
       var groups = {};
       DB.inventory.forEach(function(i) {
         var key = i.item_code || '(미지정)';
-        if (!groups[key]) groups[key] = { item_code: key, item_name: i.item_name || '', total: 0, IN_STOCK: 0, SHIPPED: 0, RENTED: 0, INSPECTION_REQUESTED: 0 };
+        if (!groups[key]) groups[key] = { item_code: key, item_name: i.item_name || '', total: 0, IN_STOCK: 0, SHIPPED: 0, RENTED: 0, INSPECTION_REQUESTED: 0, DEFECT: 0 };
         groups[key].total++;
         if (groups[key][i.status] !== undefined) groups[key][i.status]++;
         if (!groups[key].item_name && i.item_name) groups[key].item_name = i.item_name;
@@ -220,6 +227,7 @@ function refreshInventoryGroups() {
           + '<td style="text-align:center;"><span class="badge badge-complete">' + g.SHIPPED + '</span></td>'
           + '<td style="text-align:center;"><span class="badge badge-partial">' + g.RENTED + '</span></td>'
           + '<td style="text-align:center;"><span class="badge badge-open">' + g.INSPECTION_REQUESTED + '</span></td>'
+          + '<td style="text-align:center;">' + (g.DEFECT > 0 ? '<span class="badge badge-short">' + g.DEFECT + '</span>' : '<span style="color:var(--text3);">0</span>') + '</td>'
           + '<td style="text-align:center;"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">상세 보기 →</button></td>'
           + '</tr>';
       }).join('');
@@ -325,10 +333,10 @@ function _renderInventoryItemModal(mcCode) {
     });
   var historyHTML = historyRows.map(function(h) {
     var tagsHTML = h.tags.map(function(t){
-      return '<span style="font-size:10px;color:' + t.color + ';background:rgba(255,255,255,0.05);padding:1px 6px;border-radius:10px;border:1px solid var(--border);">' + t.text + '</span>';
+      return '<span style="font-size:10px;color:' + t.color + ';background:#f3f5f9;padding:1px 6px;border-radius:10px;border:1px solid var(--border);">' + t.text + '</span>';
     }).join('');
     var noteHTML = h.note
-      ? '<div style="margin-top:5px;padding:4px 8px;background:rgba(255,255,255,0.03);border-left:2px solid var(--border);border-radius:0 4px 4px 0;font-size:11px;color:var(--text2);">메모: ' + h.note + '</div>'
+      ? '<div style="margin-top:5px;padding:4px 8px;background:#f3f5f9;border-left:2px solid var(--border);border-radius:0 4px 4px 0;font-size:11px;color:var(--text2);">메모: ' + h.note + '</div>'
       : '';
     return '<div style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--input-bg);">'
       + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
@@ -340,11 +348,16 @@ function _renderInventoryItemModal(mcCode) {
       + '</div>';
   }).join('');
 
-  var actionsHTML = item.status === 'SHIPPED'
-    ? '<span style="font-size:11px;color:var(--text3);">현재 상태(출고)에서는 추가 처리가 불가합니다.</span>'
-    : '<button class="btn btn-outline btn-sm" style="border-color:var(--accent);color:var(--accent);" onclick="inventoryItemAction(\'' + mcCode + '\',\'RENTED\')">대여</button>'
-    + '<button class="btn btn-outline btn-sm" style="border-color:var(--warn);color:var(--warn);" onclick="inventoryItemAction(\'' + mcCode + '\',\'INSPECTION_REQUESTED\')">검사요청</button>'
-    + '<span style="font-size:10px;color:var(--text3);display:block;margin-top:6px;">출고는 [SCM] 탭 → 출고 서브탭에서 QR 스캔으로 처리하세요.</span>';
+  var actionsHTML;
+  if (item.status === 'SHIPPED') {
+    actionsHTML = '<span style="font-size:11px;color:var(--text3);">현재 상태(출고)에서는 추가 처리가 불가합니다.</span>';
+  } else if (item.status === 'DEFECT') {
+    actionsHTML = '<span style="font-size:11px;color:var(--danger);">불량 처리된 재고입니다. 가용 재고에서 제외되었습니다.</span>';
+  } else {
+    actionsHTML = '<button class="btn btn-outline btn-sm" style="border-color:var(--accent);color:var(--accent);" onclick="inventoryItemAction(\'' + mcCode + '\',\'RENTED\')">대여</button>'
+      + '<button class="btn btn-outline btn-sm" style="border-color:var(--warn);color:var(--warn);" onclick="inventoryItemAction(\'' + mcCode + '\',\'INSPECTION_REQUESTED\')">검사요청</button>'
+      + '<span style="font-size:10px;color:var(--text3);display:block;margin-top:6px;">출고는 [SCM] 탭 → 출고 서브탭에서 QR 스캔으로 처리하세요.</span>';
+  }
 
   document.getElementById('inv-item-modal-title').textContent = '재고 상세 — ' + item.serial_no;
   document.getElementById('inv-item-modal-body').innerHTML =
@@ -403,7 +416,7 @@ function openOutgoingModal(action, items) {
   document.getElementById('outgoing-modal-title').textContent = labels[action] + ' 처리';
   document.getElementById('outgoing-action-hidden').value = action;
   document.getElementById('outgoing-modal-info').innerHTML =
-    '<div style="padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;">'
+    '<div style="padding:10px 12px;background:#f3f5f9;border:1px solid var(--border);border-radius:8px;margin-bottom:12px;">'
   + '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">선택된 제품 (' + items.length + '개)</div>'
   + items.map(function(s){ return '<div style="font-family:monospace;font-size:11px;color:var(--text2);">• ' + s.sn + '</div>'; }).join('')
   + '</div>';

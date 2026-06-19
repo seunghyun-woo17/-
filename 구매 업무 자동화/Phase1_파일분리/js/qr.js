@@ -69,7 +69,7 @@
       wrap.appendChild(img);return dataUrl;
     } catch(err) {
       console.error('QR 생성 오류:', err);
-      wrap.innerHTML='<div style="width:'+pixelSize+'px;height:'+pixelSize+'px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fca5a5;text-align:center;padding:8px;">QR 오류<br>'+err.message+'</div>';
+      wrap.innerHTML='<div style="width:'+pixelSize+'px;height:'+pixelSize+'px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--danger);text-align:center;padding:8px;">QR 오류<br>'+err.message+'</div>';
       global._lastQRSrc='';return '';
     }
   };

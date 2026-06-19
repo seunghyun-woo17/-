@@ -102,7 +102,7 @@
         lines.map(function(line) {
           var done      = scanState.scannedItems.filter(function(i){ return i.item === line.item_code; }).length;
           var remaining = Math.max(line.ordered_qty - done, 0);
-          return '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;margin-bottom:4px;">'
+          return '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f3f5f9;border-radius:6px;margin-bottom:4px;">'
             + '<span style="font-family:monospace;font-size:11px;color:var(--accent);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (line.description || '') + '">'
             + line.item_code
             + '</span>'
