@@ -80,6 +80,7 @@
   .cat-doc  { background:#6a1b9a; }
   .cat-fat  { background:#ad1457; }
   .cat-sys  { background:#37474f; }
+  .cat-aiq  { background:#00838f; }
 
   /* ID 셀 */
   td.id-cell {
@@ -167,8 +168,9 @@
   <div class="cover-sub">구매·자재관리 시스템 및 향후 확장 모듈 전체 기능 요구사항 정의</div>
   <div class="cover-meta">
     <span><strong>문서번호</strong> AV-ERP-REQ-001</span>
-    <span><strong>버전</strong> v1.0</span>
+    <span><strong>버전</strong> v1.1</span>
     <span><strong>작성일</strong> 2026-05-19</span>
+    <span><strong>개정</strong> 2026-06-19 (AI 질의 추가)</span>
     <span><strong>작성자</strong> 우승현 (SCM팀)</span>
     <span><strong>검토대상</strong> 백엔드 개발자</span>
     <span><strong>상태</strong> 프론트 프로토타입 완성 / 백엔드 개발 전</span>
@@ -185,9 +187,9 @@
 
   <!-- 통계 -->
   <div class="summary-grid">
-    <div class="sum-card"><div class="sum-num">67</div><div class="sum-label">전체 요구사항</div></div>
-    <div class="sum-card"><div class="sum-num" style="color:#d32f2f;">31</div><div class="sum-label">중요도 상</div></div>
-    <div class="sum-card"><div class="sum-num" style="color:#e65100;">27</div><div class="sum-label">중요도 중</div></div>
+    <div class="sum-card"><div class="sum-num">72</div><div class="sum-label">전체 요구사항</div></div>
+    <div class="sum-card"><div class="sum-num" style="color:#d32f2f;">33</div><div class="sum-label">중요도 상</div></div>
+    <div class="sum-card"><div class="sum-num" style="color:#e65100;">30</div><div class="sum-label">중요도 중</div></div>
     <div class="sum-card"><div class="sum-num" style="color:#558b2f;">9</div><div class="sum-label">중요도 하</div></div>
   </div>
 
@@ -779,6 +781,49 @@
           <td class="req-name">간이 스캔 시뮬레이터</td>
           <td class="req-body">시스템은 개발·테스트 환경에서 실제 QR 스캐너 없이 버튼 클릭만으로 PO QR 스캔 및 제품 QR 단건/일괄 스캔을 시뮬레이션할 수 있다. 서버 전환 전 삭제 예정인 개발 전용 기능이다.</td>
           <td class="priority pri-lo">하</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================================================================ AIQ ================================================================ -->
+  <div class="section-wrap">
+    <div class="section-label">AI 자연어 질의 (AIQ) <span class="section-count">5개 요구사항 · 서버 전환 후 신규</span></div>
+    <table class="req-table">
+      <thead>
+        <tr><th style="width:80px;">ID 명</th><th style="width:70px;">구분</th><th style="width:130px;">요구사항명</th><th>요구사항 내용</th><th style="width:70px;">중요도</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="id-cell">AIQ01</td>
+          <td class="cat cat-aiq" rowspan="5">AI<br>질의</td>
+          <td class="req-name">자연어 질의 입력</td>
+          <td class="req-body">사용자는 ERP 화면의 질의 입력창에 자연어로 질문할 수 있다. (예: "이번 주 납품 예정 호선과 건수 알려줘", "DNV 선급 호선 중 FAT 미완료 건은?") 데이터를 직접 조회하지 않아도 질문만으로 답을 얻을 수 있다.</td>
+          <td class="priority pri-mid">중</td>
+        </tr>
+        <tr>
+          <td class="id-cell">AIQ02</td>
+          <td class="req-name">DB 조회 도구 연동 (Tool Use)</td>
+          <td class="req-body">시스템은 Claude API의 도구 사용(함수 호출)으로 질문 의도에 맞는 읽기 전용 조회 도구(호선·재고·PO·입고·FAT 등)를 자동 선택·호출한다. 실제 조회는 백엔드가 PostgreSQL에 실행하며, AI는 DB에 직접 접속하지 않는다.</td>
+          <td class="priority pri-mid">중</td>
+        </tr>
+        <tr>
+          <td class="id-cell">AIQ03</td>
+          <td class="req-name">권한 기반 조회</td>
+          <td class="req-body">AI 질의의 데이터 조회는 로그인 사용자의 권한 범위 내에서만 수행된다. 백엔드 도구 실행 시 사용자 권한으로 필터링하며, 권한 밖 데이터는 노출하지 않는다.</td>
+          <td class="priority pri-hi">상</td>
+        </tr>
+        <tr>
+          <td class="id-cell">AIQ04</td>
+          <td class="req-name">한국어 답변 생성</td>
+          <td class="req-body">시스템은 조회 결과를 근거로 한국어 답변을 생성한다. 가능한 경우 건수·호선명·핵심 수치를 요약하고, 조회 근거(대상 기간·필터)를 함께 제시한다.</td>
+          <td class="priority pri-mid">중</td>
+        </tr>
+        <tr>
+          <td class="id-cell">AIQ05</td>
+          <td class="req-name">보안 (키 보관·읽기전용)</td>
+          <td class="req-body">Anthropic API 키는 서버 환경변수로만 보관하고 브라우저에 노출하지 않는다. AI에 노출되는 도구는 읽기 전용으로 제한하며, 모델이 생성한 임의 SQL을 무검증 실행하지 않는다.</td>
+          <td class="priority pri-hi">상</td>
         </tr>
       </tbody>
     </table>

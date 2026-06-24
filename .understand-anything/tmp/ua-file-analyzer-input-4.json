@@ -1,0 +1,35 @@
+{
+  "projectRoot": "C:/Users/seunghyunwoo/Desktop/github/SCMAUTO",
+  "batchFiles": [
+    {"path": "구매 업무 자동화/docs/모듈가이드/00_개요.md", "language": "markdown", "sizeLines": 121, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/01_db.md", "language": "markdown", "sizeLines": 71, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/02_utils.md", "language": "markdown", "sizeLines": 59, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/03_qr.md", "language": "markdown", "sizeLines": 37, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/04_phase0.md", "language": "markdown", "sizeLines": 92, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/05_phase1.md", "language": "markdown", "sizeLines": 52, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/06_phase23.md", "language": "markdown", "sizeLines": 68, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/07_phase4.md", "language": "markdown", "sizeLines": 88, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/08_phase5.md", "language": "markdown", "sizeLines": 66, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md", "language": "markdown", "sizeLines": 26, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/10_app.md", "language": "markdown", "sizeLines": 35, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/11_dev-mock.md", "language": "markdown", "sizeLines": 30, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md", "language": "markdown", "sizeLines": 37, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/모듈가이드/13_phase-fat.md", "language": "markdown", "sizeLines": 79, "fileCategory": "docs"}
+  ],
+  "batchImportData": {
+    "구매 업무 자동화/docs/모듈가이드/00_개요.md": [],
+    "구매 업무 자동화/docs/모듈가이드/01_db.md": [],
+    "구매 업무 자동화/docs/모듈가이드/02_utils.md": [],
+    "구매 업무 자동화/docs/모듈가이드/03_qr.md": [],
+    "구매 업무 자동화/docs/모듈가이드/04_phase0.md": [],
+    "구매 업무 자동화/docs/모듈가이드/05_phase1.md": [],
+    "구매 업무 자동화/docs/모듈가이드/06_phase23.md": [],
+    "구매 업무 자동화/docs/모듈가이드/07_phase4.md": [],
+    "구매 업무 자동화/docs/모듈가이드/08_phase5.md": [],
+    "구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md": [],
+    "구매 업무 자동화/docs/모듈가이드/10_app.md": [],
+    "구매 업무 자동화/docs/모듈가이드/11_dev-mock.md": [],
+    "구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md": [],
+    "구매 업무 자동화/docs/모듈가이드/13_phase-fat.md": []
+  }
+}

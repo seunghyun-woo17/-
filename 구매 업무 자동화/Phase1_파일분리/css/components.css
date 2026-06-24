@@ -59,6 +59,14 @@
 .form-group input::placeholder,
 .form-group textarea::placeholder { color:var(--text4); }
 
+/* PO 조건/특이사항 — 동적 행 입력 (phase1) */
+.po-term-input {
+  background:var(--input-bg); border:1px solid var(--border2); border-radius:var(--radius-sm);
+  padding:9px 12px; color:var(--text); font-size:13px; outline:none;
+  transition:border-color .15s, box-shadow .15s; font-family:inherit;
+}
+.po-term-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,.12); }
+
 /* ── 페이지네이션 ── */
 .pager        { display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-top:12px; }
 .pager-btn    { min-width:30px; height:30px; padding:0 9px; border:1px solid var(--border2); background:var(--card); color:var(--text2); border-radius:var(--radius-sm); font-size:12px; font-weight:600; cursor:pointer; transition:all .14s; }

@@ -1,0 +1,167 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 3,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "구매 업무 자동화/CLAUDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 259,
+      "nonEmptyLines": 204,
+      "sections": [
+        {
+          "heading": "Avikus 부산사무소 ERP — 프로젝트 컨텍스트",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "프로젝트 정체성",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "현재 구현 상태",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "완성된 것",
+          "level": 3,
+          "line": 15
+        },
+        {
+          "heading": "미완성 / 예정",
+          "level": 3,
+          "line": 20
+        },
+        {
+          "heading": "폴더 구조",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "핵심 설계 원칙",
+          "level": 2,
+          "line": 69
+        },
+        {
+          "heading": "DB 테이블 목록 (현재 localStorage 기준)",
+          "level": 2,
+          "line": 83
+        },
+        {
+          "heading": "추가 예정 테이블 (CX·OP 확장)",
+          "level": 3,
+          "line": 106
+        },
+        {
+          "heading": "ERP 탭 구조 (현재)",
+          "level": 2,
+          "line": 113
+        },
+        {
+          "heading": "탭별 기능 요약",
+          "level": 2,
+          "line": 139
+        },
+        {
+          "heading": "설계 TAB — 호선·BOM·특이사항 (phase0.js)",
+          "level": 3,
+          "line": 141
+        },
+        {
+          "heading": "CX/OP TAB — 호선 중심 설치·계약·커미셔닝·시운전 (phase-cxop.js) — 서브탭 2개: 현황 / 입력·수정",
+          "level": 3,
+          "line": 149
+        },
+        {
+          "heading": "SCM TAB — PO 발행 (phase1.js)",
+          "level": 3,
+          "line": 154
+        },
+        {
+          "heading": "SCM TAB — 입고 검수 (phase23.js)",
+          "level": 3,
+          "line": 160
+        },
+        {
+          "heading": "SCM TAB — 발주·입고 이력 (phase5.js `refreshPhase5()`)",
+          "level": 3,
+          "line": 167
+        },
+        {
+          "heading": "재고 TAB — 제품별 S/N 재고 (2단계 뷰) (phase5.js `refreshInventoryGroups()`)",
+          "level": 3,
+          "line": 171
+        },
+        {
+          "heading": "검사요청 TAB (phase-inspection.js) — `outgoing_log` action=INSPECTION_REQUESTED",
+          "level": 3,
+          "line": 178
+        },
+        {
+          "heading": "QC TAB — FAT 관리 (phase-fat.js, 구현 완료) — 서브탭 3개: FAT 진행 / 선급별 참고문서 / MED 인증서",
+          "level": 3,
+          "line": 184
+        },
+        {
+          "heading": "문서 산출물 TAB — Incoming Report (phase4.js)",
+          "level": 3,
+          "line": 195
+        },
+        {
+          "heading": "호선 중심 데이터 모델 확장 (CX·OP — 2026-06 결정)",
+          "level": 2,
+          "line": 203
+        },
+        {
+          "heading": "자주 묻는 개발 Q&A",
+          "level": 2,
+          "line": 224
+        },
+        {
+          "heading": "서버 전환 로드맵 요약",
+          "level": 2,
+          "line": 249
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 23
+      }
+    },
+    {
+      "path": "구매 업무 자동화/avikus_system_report.html",
+      "language": "html",
+      "fileCategory": "markup",
+      "totalLines": 1048,
+      "nonEmptyLines": 968,
+      "metrics": {}
+    },
+    {
+      "path": "구매 업무 자동화/readme.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 3,
+      "nonEmptyLines": 2,
+      "sections": [
+        {
+          "heading": "코드를 앞으로 작성시  주의사항",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    }
+  ]
+}

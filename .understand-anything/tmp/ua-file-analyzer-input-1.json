@@ -1,0 +1,13 @@
+{
+  "projectRoot": "C:/Users/seunghyunwoo/Desktop/github/SCMAUTO",
+  "batchFiles": [
+    {"path": "구매 업무 자동화/CLAUDE.md", "language": "markdown", "sizeLines": 259, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/avikus_system_report.html", "language": "html", "sizeLines": 1048, "fileCategory": "markup"},
+    {"path": "구매 업무 자동화/readme.md", "language": "markdown", "sizeLines": 2, "fileCategory": "docs"}
+  ],
+  "batchImportData": {
+    "구매 업무 자동화/CLAUDE.md": [],
+    "구매 업무 자동화/avikus_system_report.html": [],
+    "구매 업무 자동화/readme.md": []
+  }
+}

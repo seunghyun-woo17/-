@@ -1,0 +1,91 @@
+[
+  {
+    "id": "layer:data",
+    "name": "데이터·저장 계층",
+    "description": "localStorage 추상화 레이어(db.js)로 DB 테이블 스키마·저장·QR 페이로드 직렬화를 담당하며, 서버 전환 시 api.js로 교체될 단일 영속화 지점이다.",
+    "nodeIds": [
+      "file:구매 업무 자동화/Phase1_파일분리/js/db.js"
+    ]
+  },
+  {
+    "id": "layer:utility",
+    "name": "공통 유틸 계층",
+    "description": "탭 전환·알림(notify)·페이지네이션 등 전역 헬퍼(utils.js), QR 생성/파싱(qr.js), 개발 전용 스캔 시뮬레이터(dev-mock.js)를 포함한 화면 전반에서 재사용되는 공통 모듈이다.",
+    "nodeIds": [
+      "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/dev-mock.js"
+    ]
+  },
+  {
+    "id": "layer:feature",
+    "name": "화면·탭 로직 계층",
+    "description": "Phase 0~5 및 CxOP·FAT·검사요청 탭별 화면 로직(호선·BOM·PO 발행·입고 검수·재고/출고)과 app.js 부트스트랩을 담은 ERP의 핵심 기능 모듈 묶음이다.",
+    "nodeIds": [
+      "file:구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js"
+    ]
+  },
+  {
+    "id": "layer:ui",
+    "name": "스타일(UI) 계층",
+    "description": "variables.css의 디자인 토큰을 기반으로 layout·components·phases CSS가 사이드바·공통 컴포넌트·Phase별 전용 화면 스타일을 정의하는 프리젠테이션 계층이다.",
+    "nodeIds": [
+      "file:구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "file:구매 업무 자동화/Phase1_파일분리/css/layout.css",
+      "file:구매 업무 자동화/Phase1_파일분리/css/components.css",
+      "file:구매 업무 자동화/Phase1_파일분리/css/phases.css"
+    ]
+  },
+  {
+    "id": "layer:entry",
+    "name": "진입·마크업 계층",
+    "description": "모든 Phase 탭 마크업을 담고 12개 JS·CSS를 로드하는 진입 HTML(index.html)과 PO 발행 기능이 생성한 발주서 HTML 산출물로 구성된 SPA 진입·출력 계층이다.",
+    "nodeIds": [
+      "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "file:구매 업무 자동화/PO 파일/PO_A-PO-H-250090_2026-04-17.html"
+    ]
+  },
+  {
+    "id": "layer:documentation",
+    "name": "문서·명세 계층",
+    "description": "프로젝트 컨텍스트(CLAUDE.md)·백엔드 명세·요구사항 정의서·DB 전환 로드맵·모듈가이드 등 프론트 프로토타입과 백엔드 전환을 잇는 모든 문서와 작성 지침 메모를 포함한다.",
+    "nodeIds": [
+      "document:구매 업무 자동화/CLAUDE.md",
+      "document:구매 업무 자동화/avikus_system_report.html",
+      "document:구매 업무 자동화/readme.md",
+      "document:구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "document:구매 업무 자동화/docs/모듈가이드/01_db.md",
+      "document:구매 업무 자동화/docs/모듈가이드/02_utils.md",
+      "document:구매 업무 자동화/docs/모듈가이드/03_qr.md",
+      "document:구매 업무 자동화/docs/모듈가이드/04_phase0.md",
+      "document:구매 업무 자동화/docs/모듈가이드/05_phase1.md",
+      "document:구매 업무 자동화/docs/모듈가이드/06_phase23.md",
+      "document:구매 업무 자동화/docs/모듈가이드/07_phase4.md",
+      "document:구매 업무 자동화/docs/모듈가이드/08_phase5.md",
+      "document:구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md",
+      "document:구매 업무 자동화/docs/모듈가이드/10_app.md",
+      "document:구매 업무 자동화/docs/모듈가이드/11_dev-mock.md",
+      "document:구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md",
+      "document:구매 업무 자동화/docs/모듈가이드/13_phase-fat.md",
+      "document:구매 업무 자동화/docs/FAT_참고자료/README.md",
+      "document:구매 업무 자동화/DB 전환 3단계 로드맵/혼자 수정하는 방법 가이드.md",
+      "document:구매 업무 자동화/DB 전환 3단계 로드맵/DB_전환_3단계_로드맵.md",
+      "document:검증_메모.md",
+      "document:CLAUDE.md",
+      "file:코드 작성 시 주의사항",
+      "file:기능 요구서 및 명세서/기능_요구사항_정의서.html",
+      "file:기능 요구서 및 명세서/avikus_system_report.html"
+    ]
+  }
+]

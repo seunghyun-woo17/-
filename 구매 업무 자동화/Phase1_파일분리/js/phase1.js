@@ -147,13 +147,8 @@ function generatePO() {
   var pic       = document.getElementById('po-pic').value.trim();
   if (!poRef || !vnd) { notify('PO Ref. No.와 업체 코드를 입력해주세요.', 'err'); return; }
 
-  /* PO 조건 (Terms) */
-  var terms = {
-    t1: document.getElementById('po-term1').value.trim(),
-    t3: document.getElementById('po-term3').value.trim(),
-    t4: document.getElementById('po-term4').value.trim(),
-    t5: document.getElementById('po-term5').value.trim(),
-  };
+  /* PO 조건 (Terms) — 동적 행 목록에서 수집 (빈 행 제외) */
+  var terms = collectPOTerms();
 
   var poId  = uid('PO');
   var lines = [];
@@ -252,58 +247,8 @@ function refreshPOList() {
   }
 }
 
-/* ══════════════════════════════════════════════════════════
-   발행된 PO 목록 (전체 · 검색 + 페이지네이션) — [발행된 PO] 탭
-   ══════════════════════════════════════════════════════════ */
-function refreshPoListTab() {
-  var tbody   = document.getElementById('tbl-po-all');
-  if (!tbody) return;
-  var pagerEl = document.getElementById('pager-po-all');
-  var countEl = document.getElementById('po-all-count');
-
-  if (DB.po_header.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">발행된 PO가 없습니다.</td></tr>';
-    if (pagerEl) pagerEl.innerHTML = '';
-    if (countEl) countEl.textContent = '';
-    return;
-  }
-
-  var term = ((document.getElementById('po-all-search') || {}).value || '').trim().toLowerCase();
-  var list = DB.po_header.slice().reverse().filter(function(p) {
-    if (!term) return true;
-    var hay = [p.po_ref_no, p.supplier_code, p.supplier_name, p.vessel_name, p.vessel_code, p.status]
-      .filter(Boolean).join(' ').toLowerCase();
-    return hay.indexOf(term) !== -1;
-  });
-
-  if (countEl) countEl.textContent = list.length + ' / ' + DB.po_header.length + '건';
-
-  if (list.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">검색 조건에 맞는 PO가 없습니다.</td></tr>';
-    if (pagerEl) pagerEl.innerHTML = '';
-    return;
-  }
-
-  var info = paginate(list, 'po-all');
-  tbody.innerHTML = info.slice.map(function(p) {
-    var lines = DB.po_line.filter(function(l){ return l.po_id === p.po_id; });
-    var badge = p.status === 'OPEN' ? 'badge-open' : p.status === 'PARTIAL' ? 'badge-partial' : p.status === 'COMPLETE' ? 'badge-complete' : 'badge-cancel';
-    return '<tr>'
-      + '<td><strong>' + p.po_ref_no + '</strong></td>'
-      + '<td>' + p.issue_date + '</td>'
-      + '<td>' + p.due_date + '</td>'
-      + '<td>' + p.supplier_code + '</td>'
-      + '<td>' + (p.vessel_name || p.vessel_code || '-') + '</td>'
-      + '<td style="text-align:center;">' + lines.length + '건</td>'
-      + '<td><span class="badge ' + badge + '">' + p.status + '</span></td>'
-      + '<td style="text-align:right;white-space:nowrap;">'
-      +   '<button class="btn btn-outline btn-sm" onclick="showPODocument(\'' + p.po_id + '\')">PO 보기</button> '
-      +   '<button class="btn btn-outline btn-sm" onclick="showPOQR(\'' + p.po_id + '\')">QR 보기</button>'
-      + '</td>'
-      + '</tr>';
-  }).join('');
-  if (pagerEl) pagerEl.innerHTML = buildPager('po-all', info, 'refreshPoListTab');
-}
+/* [발행된 PO] 탭은 [발주 입고 이력] 탭으로 통합됨 (refreshPhase5 in phase5.js).
+   검색·입고 검수 진행상태·PO/QR 보기 기능 모두 그쪽으로 이전. */
 
 /* ── PO 문서 보기 ── */
 function showPODocument(poId) {
@@ -344,12 +289,7 @@ function previewPODoc() {
   var vessel   = document.getElementById('po-vessel-input').value.trim() || 'T.B.D';
   var pic      = document.getElementById('po-pic').value;
   var qrSrc    = window._lastQRSrc || '';
-  var terms    = {
-    t1: document.getElementById('po-term1').value.trim(),
-    t3: document.getElementById('po-term3').value.trim(),
-    t4: document.getElementById('po-term4').value.trim(),
-    t5: document.getElementById('po-term5').value.trim(),
-  };
+  var terms    = collectPOTerms();
   var lines = [];
   document.querySelectorAll('.line-item').forEach(function(el, i) {
     lines.push({
@@ -366,14 +306,65 @@ function previewPODoc() {
 }
 
 /* ══════════════════════════════════════════════════════════
+   PO 조건 / 특이사항 — 동적 행 추가·삭제·수집
+   ══════════════════════════════════════════════════════════ */
+var _DEFAULT_PO_TERMS = [
+  '1. This PO is issued for purchasing for [HiNAS] CAMERA HOUSING & JUNCTION BOX',
+  '2. Delivery: A.S.A.P',
+  '3. To be delivered to: MRC 보관(재고 관리) 및 호선별 납품 조건',
+  '4. Payment Term: 선금 30% / 잔금 70%'
+];
+
+function addPOTermRow(value) {
+  var list = document.getElementById('po-terms-list');
+  if (!list) return;
+  var row = document.createElement('div');
+  row.className = 'po-term-row';
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:7px;';
+  var input = document.createElement('input');
+  input.className = 'po-term-input';
+  input.style.flex = '1';
+  input.value = value || '';
+  input.placeholder = '조건/특이사항을 입력하세요 (예: 5. ...)';
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-outline btn-sm';
+  btn.style.padding = '6px 11px';
+  btn.title = '이 조건 삭제';
+  btn.textContent = '✕';
+  btn.onclick = function(){ removePOTermRow(btn); };
+  row.appendChild(input);
+  row.appendChild(btn);
+  list.appendChild(row);
+  input.focus();
+}
+
+function removePOTermRow(btn) {
+  var row = btn.closest('.po-term-row');
+  if (row) row.remove();
+}
+
+/* 동적 행 → 조건 배열 (빈 행 제외) */
+function collectPOTerms() {
+  return Array.prototype.map.call(
+    document.querySelectorAll('#po-terms-list .po-term-input'),
+    function(el){ return el.value.trim(); }
+  ).filter(Boolean);
+}
+
+/* 저장된 terms(신: 배열 / 구: {t1,t3,t4,t5} 객체) → 표시용 배열 (둘 다 호환) */
+function _normalizePOTerms(terms) {
+  if (Array.isArray(terms)) return terms.filter(Boolean);
+  if (terms && typeof terms === 'object') {
+    return [terms.t1, terms.t2, terms.t3, terms.t4, terms.t5].filter(Boolean);
+  }
+  return _DEFAULT_PO_TERMS.slice();
+}
+
+/* ══════════════════════════════════════════════════════════
    PO 문서 HTML 빌더
    ══════════════════════════════════════════════════════════ */
 function buildPODocHTML(poRef, poDate, poDue, vndName, vndEmail, vessel, pic, qrSrc, lines, terms) {
-  terms = terms || {};
-  var t1 = terms.t1 || '1. This PO is issued for purchasing for [HiNAS] CAMERA HOUSING & JUNCTION BOX';
-  var t3 = terms.t3 || '3. Delivery: A.S.A.P';
-  var t4 = terms.t4 || '4. To be delivered to: MRC 보관(재고 관리) 및 호선별 납품 조건';
-  var t5 = terms.t5 || '5. Payment Term: 선금 30% / 잔금 70%';
+  var termsArr = _normalizePOTerms(terms);
 
   /* 금액 계산 */
   var total = lines.reduce(function(s,l){ return s + (parseInt(l.qty)||0) * (parseInt(l.price)||0); }, 0);
@@ -443,10 +434,7 @@ function buildPODocHTML(poRef, poDate, poDue, vndName, vndEmail, vessel, pic, qr
     + '</tbody></table>'
     /* ── 조건 ── */
     + '<div style="font-size:10px;color:#333;line-height:2;border-top:1px solid #eee;padding-top:10px;">'
-    + (t1 ? '<div>' + t1 + '</div>' : '')
-    + (t3 ? '<div>' + t3 + '</div>' : '')
-    + (t4 ? '<div>' + t4 + '</div>' : '')
-    + (t5 ? '<div>' + t5 + '</div>' : '')
+    + termsArr.map(function(t){ return '<div>' + t + '</div>'; }).join('')
     + '</div>'
     /* ── 서명 ── */
     + '<div style="margin-top:28px;text-align:right;font-size:11px;">'

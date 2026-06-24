@@ -1,0 +1,67 @@
+{
+  "nodes": [
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "type": "file",
+      "name": "variables.css",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "summary": "ERP 전체의 디자인 토큰을 정의하는 기반 스타일시트. :root 에 색상·텍스트·보더·라운드·그림자·사이드바 너비 등 CSS 변수를 선언하고, 전역 reset, body 폰트, 스크롤바 스타일을 설정한다. HiNAS 365 라이트 테마 단일 기준.",
+      "tags": ["css-variables", "design-tokens", "theme", "reset", "foundation"],
+      "complexity": "moderate",
+      "languageNotes": "디자인 시스템의 single source of truth — 색상·테마 변경은 이 :root 블록에서만 수행한다. 다크/토글은 제거되어 라이트 테마로 고정됨."
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/css/layout.css",
+      "type": "file",
+      "name": "layout.css",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/layout.css",
+      "summary": "전체 레이아웃과 내비게이션 골격 스타일. 2-state 접이식 사이드바(.sidebar/.collapsed), 상단바(.topbar), 서브탭(.sub-tab), 메인 섹션 전환(.section/.main-section/.cxop-section), 페이지 제목, 반응형 미디어쿼리를 담당한다.",
+      "tags": ["layout", "sidebar", "navigation", "responsive", "topbar"],
+      "complexity": "complex",
+      "languageNotes": "var(--sidebar-w)/var(--accent) 등 variables.css 토큰에 의존. 사이드바 접힘/펼침은 .collapsed 클래스 토글로 제어되며 JS의 toggleSidebar()와 짝을 이룬다."
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/css/components.css",
+      "type": "file",
+      "name": "components.css",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/components.css",
+      "summary": "전 화면에서 재사용되는 공통 UI 컴포넌트 스타일. 카드·알림박스·폼·페이지네이션·버튼·툴바/검색·배지·통계카드·테이블·QR박스·모달·토스트(notif)·PO/Incoming Report 미리보기를 정의한다.",
+      "tags": ["components", "buttons", "table", "modal", "form"],
+      "complexity": "complex",
+      "languageNotes": "var(--accent)/var(--radius)/var(--shadow-sm) 등 variables.css 토큰을 광범위하게 소비. .notif 토스트는 utils.js의 notify()가 생성하는 DOM과 짝을 이룬다."
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/css/phases.css",
+      "type": "file",
+      "name": "phases.css",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/phases.css",
+      "summary": "Phase별 전용 화면 스타일. Phase 2/3 입고 검수의 스캔 상태·검수 단계·카메라·스캔 목록·품목 진행 카드, Phase 0 의 안전재고 바·선박유형 토글·특이사항 필터·선급 체크박스·검색형 호선 드롭다운 등을 담는다.",
+      "tags": ["phase-styles", "scan-ui", "inventory", "feature-specific", "css"],
+      "complexity": "complex",
+      "languageNotes": "var(--*) 토큰 의존. phase23.js(스캔·검수)·phase0.js(안전재고·선급)·phase5.js(재고/출고)가 토글하는 클래스(.scan-status, .class-checkbox-item, .shortage-alert-card 등)에 대응한다. :has() 선택자 사용."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/css/layout.css",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/css/components.css",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/css/phases.css",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

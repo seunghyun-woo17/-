@@ -1,0 +1,875 @@
+{
+  "nodes": [
+    {
+      "id": "document:구매 업무 자동화/docs/FAT_참고자료/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "구매 업무 자동화/docs/FAT_참고자료/README.md",
+      "summary": "FAT 관리 기능 개발을 위해 현업 엑셀 등 참고자료를 모으는 폴더 안내 README. 자료 제출 시 참고사항을 정리한다.",
+      "tags": [
+        "documentation",
+        "fat",
+        "참고자료",
+        "readme"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:기능 요구서 및 명세서/기능_요구사항_정의서.html",
+      "type": "file",
+      "name": "기능_요구사항_정의서.html",
+      "filePath": "기능 요구서 및 명세서/기능_요구사항_정의서.html",
+      "summary": "기능 요구사항을 ID별 표 형태로 정리한 HTML 명세 문서. 각 Phase 기능의 요구사항을 정의해 개발 기준을 제공한다.",
+      "tags": [
+        "markup",
+        "documentation",
+        "요구사항",
+        "명세",
+        "api-schema"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:기능 요구서 및 명세서/avikus_system_report.html",
+      "type": "file",
+      "name": "avikus_system_report.html",
+      "filePath": "기능 요구서 및 명세서/avikus_system_report.html",
+      "summary": "백엔드 개발자를 위한 시스템 명세 보고서(HTML). DB 테이블·기능 흐름·서버 전환 컨텍스트를 정리한 전체 시스템 리포트다.",
+      "tags": [
+        "markup",
+        "documentation",
+        "명세",
+        "시스템리포트",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:코드 작성 시 주의사항",
+      "type": "file",
+      "name": "코드 작성 시 주의사항",
+      "filePath": "코드 작성 시 주의사항",
+      "summary": "코드 작성 시 한글 인코딩 깨짐 방지와 작성 완료 후 검증·결과 통보 절차를 적은 짧은 작업 지침 메모(확장자 없는 텍스트).",
+      "tags": [
+        "documentation",
+        "지침",
+        "메모",
+        "인코딩"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "type": "file",
+      "name": "phase0.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "Phase 0 — 호선·BOM·안전재고 관리. 호선 등록/편집, BOM 세대 템플릿·엑셀 적용, 호선 특이사항, 안전재고 부족 알람과 품목별 2단계 재고 뷰를 담은 가장 큰 기능 모듈이다.",
+      "tags": [
+        "feature-module",
+        "호선",
+        "bom",
+        "안전재고",
+        "ui"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "file",
+      "name": "phase1.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "summary": "Phase 1 — PO 발행. 업체 자동완성·라인아이템 관리, PO 생성과 Ref No 채번(generatePORefNo), PO 문서/QR 출력 및 미리보기를 담당한다.",
+      "tags": [
+        "feature-module",
+        "po",
+        "발주",
+        "채번",
+        "ui"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "type": "file",
+      "name": "phase23.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "summary": "Phase 2·3 — 입고 검수. PO/제품 QR 스캔(단건·일괄)·진행상태 UI, 입고 완료 처리, 검사성적서/COC/거래명세서 첨부 모달, 카메라 스캔과 QR 인쇄를 담당한다.",
+      "tags": [
+        "feature-module",
+        "입고",
+        "qr-scan",
+        "검수",
+        "서류첨부"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "file",
+      "name": "phase4.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "summary": "Phase 4 — Incoming Report·문서 관리. 입고 리포트 HTML 자동 생성/인쇄, 호선별 서류 허브(검사성적서·COC·거래명세서 상태 배지)와 문서 첨부/조회를 제공한다.",
+      "tags": [
+        "feature-module",
+        "incoming-report",
+        "문서관리",
+        "인쇄",
+        "ui"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "type": "file",
+      "name": "phase5.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "summary": "Phase 5 — 재고 현황. S/N 단위 재고 조회·품목별/호선별 뷰, 출고·대여·검사요청 모달 처리, 스캔 출고와 관리자 수기 재고 등록(PIN)을 담당한다.",
+      "tags": [
+        "feature-module",
+        "재고",
+        "출고",
+        "대여",
+        "ui"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "type": "file",
+      "name": "qr.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "summary": "QR 생성/파싱 유틸 모듈. QR 코드 이미지 생성과 스캔 문자열 처리를 위한 헬퍼를 제공한다.",
+      "tags": [
+        "utility",
+        "qr",
+        "serialization",
+        "헬퍼"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "type": "file",
+      "name": "utils.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "summary": "공통 유틸 모듈. 사용자 이름·사이드바·탭 전환, 페이지네이션, notify 알림, QR 결과 모달, 프로토콜/DB 상태 표시, 날짜 초기화 등 전역 헬퍼를 제공한다.",
+      "tags": [
+        "utility",
+        "공통",
+        "ui-helper",
+        "페이지네이션",
+        "notify"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:switchTab",
+      "type": "function",
+      "name": "switchTab",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "summary": "Phase 내부 서브탭을 전환하고 활성 탭 상태를 갱신한다.",
+      "tags": [
+        "ui",
+        "탭전환",
+        "navigation"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        67,
+        81
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:switchMainTab",
+      "type": "function",
+      "name": "switchMainTab",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "summary": "ERP 최상위 메인 탭(구매·출고·FAT)을 전환한다.",
+      "tags": [
+        "ui",
+        "탭전환",
+        "navigation"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        51,
+        64
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:buildPager",
+      "type": "function",
+      "name": "buildPager",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "summary": "목록 데이터의 페이지네이션 컨트롤 HTML을 생성한다.",
+      "tags": [
+        "페이지네이션",
+        "ui",
+        "유틸"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        102,
+        120
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:initDates",
+      "type": "function",
+      "name": "initDates",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "summary": "날짜 입력 필드를 기본값으로 초기화한다.",
+      "tags": [
+        "날짜",
+        "초기화",
+        "유틸"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        179,
+        192
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:addVessel",
+      "type": "function",
+      "name": "addVessel",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "신조/개조 호선을 선급 정보와 함께 등록하고 코드를 채번한다.",
+      "tags": [
+        "호선등록",
+        "data-model",
+        "폼처리"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        42,
+        96
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:parseBomExcel",
+      "type": "function",
+      "name": "parseBomExcel",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "업로드된 BOM 엑셀을 파싱해 품목 목록으로 변환한다.",
+      "tags": [
+        "엑셀",
+        "파싱",
+        "bom"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        230,
+        271
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:saveBOMItems",
+      "type": "function",
+      "name": "saveBOMItems",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "BOM 에디터의 품목을 검증해 호선 BOM에 저장한다.",
+      "tags": [
+        "bom",
+        "저장",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        457,
+        486
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:refreshSafetyStockByItem",
+      "type": "function",
+      "name": "refreshSafetyStockByItem",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "품목별 2단계 안전재고 뷰를 필요수량 대비 현재고로 렌더링한다.",
+      "tags": [
+        "안전재고",
+        "ui-refresh",
+        "재고비교"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        702,
+        753
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:refreshVesselList",
+      "type": "function",
+      "name": "refreshVesselList",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "등록된 호선 목록을 필터·페이지네이션과 함께 렌더링한다.",
+      "tags": [
+        "호선",
+        "ui-refresh",
+        "목록"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        813,
+        871
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:saveVesselBOMEdit",
+      "type": "function",
+      "name": "saveVesselBOMEdit",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "호선 상세에서 편집한 BOM 변경분을 검증해 저장한다.",
+      "tags": [
+        "bom",
+        "저장",
+        "호선"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        1091,
+        1123
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:_renderVesselDetail",
+      "type": "function",
+      "name": "_renderVesselDetail",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "summary": "호선 상세 모달의 BOM·특이사항·재고 정보를 렌더링한다.",
+      "tags": [
+        "ui-render",
+        "호선상세",
+        "모달"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        963,
+        1047
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:generatePO",
+      "type": "function",
+      "name": "generatePO",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "summary": "입력된 헤더·라인아이템으로 발주서를 생성하고 재고/이력에 반영한다.",
+      "tags": [
+        "po",
+        "발주",
+        "data-model"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        138,
+        216
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:generatePORefNo",
+      "type": "function",
+      "name": "generatePORefNo",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "summary": "A-PO-YYNNNN 형식의 PO 참조번호를 연도별 순번으로 채번한다.",
+      "tags": [
+        "채번",
+        "po",
+        "serialization"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        480,
+        493
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:buildPODocHTML",
+      "type": "function",
+      "name": "buildPODocHTML",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "summary": "발주서 데이터를 Avikus 양식의 인쇄용 HTML 문서로 생성한다.",
+      "tags": [
+        "po",
+        "문서생성",
+        "html"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        371,
+        464
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:lookupSupplier",
+      "type": "function",
+      "name": "lookupSupplier",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "summary": "업체명 입력 시 이름·이메일을 자동완성으로 조회한다.",
+      "tags": [
+        "업체",
+        "자동완성",
+        "lookup"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        25,
+        36
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:processScan",
+      "type": "function",
+      "name": "processScan",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "summary": "스캔된 QR을 검증·매칭해 입고 라인에 S/N을 기록한다.",
+      "tags": [
+        "qr-scan",
+        "입고",
+        "검수"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        247,
+        296
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:completeIncoming",
+      "type": "function",
+      "name": "completeIncoming",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "summary": "입고 건을 완료(COMPLETE/SHORT/OVER) 처리하고 재고를 생성한다.",
+      "tags": [
+        "입고완료",
+        "재고",
+        "워크플로"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        313,
+        365
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:saveCertAndClose",
+      "type": "function",
+      "name": "saveCertAndClose",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "summary": "검사성적서·COC·거래명세서를 입고 건에 첨부하고 전체 S/N에 cert_id를 일괄 연결한다.",
+      "tags": [
+        "서류첨부",
+        "검사성적서",
+        "핵심로직"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        442,
+        497
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:openCertModal",
+      "type": "function",
+      "name": "openCertModal",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "summary": "입고 완료 후 서류 첨부 모달을 표시한다.",
+      "tags": [
+        "서류첨부",
+        "모달",
+        "ui"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        368,
+        423
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:generateBatchQRs",
+      "type": "function",
+      "name": "generateBatchQRs",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "summary": "수량만큼 S/N을 입력받아 제품 QR을 일괄 생성한다.",
+      "tags": [
+        "qr",
+        "일괄생성",
+        "제품"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        659,
+        696
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase4.js:buildIncomingReportHTML",
+      "type": "function",
+      "name": "buildIncomingReportHTML",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "summary": "입고 건 데이터를 Incoming Report A4 인쇄용 HTML로 생성한다.",
+      "tags": [
+        "incoming-report",
+        "문서생성",
+        "html"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        407,
+        574
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase4.js:_renderScmDocTable",
+      "type": "function",
+      "name": "_renderScmDocTable",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "summary": "호선별 SCM 서류 상태 테이블을 배지와 함께 렌더링한다.",
+      "tags": [
+        "문서관리",
+        "ui-render",
+        "테이블"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        190,
+        271
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase4.js:saveVesselDoc",
+      "type": "function",
+      "name": "saveVesselDoc",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "summary": "호선 단위 첨부 문서를 저장한다.",
+      "tags": [
+        "문서관리",
+        "저장",
+        "호선"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        338,
+        364
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:refreshInventoryGroups",
+      "type": "function",
+      "name": "refreshInventoryGroups",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "summary": "품목 그룹별 재고 현황을 상태·수량과 함께 렌더링한다.",
+      "tags": [
+        "재고",
+        "ui-refresh",
+        "그룹핑"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        144,
+        239
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:openOutgoingModal",
+      "type": "function",
+      "name": "openOutgoingModal",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "summary": "선택된 S/N에 대한 출고·대여·검사요청 모달을 연다.",
+      "tags": [
+        "출고",
+        "대여",
+        "모달"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        412,
+        481
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:confirmOutgoing",
+      "type": "function",
+      "name": "confirmOutgoing",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "summary": "출고/대여/검사요청을 확정해 재고 상태와 이력을 갱신한다.",
+      "tags": [
+        "출고",
+        "재고상태",
+        "워크플로"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        493,
+        546
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:addManualInventory",
+      "type": "function",
+      "name": "addManualInventory",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "summary": "관리자 PIN 인증 후 수기로 재고 S/N을 등록한다.",
+      "tags": [
+        "재고등록",
+        "관리자",
+        "수기"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        711,
+        745
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:onOutgoingScanInput",
+      "type": "function",
+      "name": "onOutgoingScanInput",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "summary": "출고 화면에서 스캔 입력을 받아 대상 재고를 조회한다.",
+      "tags": [
+        "출고",
+        "qr-scan",
+        "조회"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        645,
+        679
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:switchTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:switchMainTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:buildPager",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/utils.js:initDates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:addVessel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:parseBomExcel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:saveBOMItems",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:refreshSafetyStockByItem",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:refreshVesselList",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:saveVesselBOMEdit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase0.js:_renderVesselDetail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:generatePO",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:generatePORefNo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:buildPODocHTML",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase1.js:lookupSupplier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:processScan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:completeIncoming",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:saveCertAndClose",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:openCertModal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase23.js:generateBatchQRs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase4.js:buildIncomingReportHTML",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase4.js:_renderScmDocTable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase4.js:saveVesselDoc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:refreshInventoryGroups",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:openOutgoingModal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:confirmOutgoing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:addManualInventory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase5.js:onOutgoingScanInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/FAT_참고자료/README.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:코드 작성 시 주의사항",
+      "target": "document:CLAUDE.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:기능 요구서 및 명세서/기능_요구사항_정의서.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:기능 요구서 및 명세서/avikus_system_report.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:기능 요구서 및 명세서/avikus_system_report.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

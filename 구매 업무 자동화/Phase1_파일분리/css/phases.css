@@ -217,3 +217,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: rgba(225,238,255,0.95);
   border-color: rgba(30,111,200,0.22);
 }
+
+/* ── 문서 산출물: 호선별 카드 (바탕색과 명확히 구분 — 흰 표면 + 좌측 강조선 + 그림자) ── */
+.docs-vessel-card {
+  padding:14px 16px;
+  border:1px solid var(--border2);
+  border-left:4px solid var(--accent);
+  border-radius:var(--radius-md);
+  margin-bottom:10px;
+  background:var(--card);
+  box-shadow:var(--shadow-sm);
+  cursor:pointer;
+  transition:box-shadow .15s, border-color .15s;
+}
+.docs-vessel-card:hover {
+  box-shadow:var(--shadow-md);
+  border-color:var(--accent);
+}

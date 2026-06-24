@@ -76,15 +76,14 @@ function refreshCxopTab() {
   var info = paginate(list, 'cxop');
   var d = function(x){ return (x !== undefined && x !== null && x !== '') ? x : '<span style="color:var(--text3);">-</span>'; };
   tbody.innerHTML = info.slice.map(function(v) {
-    var cls = (v.vessel_classes && v.vessel_classes.length) ? v.vessel_classes.join(', ') : '<span style="color:var(--text3);">-</span>';
     var product = getVesselProductsLabel(v) || v.supply_product;
     return '<tr>'
-      + '<td><strong>' + getVesselDisplayName(v) + '</strong></td>'
-      + '<td>' + getVesselTypeLabel(v.vessel_type) + '</td>'
+      + '<td>' + getVesselNameLink(v) + '</td>'
+      + '<td>' + getVesselTypeBadge(v) + '</td>'
       + '<td>' + d(v.yard) + '</td>'
       + '<td>' + d(product) + '</td>'
       + '<td>' + d(v.ship_type) + '</td>'
-      + '<td>' + cls + '</td>'
+      + '<td>' + getVesselClassBadges(v) + '</td>'
       + '<td>' + d(v.owner) + '</td>'
       + '<td>' + d(v.construction_cost) + '</td>'
       + '<td>' + d(v.dl_date) + '</td>'

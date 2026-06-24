@@ -1,0 +1,13 @@
+{
+  "projectRoot": "C:/Users/seunghyunwoo/Desktop/github/SCMAUTO",
+  "batchFiles": [
+    {"path": "구매 업무 자동화/docs/DB_전환_3단계_로드맵.md", "language": "markdown", "sizeLines": 135, "fileCategory": "docs"},
+    {"path": "구매 업무 자동화/docs/기능_요구사항_정의서.html", "language": "html", "sizeLines": 859, "fileCategory": "markup"},
+    {"path": "구매 업무 자동화/docs/요구사항_명세서.md", "language": "markdown", "sizeLines": 302, "fileCategory": "docs"}
+  ],
+  "batchImportData": {
+    "구매 업무 자동화/docs/DB_전환_3단계_로드맵.md": [],
+    "구매 업무 자동화/docs/기능_요구사항_정의서.html": [],
+    "구매 업무 자동화/docs/요구사항_명세서.md": []
+  }
+}

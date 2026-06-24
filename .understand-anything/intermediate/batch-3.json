@@ -1,0 +1,148 @@
+{
+  "nodes": [
+    {
+      "id": "document:구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "type": "document",
+      "name": "DB_전환_3단계_로드맵.md",
+      "filePath": "구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "summary": "localStorage 프로토타입을 PostgreSQL + Node.js 서버로 전환하는 3단계 로드맵 문서. db.js 단일 교체 전략, 마이그레이션 주의사항(채번 동시성·파일 저장·EAV 금지), CX·OP 팀 추가에 따른 호선 중심 데이터 모델 확장(저장은 단일·표현은 이원화)을 정의한다.",
+      "tags": ["documentation", "database", "roadmap", "migration", "architecture"],
+      "complexity": "moderate",
+      "languageNotes": "백엔드 전환 계획 문서로, 핵심 설계 원칙(db.js→api.js 단일 교체)과 vessel_milestone 신규 테이블 등 스키마 확장 방향을 함께 기술한다."
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "type": "document",
+      "name": "기능_요구사항_정의서.html",
+      "filePath": "구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "summary": "ERP 기능 요구사항을 ID·구분·중요도별로 정리한 HTML 표 문서. 호선관리·BOM안전재고·PO발행·제품QR생성·입고검수·Incoming Report·서류첨부관리·재고현황 등 카테고리별 요구사항을 색상 분류 테이블로 명세한다.",
+      "tags": ["documentation", "requirements", "specification", "html-report"],
+      "complexity": "complex",
+      "languageNotes": "인쇄용 자기완결형 HTML(인라인 <style>)로, 카테고리별 색상 클래스(cat-vsl/cat-bom/cat-po 등)와 중요도 범례를 사용해 요구사항 ID 표를 시각화한다."
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "type": "document",
+      "name": "요구사항_명세서.md",
+      "filePath": "구매 업무 자동화/docs/요구사항_명세서.md",
+      "summary": "백엔드 개발자를 위한 전체 요구사항 명세서. 프로젝트 개요·목표 아키텍처·ERP 탭 구성·사용자 역할·Phase 0~5 기능·DB 테이블·서버 전환 후 REST API 엔드포인트·비기능 요구사항·인수인계 체크리스트를 포괄적으로 기술한다.",
+      "tags": ["documentation", "requirements", "specification", "api-schema", "entry-point"],
+      "complexity": "complex",
+      "languageNotes": "DB 테이블 명세와 서버 전환 후 구현 예정 REST API 엔드포인트를 함께 담은 마스터 명세 문서로, 프론트 프로토타입과 백엔드 개발의 연결고리 역할을 한다."
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "target": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/요구사항_명세서.md",
+      "target": "document:구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

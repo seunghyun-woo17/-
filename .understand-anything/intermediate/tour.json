@@ -1,0 +1,97 @@
+[
+  {
+    "order": 1,
+    "title": "프로젝트 개요 — 무엇을 만드는가",
+    "description": "이 ERP가 무엇이고 왜 만들어졌는지부터 시작합니다. CLAUDE.md는 Avikus 부산사무소의 구매·자재관리 시스템 정체성, 현재 구현 상태(프론트엔드 프로토타입 완성, 백엔드 미구축), 폴더 구조, 핵심 설계 원칙, DB 테이블 목록을 한곳에 요약한 온보딩 문서입니다. 앞으로의 투어에서 만날 모든 모듈의 지도 역할을 하므로 가장 먼저 읽습니다.",
+    "nodeIds": ["document:CLAUDE.md", "document:구매 업무 자동화/CLAUDE.md"]
+  },
+  {
+    "order": 2,
+    "title": "요구사항·기능 명세 읽기",
+    "description": "프로젝트의 목표 아키텍처와 업무 요구사항을 파악합니다. 요구사항_명세서.md는 ERP 탭 구성·사용자 역할·Phase 0~5 기능·DB 테이블·서버 전환 후 REST API를 포괄적으로 기술하고, 기능_요구사항_정의서.html은 호선관리·BOM·PO발행·입고검수·재고현황 등 기능별 요구사항을 ID·중요도 표로 정리합니다. 코드를 읽기 전에 '어떤 업무를 자동화하는가'를 먼저 이해하는 단계입니다.",
+    "nodeIds": ["document:구매 업무 자동화/docs/요구사항_명세서.md", "document:구매 업무 자동화/docs/기능_요구사항_정의서.html"]
+  },
+  {
+    "order": 3,
+    "title": "진입점 — index.html과 모듈 로딩",
+    "description": "1단계에서 본 폴더 구조가 실제로 어떻게 하나의 화면으로 합쳐지는지 봅니다. index.html은 모든 Phase 탭의 마크업과 모달을 담고, 하단에서 12개의 JS 모듈과 CSS를 script/link 태그로 순차 로드해 단일 페이지 앱(SPA)을 구성하는 진입 HTML입니다. 프레임워크나 빌드 도구 없이 전역 함수와 onclick 핸들러로만 동작하는 바닐라 구조라, 로딩 순서 자체가 곧 의존성 그래프입니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/index.html"],
+    "languageLesson": "빌드 없는 바닐라 SPA에서는 <script src> 태그의 나열 순서가 곧 모듈 의존성입니다. db.js→utils.js→qr.js→phase*→app.js 순으로 로드되어, 먼저 로드된 전역 함수를 나중 파일이 그대로 호출합니다. app.js가 맨 마지막에 와야 모든 함수가 정의된 뒤 초기화가 실행됩니다."
+  },
+  {
+    "order": 4,
+    "title": "데이터 계층 — db.js (localStorage 추상화)",
+    "description": "ERP에서 가장 많이 의존되는(fan-in 최상위) 핵심 모듈입니다. db.js는 13개 DB 테이블 스키마를 정의하고 저장·리셋, ID·날짜 헬퍼, QR 페이로드 직렬화/파싱, 전체 뷰 갱신(refreshAllViews)을 제공하는 localStorage 추상화 레이어입니다. 모든 Phase 모듈이 데이터를 읽고 쓸 때 이 파일 하나만 거치도록 설계되어, 다음 단계들에서 만날 기능 로직의 공통 토대가 됩니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/db.js", "document:구매 업무 자동화/docs/모듈가이드/01_db.md"],
+    "languageLesson": "db.js의 '단일 교체 전략(single point of replacement)'은 영속화 코드를 한 파일에 격리하는 패턴입니다. localStorage를 만지는 코드가 db.js에만 모여 있어, 서버 전환 시 이 파일만 api.js로 바꾸면 나머지 phase*.js는 수정이 필요 없습니다."
+  },
+  {
+    "order": 5,
+    "title": "공통 유틸 계층 — utils.js · qr.js",
+    "description": "4단계의 데이터 계층 위에서 화면 전반이 공유하는 헬퍼들입니다. utils.js는 탭 전환(switchTab/switchMainTab), notify 알림 토스트, 페이지네이션, 사용자 이름·DB 상태 표시 등 전역 UI 헬퍼를 제공하고, qr.js는 외부 라이브러리 없이 순수 JS로 QR 코드를 생성·파싱하는 엔진입니다. 두 모듈 모두 특정 Phase에 종속되지 않고 모든 탭에서 재사용됩니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/utils.js", "file:구매 업무 자동화/Phase1_파일분리/js/qr.js"]
+  },
+  {
+    "order": 6,
+    "title": "부트스트랩 — app.js",
+    "description": "모든 모듈이 로드된 뒤 마지막에 실행되는 진입 스크립트입니다. app.js는 DB 초기화, 테마 설정, 최상위 탭 전환, 상단바 시계(updateTopbarClock) 갱신을 수행해 앱을 기동시킵니다. 3단계에서 본 로딩 순서의 종착점으로, 'index.html이 모듈을 로드한 뒤 무엇이 가장 먼저 일어나는가'에 대한 답입니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/app.js", "document:구매 업무 자동화/docs/모듈가이드/10_app.md"]
+  },
+  {
+    "order": 7,
+    "title": "Phase 0 — 호선·BOM·안전재고",
+    "description": "여기서부터 실제 업무 흐름이 시작됩니다. phase0.js는 fan-out이 가장 큰 기능 모듈로, 신조/개조 호선 등록(addVessel)과 선급 입력, BOM 세대 템플릿·엑셀 적용(parseBomExcel), 호선 특이사항, 그리고 필요수량 대비 현재고를 비교하는 안전재고 부족 알람(refreshSafetyStockByItem)을 담당합니다. 이후 Phase들이 다루는 PO·입고·재고의 기준이 되는 '무엇을, 얼마나 사야 하는가'를 정의하는 출발점입니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/phase0.js", "document:구매 업무 자동화/docs/모듈가이드/04_phase0.md"]
+  },
+  {
+    "order": 8,
+    "title": "Phase 1 — PO 발행",
+    "description": "7단계에서 정한 필요 품목을 실제 발주로 옮기는 단계입니다. phase1.js는 업체 자동완성(lookupSupplier), 라인아이템 관리, A-PO-YYNNNN 형식의 PO 번호 채번(generatePORefNo), 발주서 생성(generatePO)과 Avikus 양식 인쇄용 HTML·QR 출력(buildPODocHTML)을 담당합니다. db.js와 함께 fan-in 최상위인 핵심 업무 모듈입니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/phase1.js", "document:구매 업무 자동화/docs/모듈가이드/05_phase1.md"],
+    "languageLesson": "generatePORefNo는 연도 2자리+4자리 순번(A-PO-260001)을 클라이언트에서 채번합니다. 단일 PC localStorage 환경에서는 안전하지만, 서버 전환 후에는 동시성 보장을 위해 반드시 서버에서 채번해야 합니다 — 프로토타입과 운영 환경의 대표적 차이점입니다."
+  },
+  {
+    "order": 9,
+    "title": "발주서 산출물 확인 — PO HTML",
+    "description": "8단계의 buildPODocHTML이 실제로 만들어내는 결과물을 봅니다. 이 파일은 PO 발행 기능이 export한 단일 발주서(HTML)로, 코드가 생성하는 정적 산출물이 어떤 모습인지 보여줍니다. 추상적인 '문서 생성 함수'가 눈에 보이는 인쇄/보관용 파일로 이어지는 지점을 확인하는 짧은 정거장입니다.",
+    "nodeIds": ["file:구매 업무 자동화/PO 파일/PO_A-PO-H-250090_2026-04-17.html"]
+  },
+  {
+    "order": 10,
+    "title": "Phase 2·3 — 입고 검수와 QR 스캔",
+    "description": "발주한 물품이 도착했을 때의 흐름입니다. phase23.js는 PO/제품 QR 스캔(processScan), 단건·일괄 QR 생성(generateBatchQRs), 입고 완료 처리(completeIncoming), 그리고 검사성적서·COC·거래명세서 첨부 모달(openCertModal/saveCertAndClose)을 담당합니다. 5단계의 qr.js와 4단계의 db.js 위에서 동작하며, 입고된 물품이 S/N 단위 재고로 전환되는 핵심 검수 단계입니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/phase23.js", "document:구매 업무 자동화/docs/모듈가이드/06_phase23.md"],
+    "languageLesson": "'성적서 1장 → N개 S/N 자동 연결' 패턴이 saveCertAndClose에 구현됩니다. 검사성적서는 입고 건(incoming) 단위로 1회만 첨부하면 해당 건의 모든 S/N에 cert_id가 일괄 연결됩니다 — 1:N 관계를 입력 부담 없이 표현하는 설계입니다."
+  },
+  {
+    "order": 11,
+    "title": "Phase 4 — Incoming Report·문서 허브",
+    "description": "10단계의 입고 데이터를 문서로 산출하고 관리하는 단계입니다. phase4.js는 입고 리포트 A4 인쇄용 HTML 자동 생성(buildIncomingReportHTML)과, 호선별로 검사성적서·COC·거래명세서 상태를 배지로 보여주는 SCM 문서 허브(_renderScmDocTable), 호선 단위 수기 첨부(saveVesselDoc)를 제공합니다. fan-in 상위 모듈로, 입고·검수 결과가 최종 산출물과 문서 추적으로 이어지는 종착점입니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/phase4.js", "document:구매 업무 자동화/docs/모듈가이드/07_phase4.md"]
+  },
+  {
+    "order": 12,
+    "title": "Phase 5 — 재고 현황·출고·대여",
+    "description": "물품의 마지막 생애주기 단계입니다. phase5.js는 S/N 단위 재고 조회와 품목별·호선별 뷰(refreshInventoryGroups), 출고·대여·검사요청 모달 처리(openOutgoingModal/confirmOutgoing), 스캔 출고, 관리자 PIN 인증 수기 재고 등록(addManualInventory)을 담당합니다. Phase 0의 안전재고 비교가 가리키던 '현재고'가 실제로 어떻게 소진·이동되는지 보여주며 구매→입고→재고 흐름을 완성합니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/phase5.js", "document:구매 업무 자동화/docs/모듈가이드/08_phase5.md"]
+  },
+  {
+    "order": 13,
+    "title": "확장 탭 — FAT 관리·검사요청·CxOP",
+    "description": "구매·자재 본류 외에 QC·운영 팀을 위해 확장된 탭들입니다. phase-fat.js는 선급별 FAT(공장인수시험) 일정·BOM 커버리지·코멘트·MED 인증서를 관리하는 대형 모듈이고, phase-inspection.js는 출고 이력 기반 검사요청을 품목별로 집계·처리하며, phase-cxop.js는 호선별 CX/OP 정보를 엑셀로 입출력합니다. 모두 12단계까지의 호선·재고 데이터를 다른 관점에서 재사용하는 부가 기능 계층입니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js", "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js", "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js"]
+  },
+  {
+    "order": 14,
+    "title": "스타일 계층 — CSS 토큰부터 화면까지",
+    "description": "지금까지 본 기능들이 어떤 시각 언어로 그려지는지 봅니다. variables.css는 색상·라운드·그림자·사이드바 너비 등 디자인 토큰을 :root에 정의한 단일 기준이고(이 파일만 fan-in 3으로 CSS 중 최상위), layout.css·components.css·phases.css가 그 토큰을 소비해 각각 사이드바/상단바 골격, 공통 컴포넌트(버튼·테이블·모달·notify 토스트), Phase별 전용 화면(스캔 UI·안전재고 바)을 정의합니다.",
+    "nodeIds": ["file:구매 업무 자동화/Phase1_파일분리/css/variables.css", "file:구매 업무 자동화/Phase1_파일분리/css/layout.css", "file:구매 업무 자동화/Phase1_파일분리/css/components.css", "file:구매 업무 자동화/Phase1_파일분리/css/phases.css"],
+    "languageLesson": "CSS 커스텀 프로퍼티(var(--accent) 등)를 :root에 모아두면 디자인 토큰의 single source of truth가 됩니다. 색상·테마 변경을 variables.css 한 곳에서만 하면 layout/components/phases 전체에 전파되어, 비개발자도 16진수 값만 바꿔 테마를 조정할 수 있습니다."
+  },
+  {
+    "order": 15,
+    "title": "백엔드 전환 청사진 — DB 로드맵·시스템 명세",
+    "description": "투어의 마무리로, 이 프로토타입이 어디로 향하는지 봅니다. DB_전환_3단계_로드맵.md는 localStorage→PostgreSQL+Node.js 전환을 '파일 분리 → 서버 구축 → db.js를 api.js로 교체'의 3단계로 정의하고, avikus_system_report.html은 PostgreSQL 스키마·REST API 명세·비즈니스 로직을 9개 섹션으로 정리한 백엔드 개발자용 청사진입니다. 4단계에서 본 db.js 단일 교체 전략이 왜 그렇게 설계됐는지 여기서 완결됩니다.",
+    "nodeIds": ["document:구매 업무 자동화/docs/DB_전환_3단계_로드맵.md", "document:구매 업무 자동화/avikus_system_report.html"]
+  }
+]

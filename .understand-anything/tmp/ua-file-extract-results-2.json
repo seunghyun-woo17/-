@@ -1,0 +1,39 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "구매 업무 자동화/Phase1_파일분리/css/components.css",
+      "language": "css",
+      "fileCategory": "markup",
+      "totalLines": 192,
+      "nonEmptyLines": 176,
+      "metrics": {}
+    },
+    {
+      "path": "구매 업무 자동화/Phase1_파일분리/css/layout.css",
+      "language": "css",
+      "fileCategory": "markup",
+      "totalLines": 225,
+      "nonEmptyLines": 207,
+      "metrics": {}
+    },
+    {
+      "path": "구매 업무 자동화/Phase1_파일분리/css/phases.css",
+      "language": "css",
+      "fileCategory": "markup",
+      "totalLines": 219,
+      "nonEmptyLines": 202,
+      "metrics": {}
+    },
+    {
+      "path": "구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "language": "css",
+      "fileCategory": "markup",
+      "totalLines": 84,
+      "nonEmptyLines": 72,
+      "metrics": {}
+    }
+  ]
+}

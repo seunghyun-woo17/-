@@ -183,9 +183,12 @@ function saveInspectionResult() {
   log.inspection_memo = memo;
   dbSave('outgoing_log');
 
-  if (result === 'FAIL') {
-    var inv = DB.inventory.find(function(i){ return i.mc_code === log.inv_mc; });
-    if (inv) { inv.status = 'DEFECT'; dbSave('inventory'); }
+  /* 검사 결과 → 재고 상태 반영: 정상=가용재고 복귀(IN_STOCK), 불량=DEFECT(가용 제외)
+     (정상인데 INSPECTION_REQUESTED로 묶여 재고현황에 반영 안 되던 오류 수정) */
+  var inv = DB.inventory.find(function(i){ return i.mc_code === log.inv_mc; });
+  if (inv) {
+    inv.status = (result === 'FAIL') ? 'DEFECT' : 'IN_STOCK';
+    dbSave('inventory');
   }
 
   document.getElementById('insp-result-modal').classList.remove('show');

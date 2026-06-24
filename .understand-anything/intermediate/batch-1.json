@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "id": "document:구매 업무 자동화/CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "구매 업무 자동화/CLAUDE.md",
+      "summary": "Avikus 부산사무소 ERP(구매·자재관리 시스템)의 핵심 프로젝트 컨텍스트 문서로, 폴더 구조·설계 원칙·DB 테이블 목록·탭별 기능 요약·localStorage→PostgreSQL 서버 전환 로드맵을 정리한다. Claude Code 자동 로드용 가이드이자 프론트엔드 프로토타입 전체의 단일 참조 명세 역할을 한다.",
+      "tags": ["documentation", "entry-point", "프로젝트-컨텍스트", "architecture", "erp"],
+      "complexity": "complex",
+      "languageNotes": "코드 블록으로 폴더 트리·탭 구조를 표현하고 표(table)로 DB 테이블·CX·OP 확장 항목을 정의하는 한국어 컨텍스트 문서. js/db.js 단일 교체 전략 등 핵심 설계 원칙이 코드 모듈과 직접 매핑된다."
+    },
+    {
+      "id": "document:구매 업무 자동화/avikus_system_report.html",
+      "type": "document",
+      "name": "avikus_system_report.html",
+      "filePath": "구매 업무 자동화/avikus_system_report.html",
+      "summary": "백엔드 개발자용 명세서 v2.0(HTML)로, PostgreSQL DB 스키마·REST API 명세·비즈니스 로직 요구사항·파일 저장 전략·구현 우선순위·프론트-백엔드 연동 포인트를 9개 섹션으로 정리한다. localStorage 프로토타입을 서버 기반으로 전환할 때의 설계 청사진이다.",
+      "tags": ["documentation", "api-schema", "백엔드-명세", "database", "deployment"],
+      "complexity": "complex",
+      "languageNotes": "인라인 CSS로 표·배지(PK/FK/GET/POST)·코드블록을 스타일링한 단일 HTML 명세 문서. 9개 섹션(DB 스키마, REST API, 비즈니스 로직 등)을 spec-table 형식으로 구성한 정적 산출물."
+    },
+    {
+      "id": "document:구매 업무 자동화/readme.md",
+      "type": "document",
+      "name": "readme.md",
+      "filePath": "구매 업무 자동화/readme.md",
+      "summary": "향후 코드 작성 시 주의사항을 안내하는 최소 분량의 메모성 README 파일이다.",
+      "tags": ["documentation", "메모", "guideline"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:구매 업무 자동화/CLAUDE.md",
+      "target": "document:구매 업무 자동화/avikus_system_report.html",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

@@ -1,0 +1,2266 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "7b6841557cabae592d82313bb87fe4e8a488b37f",
+  "generatedAt": "2026-06-19T15:13:20.779Z",
+  "files": {
+    "검증_메모.md": {
+      "filePath": "검증_메모.md",
+      "contentHash": "6db31eb7bd12008f5c3316e136d38ce5f8158208b40fb6b2994700b0417ed64d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 121,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/avikus_system_report.html": {
+      "filePath": "구매 업무 자동화/avikus_system_report.html",
+      "contentHash": "74a14e5ce27dac685a78ba445159ede0659cf1f01790969dd7eba96d322ac2cf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1049,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/CLAUDE.md": {
+      "filePath": "구매 업무 자동화/CLAUDE.md",
+      "contentHash": "fa43d63c26738d2dab43800ce2a39184ca27f534e8f2283a51b234b73d21d058",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 260,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/DB 전환 3단계 로드맵/혼자 수정하는 방법 가이드.md": {
+      "filePath": "구매 업무 자동화/DB 전환 3단계 로드맵/혼자 수정하는 방법 가이드.md",
+      "contentHash": "6023dc0d98327240cddc9f0d71b4f600acd2138ba23732b1d1ea56e286d8a564",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/DB 전환 3단계 로드맵/DB_전환_3단계_로드맵.md": {
+      "filePath": "구매 업무 자동화/DB 전환 3단계 로드맵/DB_전환_3단계_로드맵.md",
+      "contentHash": "94ce77e8f5e23c2c6ddda89d54658874a2ed04a13d9febdb5201acc09eb399c6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 106,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/기능_요구사항_정의서.html": {
+      "filePath": "구매 업무 자동화/docs/기능_요구사항_정의서.html",
+      "contentHash": "4e0eb866e75811c7d9b7b9585aad2ba6c9427c0163639f9efb59512b4a86fe86",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 860,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/docs/모듈가이드/00_개요.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "contentHash": "bea2e6460aea785e93d5339e0058933c08729474d00d69ffd173ef2c7e58a092",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 122,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/01_db.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/01_db.md",
+      "contentHash": "1d19396ca9486140d52cd3c0d8a5e6dd5e06b8aca981c382e6f33c64211d386a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 72,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/02_utils.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/02_utils.md",
+      "contentHash": "e4afc7343a55209e8e3fc4ec72a77d34701c108515063a6671dacb5c52837eab",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/03_qr.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/03_qr.md",
+      "contentHash": "3eb5c8856e8ee1b6354632d0c5cff5862b2d37280ca41d4fb8ce1f23d7ab61c1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/04_phase0.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/04_phase0.md",
+      "contentHash": "ce39cc4303e8625c534d11cfe18a6cfff5cc5dac4823052901db1999815d735c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 93,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/05_phase1.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/05_phase1.md",
+      "contentHash": "cd79b00d731bd421aa109d7176dd37c8027c53d2e3b7c168bcbe890b304965cc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/06_phase23.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/06_phase23.md",
+      "contentHash": "d2df9bd881b53a14f36fae9ef8c488844f2dd15cc6007136e6fb19efb812baf5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/07_phase4.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/07_phase4.md",
+      "contentHash": "26bb7b4376d69f28433eae9991e83e5ad0af4cce57c4ce1610d8cf5c7b30e2af",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 89,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/08_phase5.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/08_phase5.md",
+      "contentHash": "80f8a4d5d8387177e08f87829f354cfa3418c6d36c73c7750f3d161468e37c30",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 67,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md",
+      "contentHash": "1e02938bed4a09749f7d8d1658a6b6c98a9d999483fa1566daf6b747e1427356",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/10_app.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/10_app.md",
+      "contentHash": "65f373020d90a51df8d4dd9dc86ed523c9202e49f3885b0299a2dccf29f45259",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/11_dev-mock.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/11_dev-mock.md",
+      "contentHash": "a79a9aac2f69d435aa643b32bd94ea2f0c5fd5e51c45cc2f5a391260856bf112",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md",
+      "contentHash": "50ffb10c37910ff831d52dfb496583b7562c0f4c1025e8f57b3da6e5ac699c29",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/모듈가이드/13_phase-fat.md": {
+      "filePath": "구매 업무 자동화/docs/모듈가이드/13_phase-fat.md",
+      "contentHash": "df7d985dca8b92b9dbb09fb6654fa3c7c348ead60dd5bc6f5d25e0fa0801d43f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 80,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/요구사항_명세서.md": {
+      "filePath": "구매 업무 자동화/docs/요구사항_명세서.md",
+      "contentHash": "09f5b410fe94481ceb87b7a084843d1ff51558ac313605b8cb2484c979ed30ef",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 303,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/DB_전환_3단계_로드맵.md": {
+      "filePath": "구매 업무 자동화/docs/DB_전환_3단계_로드맵.md",
+      "contentHash": "1fb371ddf38cf05b7d48a33ee14a49fd02ac1176581b3c97f4e1e966b77769a9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/docs/FAT_참고자료/README.md": {
+      "filePath": "구매 업무 자동화/docs/FAT_참고자료/README.md",
+      "contentHash": "1e9dca9f0df57c7e90d1555d394c147e8633474881e39c1bda0c15ed3ef88516",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/css/components.css": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/components.css",
+      "contentHash": "afc55e9cf0843073a0762209f7e31597feb3d987b66dc2e39b1f24c02fdc6ec8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 193,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/Phase1_파일분리/css/layout.css": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/layout.css",
+      "contentHash": "cae77cfea0c2c5b410a578c5c44823dbd2c904eccca8f8a7ad28a24d5d922d4b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 226,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/Phase1_파일분리/css/phases.css": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/phases.css",
+      "contentHash": "266153f0b5a1b4427546a925c1ada494a9bbe1710e32070b7bf61c827efed146",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 220,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/Phase1_파일분리/css/variables.css": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/css/variables.css",
+      "contentHash": "e245086fb174db42b209b06bcbba0c077e085e92d09eb0cb55a9757c96c2d924",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 85,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/Phase1_파일분리/index.html": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/index.html",
+      "contentHash": "7327c681216531d5a8a3e14cff53d63db9e4518baf6b5d8421ae5c1cae82a62c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2094,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/app.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "contentHash": "cc102ad0002d2067717b868b5401c9c4f24cc96a44bc12fdc0f4e43968f15ea1",
+      "functions": [
+        {
+          "name": "updateTopbarClock",
+          "params": [],
+          "exported": false,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/db.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "contentHash": "041bb21f710d747a7cbfafaf594947d0dc4c708fc069439ddebef4b235c61de1",
+      "functions": [
+        {
+          "name": "dbSave",
+          "params": [
+            "key"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "dbReset",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "uid",
+          "params": [
+            "prefix"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "today",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "addDays",
+          "params": [
+            "dateStr",
+            "days"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "shortId",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "buildPOQRPayload",
+          "params": [
+            "po",
+            "lines"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "buildProductQRPayload",
+          "params": [
+            "poId",
+            "mc",
+            "item",
+            "sn",
+            "date",
+            "vnd"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "parseQRString",
+          "params": [
+            "str"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "refreshAllViews",
+          "params": [],
+          "exported": false,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 214,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/dev-mock.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "contentHash": "ffec65926c5d7cc356afd702e37348bc15f0f058717d2d2d6de613cb4e5071e4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 171,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "contentHash": "3d1d776d6904a196d1eae525181557d75a63e212963ddbb9b38b5d04219b42b8",
+      "functions": [
+        {
+          "name": "switchCxopTab",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "filterCxopList",
+          "params": [
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "refreshCxopTab",
+          "params": [],
+          "exported": false,
+          "lineCount": 57
+        },
+        {
+          "name": "populateCxopVesselSelect",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "onCxopInputVesselChange",
+          "params": [],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "editCxopInput",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "saveCxopInline",
+          "params": [],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "_cxopFmtDate",
+          "params": [
+            "v"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "downloadCxopTemplate",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "onCxopExcelUpload",
+          "params": [
+            "input"
+          ],
+          "exported": false,
+          "lineCount": 31
+        },
+        {
+          "name": "applyCxopExcel",
+          "params": [
+            "rows"
+          ],
+          "exported": false,
+          "lineCount": 30
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 285,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase-fat.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "contentHash": "cb5ef42859277a5d1d8bdc5483125e050b8d2c60d3ae2aa08e09ca7818dc7017",
+      "functions": [
+        {
+          "name": "_fatStatusInfo",
+          "params": [
+            "s"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "_esc",
+          "params": [
+            "s"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "_val",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "_fatBomCoverage",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "_fatCoverageHTML",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "_fatScmRange",
+          "params": [
+            "f"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "_fatComments",
+          "params": [
+            "fatId"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "_fatCommentProgress",
+          "params": [
+            "fatId"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "_fatProgressHTML",
+          "params": [
+            "fatId"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "_fatRows",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "_getOrCreateFat",
+          "params": [
+            "vesselId",
+            "cls"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "_fat",
+          "params": [],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "refreshFatTab",
+          "params": [],
+          "exported": false,
+          "lineCount": 42
+        },
+        {
+          "name": "openFatDetail",
+          "params": [
+            "vesselId",
+            "cls"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "closeFatDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "_renderFatDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 106
+        },
+        {
+          "name": "saveFatMaster",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "saveFatScmDate",
+          "params": [],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "saveFatQcDate",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "applyFatInspection",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "startFatProgress",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "completeFat",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "_pushFatHistory",
+          "params": [
+            "fatId",
+            "content"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "openFatCommentModal",
+          "params": [
+            "commentId"
+          ],
+          "exported": false,
+          "lineCount": 27
+        },
+        {
+          "name": "onFatCommentCodeChange",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "onFatCommentFile",
+          "params": [
+            "input"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "saveFatComment",
+          "params": [],
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "deleteFatComment",
+          "params": [
+            "commentId"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "viewFatCommentFile",
+          "params": [
+            "commentId"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "openFatCodeModal",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "_renderFatCodeList",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "addFatCode",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "deleteFatCode",
+          "params": [
+            "code"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "refreshFatRefDocs",
+          "params": [],
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "openFatRefModal",
+          "params": [
+            "cls"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "onFatRefFileChange",
+          "params": [
+            "input"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "saveFatRefDoc",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "viewFatRefDoc",
+          "params": [
+            "refId"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "deleteFatRefDoc",
+          "params": [
+            "refId"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "refreshMedCert",
+          "params": [],
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "openMedModal",
+          "params": [
+            "medId"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "saveMed",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "deleteMed",
+          "params": [
+            "medId"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "_openFileInNewWindow",
+          "params": [
+            "fileData",
+            "fileName"
+          ],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "switchQcTab",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 580,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "contentHash": "16bf3ccd80398641d9d5c2639b5929c5dab0cbae3dd2a6e3c5b02572939d4b32",
+      "functions": [
+        {
+          "name": "refreshInspectionTab",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "_renderInspectionStats",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "_groupByItem",
+          "params": [
+            "team"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "_renderInspectionGroups",
+          "params": [],
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "openInspectionDetail",
+          "params": [
+            "team",
+            "itemCode"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "closeInspectionDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "_renderInspectionDetail",
+          "params": [
+            "team",
+            "itemCode"
+          ],
+          "exported": false,
+          "lineCount": 45
+        },
+        {
+          "name": "_rerenderInspDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "openInspectionResultModal",
+          "params": [
+            "logId",
+            "team",
+            "itemCode"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "saveInspectionResult",
+          "params": [],
+          "exported": false,
+          "lineCount": 32
+        },
+        {
+          "name": "openInspectionLogDetail",
+          "params": [
+            "logId"
+          ],
+          "exported": false,
+          "lineCount": 26
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 226,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase0.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "contentHash": "681e55b1a1ac30de84df61ff13e9db1fda2c42fbfc00213d43eff873698e4266",
+      "functions": [
+        {
+          "name": "switchDesignTab",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "toggleVesselForm",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "addVessel",
+          "params": [],
+          "exported": false,
+          "lineCount": 55
+        },
+        {
+          "name": "getVesselDisplayName",
+          "params": [
+            "vessel"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "getVesselTypeLabel",
+          "params": [
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "buildVesselOptions",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "openVesselDropdown",
+          "params": [
+            "prefix"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "closeVesselDropdownDelayed",
+          "params": [
+            "prefix"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "closeVesselDropdown",
+          "params": [
+            "prefix"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "filterVesselDropdown",
+          "params": [
+            "prefix"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "renderVesselDropdown",
+          "params": [
+            "prefix",
+            "items"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "selectVessel",
+          "params": [
+            "prefix",
+            "vesselId",
+            "displayName"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "refreshBomVesselSelect",
+          "params": [],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "onBomExcelUpload",
+          "params": [
+            "input"
+          ],
+          "exported": false,
+          "lineCount": 35
+        },
+        {
+          "name": "parseBomExcel",
+          "params": [
+            "workbook"
+          ],
+          "exported": false,
+          "lineCount": 42
+        },
+        {
+          "name": "populateBomGubunSelect",
+          "params": [],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "onBomGubunChange",
+          "params": [],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "loadBOMFromCatalog",
+          "params": [],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "normalizeModelKey",
+          "params": [
+            "name"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "getProductCodeForModel",
+          "params": [
+            "gubun",
+            "model"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "generateVesselCode",
+          "params": [
+            "productCode",
+            "contractDate"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "assignVesselProductCode",
+          "params": [
+            "vesselId",
+            "gubun",
+            "model"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "addVesselProduct",
+          "params": [
+            "vesselId",
+            "gubun",
+            "model"
+          ],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "getVesselProductsLabel",
+          "params": [
+            "vessel"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "getVesselModels",
+          "params": [
+            "vessel"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "getVesselProductsHTML",
+          "params": [
+            "vessel"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "renderBOMEditor",
+          "params": [
+            "items"
+          ],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "addBOMEditorRow",
+          "params": [],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "removeBOMEditorRow",
+          "params": [
+            "btn"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "saveBOMItems",
+          "params": [],
+          "exported": false,
+          "lineCount": 30
+        },
+        {
+          "name": "addBomItem",
+          "params": [],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "deleteBomItem",
+          "params": [
+            "bomId"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "addSpecialNote",
+          "params": [],
+          "exported": false,
+          "lineCount": 25
+        },
+        {
+          "name": "confirmNote",
+          "params": [
+            "noteId"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "deleteSpecialNote",
+          "params": [
+            "noteId"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "filterNotes",
+          "params": [
+            "category"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "refreshSpecialNotes",
+          "params": [],
+          "exported": false,
+          "lineCount": 56
+        },
+        {
+          "name": "refreshSafetyStock",
+          "params": [
+            "showPopup"
+          ],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "showShortagePopup",
+          "params": [
+            "shortageItems"
+          ],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "acknowledgeShortage",
+          "params": [
+            "bomId"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "switchSafetyView",
+          "params": [
+            "view"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "refreshSafetyStockByItem",
+          "params": [],
+          "exported": false,
+          "lineCount": 52
+        },
+        {
+          "name": "openSafetyItemDetail",
+          "params": [
+            "itemCode"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "closeSafetyItemDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "_renderSafetyItemDetail",
+          "params": [
+            "itemCode"
+          ],
+          "exported": false,
+          "lineCount": 29
+        },
+        {
+          "name": "filterVesselList",
+          "params": [
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "refreshVesselList",
+          "params": [],
+          "exported": false,
+          "lineCount": 59
+        },
+        {
+          "name": "editVessel",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 29
+        },
+        {
+          "name": "onVesselEditTypeChange",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "saveVesselEdit",
+          "params": [],
+          "exported": false,
+          "lineCount": 38
+        },
+        {
+          "name": "openVesselDetail",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "_renderVesselDetail",
+          "params": [
+            "v"
+          ],
+          "exported": false,
+          "lineCount": 85
+        },
+        {
+          "name": "_vesselBOMEditRowHTML",
+          "params": [
+            "item"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "openVesselBOMEditor",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "addVesselBOMEditRow",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "removeVesselBOMEditRow",
+          "params": [
+            "btn"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "saveVesselBOMEdit",
+          "params": [],
+          "exported": false,
+          "lineCount": 33
+        },
+        {
+          "name": "deleteVessel",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1140,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase1.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "contentHash": "ad5b7827a15a027598bded2f7524de317177bd3fd471ede6496db5550b5d91d3",
+      "functions": [
+        {
+          "name": "lookupSupplier",
+          "params": [],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "openSupplierModal",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "addSupplier",
+          "params": [],
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "deleteSupplier",
+          "params": [
+            "code"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "refreshSupplierList",
+          "params": [],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "addLineItem",
+          "params": [],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "autoFillItemCode",
+          "params": [
+            "descInput"
+          ],
+          "exported": false,
+          "lineCount": 19
+        },
+        {
+          "name": "removeLineItem",
+          "params": [
+            "btn"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "generatePO",
+          "params": [],
+          "exported": false,
+          "lineCount": 79
+        },
+        {
+          "name": "refreshPOList",
+          "params": [],
+          "exported": false,
+          "lineCount": 33
+        },
+        {
+          "name": "refreshPoListTab",
+          "params": [],
+          "exported": false,
+          "lineCount": 49
+        },
+        {
+          "name": "showPODocument",
+          "params": [
+            "poId"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "showPOQR",
+          "params": [
+            "poId"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "previewPODoc",
+          "params": [],
+          "exported": false,
+          "lineCount": 29
+        },
+        {
+          "name": "buildPODocHTML",
+          "params": [
+            "poRef",
+            "poDate",
+            "poDue",
+            "vndName",
+            "vndEmail",
+            "vessel",
+            "pic",
+            "qrSrc",
+            "lines",
+            "terms"
+          ],
+          "exported": false,
+          "lineCount": 94
+        },
+        {
+          "name": "printPODocument",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "closePOQR",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "generatePORefNo",
+          "params": [],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "updateQuickTestBtns",
+          "params": [],
+          "exported": false,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 511,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase23.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "contentHash": "f62f920834d41356f92c2d9e05a72c0ec1fa93a62c28cc27d3b4113eb89f017d",
+      "functions": [
+        {
+          "name": "getCurrentPOLines",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "getItemProgress",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "updateScanUI",
+          "params": [],
+          "exported": false,
+          "lineCount": 56
+        },
+        {
+          "name": "renderInspectionSummary",
+          "params": [],
+          "exported": false,
+          "lineCount": 70
+        },
+        {
+          "name": "updateScannedList",
+          "params": [],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "generateProductQR",
+          "params": [],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "populateScanItemSelect",
+          "params": [],
+          "exported": false,
+          "lineCount": 23
+        },
+        {
+          "name": "autoFillProductQR",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "processScan",
+          "params": [
+            "qrStr"
+          ],
+          "exported": false,
+          "lineCount": 50
+        },
+        {
+          "name": "manualScan",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "resetScan",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "completeIncoming",
+          "params": [],
+          "exported": false,
+          "lineCount": 53
+        },
+        {
+          "name": "openCertModal",
+          "params": [
+            "incId",
+            "poRefNo",
+            "qty"
+          ],
+          "exported": false,
+          "lineCount": 56
+        },
+        {
+          "name": "onDocFileChange",
+          "params": [
+            "input",
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "saveCertAndClose",
+          "params": [],
+          "exported": false,
+          "lineCount": 56
+        },
+        {
+          "name": "skipCertAndClose",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "closeCertModal",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "printSingleQR",
+          "params": [],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "startCamera",
+          "params": [],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "stopCamera",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "scanFrame",
+          "params": [],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "switchQRMode",
+          "params": [
+            "mode"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "renderBatchQRForm",
+          "params": [],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "openBatchSNModal",
+          "params": [
+            "itemCode",
+            "qty"
+          ],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "confirmBatchSNInput",
+          "params": [],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "generateBatchQRs",
+          "params": [],
+          "exported": false,
+          "lineCount": 38
+        },
+        {
+          "name": "printBatchQRs",
+          "params": [],
+          "exported": false,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 724,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase4.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "contentHash": "633d448f07b0e0d390c732a3798d84c3ebc705d3d584b5e871365bc4027de3c3",
+      "functions": [
+        {
+          "name": "_docChip",
+          "params": [
+            "label",
+            "has",
+            "onclick",
+            "warn"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "_vesselDocStatus",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "_renderTeamDocChecklist",
+          "params": [
+            "status"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "refreshIncomingReports",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "refreshDocsVesselList",
+          "params": [],
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "openVesselDocHub",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "closeVesselDocHub",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "_renderVesselDocHub",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 31
+        },
+        {
+          "name": "_renderScmDocTable",
+          "params": [
+            "incIds"
+          ],
+          "exported": false,
+          "lineCount": 82
+        },
+        {
+          "name": "_renderVesselManualDocsByType",
+          "params": [
+            "vesselId",
+            "docType",
+            "containerId",
+            "emptyMsg"
+          ],
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "openVesselDocModal",
+          "params": [
+            "presetType"
+          ],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "onVesselDocFileChange",
+          "params": [
+            "input"
+          ],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "saveVesselDoc",
+          "params": [],
+          "exported": false,
+          "lineCount": 27
+        },
+        {
+          "name": "viewVesselDoc",
+          "params": [
+            "docId"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "deleteVesselDoc",
+          "params": [
+            "docId"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "viewDoc",
+          "params": [
+            "certId",
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "buildIncomingReportHTML",
+          "params": [
+            "h",
+            "groups",
+            "poHeader"
+          ],
+          "exported": false,
+          "lineCount": 168
+        },
+        {
+          "name": "printIncomingReport",
+          "params": [
+            "incId"
+          ],
+          "exported": false,
+          "lineCount": 29
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 606,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/phase5.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "contentHash": "b2bb20cf694565b129116bcdc109103beacecce9cca7d1bb43e47affb0cfb31b",
+      "functions": [
+        {
+          "name": "refreshPhase5",
+          "params": [],
+          "exported": false,
+          "lineCount": 42
+        },
+        {
+          "name": "selectPOForLineDetail",
+          "params": [
+            "poId"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "clearPOLineDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "_renderPOLineDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 23
+        },
+        {
+          "name": "openShortageModal",
+          "params": [],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "closeShortageModal",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "_inventoryStatusInfo",
+          "params": [
+            "status"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "refreshInventoryGroups",
+          "params": [],
+          "exported": false,
+          "lineCount": 96
+        },
+        {
+          "name": "openInventoryDetail",
+          "params": [
+            "itemCode"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "closeInventoryDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "_resolveVesselName",
+          "params": [
+            "vesselRef"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "_renderInventoryDetail",
+          "params": [
+            "itemCode"
+          ],
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "openInventoryItemDetail",
+          "params": [
+            "mcCode"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "closeInventoryItemModal",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "_renderInventoryItemModal",
+          "params": [
+            "mcCode"
+          ],
+          "exported": false,
+          "lineCount": 57
+        },
+        {
+          "name": "inventoryItemAction",
+          "params": [
+            "mcCode",
+            "action"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "toggleAdminPanel",
+          "params": [],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "openOutgoingModal",
+          "params": [
+            "action",
+            "items"
+          ],
+          "exported": false,
+          "lineCount": 70
+        },
+        {
+          "name": "onOutgoingVesselChange",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "confirmOutgoing",
+          "params": [],
+          "exported": false,
+          "lineCount": 54
+        },
+        {
+          "name": "switchInventoryView",
+          "params": [
+            "view"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "refreshInventoryVesselView",
+          "params": [],
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "openVesselInventoryDetail",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "closeVesselInventoryDetail",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "_renderVesselInventoryDetail",
+          "params": [
+            "vesselId"
+          ],
+          "exported": false,
+          "lineCount": 25
+        },
+        {
+          "name": "onOutgoingScanInput",
+          "params": [
+            "val"
+          ],
+          "exported": false,
+          "lineCount": 35
+        },
+        {
+          "name": "clearOutgoingScanResult",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "refreshOutgoingStockList",
+          "params": [],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "addManualInventory",
+          "params": [],
+          "exported": false,
+          "lineCount": 35
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 746,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/qr.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "contentHash": "b40cdac3947c12820ae74a9f89feb78f0c1ae458561830f95c0462db32a7b33c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/Phase1_파일분리/js/utils.js": {
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "contentHash": "58045362a452382932e99586542d31be88ee0377d1c38db19bb3b6fda6acfdc0",
+      "functions": [
+        {
+          "name": "promptUserName",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "updateHeaderUser",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "toggleSidebar",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "restoreSidebarState",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "switchMainTab",
+          "params": [
+            "tabId"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "switchTab",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "paginate",
+          "params": [
+            "items",
+            "name"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "buildPager",
+          "params": [
+            "name",
+            "info",
+            "renderFn"
+          ],
+          "exported": false,
+          "lineCount": 19
+        },
+        {
+          "name": "gotoPage",
+          "params": [
+            "name",
+            "page",
+            "renderFn"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "resetPager",
+          "params": [
+            "name"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "notify",
+          "params": [
+            "msg",
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "showQRResultModal",
+          "params": [
+            "title",
+            "raw",
+            "parsed"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "checkProtocol",
+          "params": [],
+          "exported": false,
+          "lineCount": 17
+        },
+        {
+          "name": "updateDBStatus",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "initDates",
+          "params": [],
+          "exported": false,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 193,
+      "hasStructuralAnalysis": true
+    },
+    "구매 업무 자동화/PO 파일/PO_A-PO-H-250090_2026-04-17.html": {
+      "filePath": "구매 업무 자동화/PO 파일/PO_A-PO-H-250090_2026-04-17.html",
+      "contentHash": "0612919e602c17ef455ed902b9f2535b3c5ea880166f215ff9d01c3bfd7be747",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 94,
+      "hasStructuralAnalysis": false
+    },
+    "구매 업무 자동화/readme.md": {
+      "filePath": "구매 업무 자동화/readme.md",
+      "contentHash": "40c3443ba2a4ff13524416978bdbf5577fa7c7d45d01dd2af890347262e1b159",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "기능 요구서 및 명세서/기능_요구사항_정의서.html": {
+      "filePath": "기능 요구서 및 명세서/기능_요구사항_정의서.html",
+      "contentHash": "05cf51724d225445cd8746c5e96512fec0c84d7bcb24035f66fd642e2dc41d23",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 815,
+      "hasStructuralAnalysis": false
+    },
+    "기능 요구서 및 명세서/avikus_system_report.html": {
+      "filePath": "기능 요구서 및 명세서/avikus_system_report.html",
+      "contentHash": "74a14e5ce27dac685a78ba445159ede0659cf1f01790969dd7eba96d322ac2cf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1049,
+      "hasStructuralAnalysis": false
+    },
+    "코드 작성 시 주의사항": {
+      "filePath": "코드 작성 시 주의사항",
+      "contentHash": "cf89fe5adc070221f5d1620c67500b8687cc771994c3b77a9937f5f15896c9f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": false
+    },
+    "CLAUDE.md": {
+      "filePath": "CLAUDE.md",
+      "contentHash": "4e6fae2c891ff0b4ecd603f08b45c4e9fc1e1b35ff21361a2026d33baf99e583",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 173,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

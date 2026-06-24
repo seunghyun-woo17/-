@@ -1,0 +1,413 @@
+{
+  "nodes": [
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "type": "document",
+      "name": "00_개요.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "summary": "모듈가이드 폴더의 인덱스 문서. Phase1_파일분리/js/ 전체 구조, 스크립트 로딩 순서(db.js→utils.js→qr.js→phase*→app.js), CDN 의존성, 핵심 데이터 흐름, 13개 모듈 목록과 설계 원칙을 한곳에 정리한 코드맵.",
+      "tags": ["documentation", "entry-point", "overview", "code-map", "architecture"],
+      "complexity": "moderate",
+      "languageNotes": "각 모듈 문서로 상대 링크(01_db.md 등)를 거는 허브형 인덱스. 코드는 그대로 두고 로직 단위로 정리한 핸드오프용 문서."
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/01_db.md",
+      "type": "document",
+      "name": "01_db.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/01_db.md",
+      "summary": "db.js 모듈 가이드. 13개 테이블 DB 스키마(const DB), 초기화·저장·리셋, 유틸리티, QR 페이로드 명세, 그리고 자주 찾는 refreshAllViews() 전체 뷰 갱신 함수를 설명한다.",
+      "tags": ["documentation", "database", "schema-definition", "localstorage"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/02_utils.md",
+      "type": "document",
+      "name": "02_utils.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/02_utils.md",
+      "summary": "utils.js 모듈 가이드. 전역 사용자 이름(currentUserName), 탭 전환(switchTab), 알림·모달(notify), 환경/상태 표시, 테마·날짜 유틸과 새 탭/뷰 추가 체크리스트를 설명한다.",
+      "tags": ["documentation", "utility", "ui-helpers"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/03_qr.md",
+      "type": "document",
+      "name": "03_qr.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/03_qr.md",
+      "summary": "qr.js 모듈 가이드. 순수 JS QR 코드 생성 엔진의 공개 API, 내부 구현, 사용처(PO/제품 QR), 전역 부산물을 정리한 간략 문서.",
+      "tags": ["documentation", "qr", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/04_phase0.md",
+      "type": "document",
+      "name": "04_phase0.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/04_phase0.md",
+      "summary": "phase0.js(설계 TAB) 모듈 가이드. 호선 마스터(vessel_master), 호선 검색 드롭다운, BOM 엑셀 업로드·편집기(vessel_bom), 호선 특이사항(vessel_notes), 안전재고 비교 로직을 설명한다.",
+      "tags": ["documentation", "data-model", "bom", "vessel"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/05_phase1.md",
+      "type": "document",
+      "name": "05_phase1.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/05_phase1.md",
+      "summary": "phase1.js(PO 발행) 모듈 가이드. 업체 관리(suppliers), PO 라인 입력, PO 생성·조회·인쇄, 그리고 자주 찾는 PO 번호 자동생성(generatePORefNo) 함수를 설명한다.",
+      "tags": ["documentation", "po", "api-handler", "qr"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/06_phase23.md",
+      "type": "document",
+      "name": "06_phase23.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/06_phase23.md",
+      "summary": "phase23.js(입고 검수) 모듈 가이드. 스캔 상태/진행률, 제품 QR 생성, QR 스캔 처리, 입고 완료 처리, 서류 첨부(검사성적서·COC·거래명세서), QR 인쇄·카메라·일괄 처리를 설명한다.",
+      "tags": ["documentation", "qr", "scanning", "receiving"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/07_phase4.md",
+      "type": "document",
+      "name": "07_phase4.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/07_phase4.md",
+      "summary": "phase4.js(문서 산출물) 모듈 가이드. 2026-06 개편된 호선별 문서 허브(팀별 SCM/QC/SW 구조), 데이터 연결 체인, 호선 목록·상세 뷰, 수기 첨부(vessel_docs), 기존 Incoming Report 기능을 설명한다.",
+      "tags": ["documentation", "document-hub", "vessel", "data-flow"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/08_phase5.md",
+      "type": "document",
+      "name": "08_phase5.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/08_phase5.md",
+      "summary": "phase5.js(재고 현황·출고) 모듈 가이드. 발주·입고 이력, 품목별 2단계 재고 뷰, 출고/대여/검사요청 처리, 호선별 뷰, SCM 출고 처리 서브탭, 관리자 수기 재고 등록을 설명한다.",
+      "tags": ["documentation", "inventory", "outgoing", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md",
+      "type": "document",
+      "name": "09_phase-inspection.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md",
+      "summary": "phase-inspection.js(검사요청 탭) 모듈 가이드. outgoing_log(INSPECTION_REQUESTED) 기반 팀별 집계와 검사 완료 처리 함수 목록을 정리한 간략 문서.",
+      "tags": ["documentation", "inspection", "api-handler"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/10_app.md",
+      "type": "document",
+      "name": "10_app.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/10_app.md",
+      "summary": "app.js(앱 초기화 진입점) 모듈 가이드. 마지막에 로드되어 DB 초기화·테마·탭 전환을 수행하는 초기화 순서를 설명한다.",
+      "tags": ["documentation", "entry-point", "bootstrap"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/11_dev-mock.md",
+      "type": "document",
+      "name": "11_dev-mock.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/11_dev-mock.md",
+      "summary": "dev-mock.js(개발 전용 스캔 시뮬레이터) 모듈 가이드. IIFE 구조의 함수 목록과 서버 전환 전(2단계) 삭제 방법을 설명한다.",
+      "tags": ["documentation", "dev-only", "mock", "removal-guide"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md",
+      "type": "document",
+      "name": "12_phase-cxop.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md",
+      "summary": "phase-cxop.js(CX/OP 호선 정보) 모듈 가이드. 호선 조회 컬럼, vessel_master에 저장되는 CX/OP 필드, 함수 목록, 진입점 연결을 설명한다.",
+      "tags": ["documentation", "cxop", "vessel", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/docs/모듈가이드/13_phase-fat.md",
+      "type": "document",
+      "name": "13_phase-fat.md",
+      "filePath": "구매 업무 자동화/docs/모듈가이드/13_phase-fat.md",
+      "summary": "phase-fat.js(QC FAT 관리) 모듈 가이드. 선급별 FAT 업무 흐름, 핵심 결정, 데이터 구조(fat_master 등), 헬퍼·목록·상세·선급 코멘트·코멘트 코드 마스터·MED 인증서 함수와 확장 포인트를 설명한다.",
+      "tags": ["documentation", "fat", "qc", "classification", "data-model"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/01_db.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/02_utils.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/03_qr.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/04_phase0.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/05_phase1.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/06_phase23.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/07_phase4.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/08_phase5.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/10_app.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/11_dev-mock.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "target": "document:구매 업무 자동화/docs/모듈가이드/13_phase-fat.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/01_db.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/02_utils.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/03_qr.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/04_phase0.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/05_phase1.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/06_phase23.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/07_phase4.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/08_phase5.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/10_app.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/11_dev-mock.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/docs/모듈가이드/13_phase-fat.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

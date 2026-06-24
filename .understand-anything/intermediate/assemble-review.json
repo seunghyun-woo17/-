@@ -1,0 +1,17 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 0,
+  "edgesRestored": 0,
+  "crossBatchEdgesAdded": 0,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "그래프 무결성 검증 통과: 노드 90개(ID 모두 고유), 엣지 138개, dangling 0, 중복 엣지 0, self-loop 0. 병합 스크립트 리포트(90/138, 0 drop)와 일치.",
+    "'Could not fix' 항목 없음: id 누락 노드 0, 미지의 type 0(document/file/function만 존재), 미지의 complexity 0(simple/moderate/complex만 존재). 복구·재매핑 대상 없음.",
+    "교차배치 갭 없음: import map이 비어 있는 vanilla <script> 로딩 프로젝트라 imports 엣지는 기대하지 않음. 파일 간 결합은 depends_on(index.html→JS 13개), documents(문서→모듈), contains(파일→함수)로 이미 표현됨. 추측성 엣지는 추가하지 않음.",
+    "함수 노드 43개 전부 contains 부모 보유(고아 함수 0). 6개 배치의 distinct 노드 ID 90개가 모두 어셈블리에 존재하며, 유효 endpoint를 가진 배치 엣지도 전부 보존됨(유실 0).",
+    "데이터 품질 관찰(수정 아님) 1 — qr.js, dev-mock.js 파일 노드에 하위 function 노드 없음. dev-mock.js는 모듈가이드상 IIFE 구조라 공개 함수가 없는 것이 정상. qr.js는 03_qr.md에 '공개 API'가 있다고 기술돼 있어 function 추출이 누락됐을 가능성(상위 file-analyzer 단계의 추출 완성도 이슈)이 있음. 임의 함수 노드를 날조하지 않음.",
+    "데이터 품질 관찰(수정 아님) 2 — document:구매 업무 자동화/readme.md 가 완전 고립 노드(엣지 0). 'related'로 CLAUDE.md에 연결할 여지는 있으나 import map 근거가 없어 추측성 엣지로 판단, 추가하지 않음.",
+    "데이터 품질 관찰(수정 아님) 3 — 동일 내용의 중복 파일이 리포지토리에 실재함(avikus_system_report.html, 기능_요구사항_정의서.html, DB_전환_3단계_로드맵.md, CLAUDE.md 가 각각 2개 경로에 존재). 디스크상 별개 파일(경로·크기·mtime 상이)이므로 별도 노드 유지가 올바름. 병합 아티팩트 아님."
+  ]
+}

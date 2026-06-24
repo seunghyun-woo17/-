@@ -1,0 +1,15 @@
+{
+  "projectRoot": "C:/Users/seunghyunwoo/Desktop/github/SCMAUTO",
+  "batchFiles": [
+    {"path": "구매 업무 자동화/Phase1_파일분리/css/components.css", "language": "css", "sizeLines": 192, "fileCategory": "markup"},
+    {"path": "구매 업무 자동화/Phase1_파일분리/css/layout.css", "language": "css", "sizeLines": 225, "fileCategory": "markup"},
+    {"path": "구매 업무 자동화/Phase1_파일분리/css/phases.css", "language": "css", "sizeLines": 219, "fileCategory": "markup"},
+    {"path": "구매 업무 자동화/Phase1_파일분리/css/variables.css", "language": "css", "sizeLines": 84, "fileCategory": "markup"}
+  ],
+  "batchImportData": {
+    "구매 업무 자동화/Phase1_파일분리/css/components.css": [],
+    "구매 업무 자동화/Phase1_파일분리/css/layout.css": [],
+    "구매 업무 자동화/Phase1_파일분리/css/phases.css": [],
+    "구매 업무 자동화/Phase1_파일분리/css/variables.css": []
+  }
+}

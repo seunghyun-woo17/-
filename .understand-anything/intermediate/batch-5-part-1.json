@@ -1,0 +1,757 @@
+{
+  "nodes": [
+    {
+      "id": "document:검증_메모.md",
+      "type": "document",
+      "name": "검증_메모.md",
+      "filePath": "검증_메모.md",
+      "summary": "MVP 프로토타입의 전체 기능 흐름과 버그(BUG-01~06)·개선사항(IMPROVE)을 정리한 검증 메모. PDF 출력·단가 입력 등 수정 이력과 외부 CDN 의존·HTML 저장 이슈를 추적한다.",
+      "tags": [
+        "documentation",
+        "검증",
+        "버그추적",
+        "mvp",
+        "변경이력"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:구매 업무 자동화/DB 전환 3단계 로드맵/혼자 수정하는 방법 가이드.md",
+      "type": "document",
+      "name": "혼자 수정하는 방법 가이드.md",
+      "filePath": "구매 업무 자동화/DB 전환 3단계 로드맵/혼자 수정하는 방법 가이드.md",
+      "summary": "비개발자가 직접 색상(CSS 변수, RRGGBB 16진수) 등을 수정하는 방법을 설명하는 셀프 편집 가이드.",
+      "tags": [
+        "documentation",
+        "가이드",
+        "css",
+        "self-edit"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:구매 업무 자동화/DB 전환 3단계 로드맵/DB_전환_3단계_로드맵.md",
+      "type": "document",
+      "name": "DB_전환_3단계_로드맵.md",
+      "filePath": "구매 업무 자동화/DB 전환 3단계 로드맵/DB_전환_3단계_로드맵.md",
+      "summary": "localStorage 프로토타입을 PostgreSQL+Node.js 서버로 전환하는 3단계 로드맵(파일 분리 → 서버 구축 → db.js를 api.js로 교체)과 단계별 완료 체크리스트를 담은 문서.",
+      "tags": [
+        "documentation",
+        "로드맵",
+        "db-migration",
+        "postgresql",
+        "아키텍처"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "summary": "프로젝트 루트의 Claude 컨텍스트 문서. 부산사무소 ERP의 정체성·구현 상태·폴더 구조·핵심 설계 원칙·DB 테이블·Phase별 기능을 요약해 자동 로드되는 핵심 온보딩 문서다.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "컨텍스트",
+        "온보딩",
+        "아키텍처"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/index.html",
+      "summary": "부산사무소 ERP의 메인 화면. 모든 Phase 탭의 마크업과 모달을 포함하고 12개 js 모듈과 CSS를 로드해 단일 페이지 앱을 구성하는 진입 HTML이다.",
+      "tags": [
+        "entry-point",
+        "markup",
+        "spa",
+        "ui",
+        "single-page"
+      ],
+      "complexity": "complex",
+      "languageNotes": "프레임워크/빌드 없이 전역 스코프 함수와 onclick 핸들러로 동작하는 바닐라 SPA. 하단에서 script src로 12개 JS를 순차 로드한다."
+    },
+    {
+      "id": "file:구매 업무 자동화/PO 파일/PO_A-PO-H-250090_2026-04-17.html",
+      "type": "file",
+      "name": "PO_A-PO-H-250090_2026-04-17.html",
+      "filePath": "구매 업무 자동화/PO 파일/PO_A-PO-H-250090_2026-04-17.html",
+      "summary": "PO 발행 기능이 생성한 발주서 산출물(HTML). Avikus 양식의 단일 PO 문서로, 인쇄/보관용으로 export된 정적 결과물이다.",
+      "tags": [
+        "markup",
+        "po",
+        "산출물",
+        "발주서",
+        "export"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "type": "file",
+      "name": "app.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "summary": "앱 부트스트랩 모듈. 탭 전환·초기화·테마 설정과 상단 시계 갱신을 담당하는 진입 스크립트다.",
+      "tags": [
+        "entry-point",
+        "초기화",
+        "bootstrap",
+        "ui"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "file",
+      "name": "db.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "summary": "localStorage 추상화 레이어. DB 테이블 스키마 정의, 저장/리셋, ID·날짜 헬퍼, QR 페이로드 빌드/파싱, 전체 뷰 갱신을 제공하며 서버 전환 시 api.js로 교체될 단일 교체 지점이다.",
+      "tags": [
+        "data-model",
+        "persistence",
+        "localstorage",
+        "utility",
+        "핵심모듈"
+      ],
+      "complexity": "complex",
+      "languageNotes": "서버 전환 단일 교체 전략의 중심. 모든 영속화 코드가 이 파일에 집중되어 있다."
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "type": "file",
+      "name": "dev-mock.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "summary": "개발 전용 스캔 시뮬레이터. QR 스캔을 흉내내는 모의 데이터를 제공하며 서버 전환 전 삭제 대상인 임시 스크립트다.",
+      "tags": [
+        "dev-tool",
+        "mock",
+        "테스트",
+        "임시",
+        "scan"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "서버 전환 전 삭제 예정. index.html의 DEV ONLY 스크립트 태그와 함께 제거한다."
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "type": "file",
+      "name": "phase-cxop.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "summary": "CxOP(고객 운영) 탭 로직. 호선별 입력 목록 갱신·필터·인라인 저장과 엑셀 템플릿 다운로드/업로드 처리를 담당한다.",
+      "tags": [
+        "feature-module",
+        "ui",
+        "엑셀",
+        "cxop",
+        "data-import"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "type": "file",
+      "name": "phase-fat.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "summary": "FAT(공장인수시험) 관리 탭. FAT 마스터/일정·BOM 커버리지·코멘트·참고문서·의료성적서 관리와 상세 렌더링·진행상태 워크플로를 제공하는 대형 기능 모듈이다.",
+      "tags": [
+        "feature-module",
+        "fat",
+        "워크플로",
+        "문서관리",
+        "ui"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "type": "file",
+      "name": "phase-inspection.js",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "summary": "검사요청 탭 로직. 품목별 그룹핑·통계 렌더링과 검사 결과 입력/저장, 검사 이력 상세 조회를 담당한다.",
+      "tags": [
+        "feature-module",
+        "검사",
+        "inspection",
+        "ui",
+        "워크플로"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/app.js:updateTopbarClock",
+      "type": "function",
+      "name": "updateTopbarClock",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "summary": "상단바 시계를 현재 시각으로 주기적으로 갱신한다.",
+      "tags": [
+        "ui",
+        "시계",
+        "timer"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        43,
+        53
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:refreshAllViews",
+      "type": "function",
+      "name": "refreshAllViews",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "summary": "모든 Phase 탭의 화면을 일괄 재렌더링해 데이터 변경을 전역 반영한다.",
+      "tags": [
+        "ui-refresh",
+        "전역갱신",
+        "오케스트레이션"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        197,
+        213
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:buildPOQRPayload",
+      "type": "function",
+      "name": "buildPOQRPayload",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "summary": "PO 정보를 QR 코드용 페이로드 문자열로 직렬화한다.",
+      "tags": [
+        "qr",
+        "serialization",
+        "po"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        165,
+        174
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:buildProductQRPayload",
+      "type": "function",
+      "name": "buildProductQRPayload",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "summary": "제품 S/N 정보를 QR 코드용 페이로드로 직렬화한다.",
+      "tags": [
+        "qr",
+        "serialization",
+        "product"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        176,
+        183
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:parseQRString",
+      "type": "function",
+      "name": "parseQRString",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "summary": "스캔된 QR 문자열을 파싱해 구조화된 객체로 변환한다.",
+      "tags": [
+        "qr",
+        "parsing",
+        "scan"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        186,
+        194
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js:refreshCxopTab",
+      "type": "function",
+      "name": "refreshCxopTab",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "summary": "CxOP 입력 목록을 필터와 함께 갱신 렌더링한다.",
+      "tags": [
+        "cxop",
+        "ui-refresh",
+        "목록"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        46,
+        102
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js:onCxopExcelUpload",
+      "type": "function",
+      "name": "onCxopExcelUpload",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "summary": "CxOP 엑셀 업로드를 처리해 행 데이터를 파싱한다.",
+      "tags": [
+        "엑셀",
+        "업로드",
+        "cxop"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        222,
+        252
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js:applyCxopExcel",
+      "type": "function",
+      "name": "applyCxopExcel",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "summary": "파싱된 CxOP 엑셀 데이터를 검증해 저장 반영한다.",
+      "tags": [
+        "엑셀",
+        "적용",
+        "cxop"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        255,
+        284
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:refreshFatTab",
+      "type": "function",
+      "name": "refreshFatTab",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "summary": "FAT 목록을 진행상태·커버리지·일정과 함께 렌더링한다.",
+      "tags": [
+        "fat",
+        "ui-refresh",
+        "목록"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        114,
+        155
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:_renderFatDetail",
+      "type": "function",
+      "name": "_renderFatDetail",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "summary": "FAT 상세 모달의 일정·코멘트·문서·진행 워크플로를 렌더링한다.",
+      "tags": [
+        "fat",
+        "ui-render",
+        "상세"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        175,
+        280
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:saveFatComment",
+      "type": "function",
+      "name": "saveFatComment",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "summary": "FAT 코멘트를 코드·첨부파일과 함께 저장한다.",
+      "tags": [
+        "fat",
+        "코멘트",
+        "저장"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        380,
+        403
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:completeFat",
+      "type": "function",
+      "name": "completeFat",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "summary": "FAT 절차를 완료 상태로 전환하고 이력을 기록한다.",
+      "tags": [
+        "fat",
+        "완료",
+        "워크플로"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        322,
+        327
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js:_renderInspectionGroups",
+      "type": "function",
+      "name": "_renderInspectionGroups",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "summary": "검사요청 항목을 품목별 그룹으로 렌더링한다.",
+      "tags": [
+        "검사",
+        "ui-render",
+        "그룹핑"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        45,
+        68
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js:saveInspectionResult",
+      "type": "function",
+      "name": "saveInspectionResult",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "summary": "검사 결과를 입력받아 항목에 저장하고 상태를 갱신한다.",
+      "tags": [
+        "검사",
+        "결과저장",
+        "워크플로"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        166,
+        197
+      ]
+    },
+    {
+      "id": "function:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js:_renderInspectionDetail",
+      "type": "function",
+      "name": "_renderInspectionDetail",
+      "filePath": "구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "summary": "검사 항목 상세 정보를 렌더링한다.",
+      "tags": [
+        "검사",
+        "ui-render",
+        "상세"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        98,
+        142
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/app.js:updateTopbarClock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:refreshAllViews",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:buildPOQRPayload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:buildProductQRPayload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/db.js:parseQRString",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js:refreshCxopTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js:onCxopExcelUpload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js:applyCxopExcel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:refreshFatTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:_renderFatDetail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:saveFatComment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js:completeFat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js:_renderInspectionGroups",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js:saveInspectionResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "target": "function:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js:_renderInspectionDetail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-cxop.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-fat.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase-inspection.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:구매 업무 자동화/PO 파일/PO_A-PO-H-250090_2026-04-17.html",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/utils.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/qr.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase0.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase23.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase5.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/dev-mock.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/app.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:검증_메모.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:검증_메모.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase1.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:검증_메모.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/phase4.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/DB 전환 3단계 로드맵/DB_전환_3단계_로드맵.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/js/db.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:구매 업무 자동화/DB 전환 3단계 로드맵/혼자 수정하는 방법 가이드.md",
+      "target": "file:구매 업무 자동화/Phase1_파일분리/index.html",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

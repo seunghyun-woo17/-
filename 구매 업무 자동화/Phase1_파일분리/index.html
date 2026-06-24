@@ -105,7 +105,7 @@
     <button class="topbar-icon-btn" title="알림" aria-label="알림">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </button>
-    <div class="topbar-avatar" id="header-user-name" onclick="promptUserName()" title="클릭하여 이름 설정">설정</div>
+    <div class="topbar-avatar" id="header-user-name" onclick="onSettingsClick()" title="클릭하여 이름 설정">설정</div>
   </div>
 </header>
 
@@ -598,14 +598,11 @@
     <div class="sub-tab active" onclick="switchTab('phase1')">
       <span class="tab-phase tp-1">PO</span> PO 발행
     </div>
-    <div class="sub-tab" onclick="switchTab('polist')">
-      <span class="tab-phase tp-1">목록</span> 발행된 PO
-    </div>
     <div class="sub-tab" onclick="switchTab('phase23')">
       <span class="tab-phase tp-23">입고</span> 입고 검수
     </div>
     <div class="sub-tab" onclick="switchTab('phase5')">
-      <span class="tab-phase tp-5">이력</span> 발주·입고 이력
+      <span class="tab-phase tp-5">이력</span> 발주 입고 이력
     </div>
     <div class="sub-tab" onclick="switchTab('outgoing')">
       <span class="tab-phase tp-5" style="background:rgba(0,201,167,0.15);color:var(--accent);">출고</span> 출고 처리
@@ -716,25 +713,28 @@
 
     <hr class="divider">
 
-    <!-- PO 조건 (editable) -->
-    <div class="card-title blue" style="margin-bottom:10px;">PO 조건 / 특이사항 <span style="font-size:10px;font-weight:400;color:var(--text3);">— 매번 변경 가능</span></div>
-    <div class="form-grid">
-      <div class="form-group" style="grid-column:span 2;">
-        <label>1. 품목 설명 조항</label>
-        <input id="po-term1" value="1. This PO is issued for purchasing for [HiNAS] CAMERA HOUSING &amp; JUNCTION BOX">
+    <!-- PO 조건 / 특이사항 (editable, 행 추가/삭제 가능) -->
+    <div class="card-title blue" style="margin-bottom:10px;">PO 조건 / 특이사항 <span style="font-size:10px;font-weight:400;color:var(--text3);">— 매번 변경 가능 · 행 추가/삭제</span></div>
+    <div id="po-terms-list">
+      <div class="po-term-row" style="display:flex;gap:8px;align-items:center;margin-bottom:7px;">
+        <input class="po-term-input" style="flex:1;" value="1. This PO is issued for purchasing for [HiNAS] CAMERA HOUSING &amp; JUNCTION BOX">
+        <button class="btn btn-outline btn-sm" style="padding:6px 11px;" onclick="removePOTermRow(this)" title="이 조건 삭제">✕</button>
       </div>
-      <div class="form-group">
-        <label>2. 납기 조건</label>
-        <input id="po-term3" value="2. Delivery: A.S.A.P">
+      <div class="po-term-row" style="display:flex;gap:8px;align-items:center;margin-bottom:7px;">
+        <input class="po-term-input" style="flex:1;" value="2. Delivery: A.S.A.P">
+        <button class="btn btn-outline btn-sm" style="padding:6px 11px;" onclick="removePOTermRow(this)" title="이 조건 삭제">✕</button>
       </div>
-      <div class="form-group">
-        <label>3. 납품 장소</label>
-        <input id="po-term4" value="3. To be delivered to: MRC 보관(재고 관리) 및 호선별 납품 조건">
+      <div class="po-term-row" style="display:flex;gap:8px;align-items:center;margin-bottom:7px;">
+        <input class="po-term-input" style="flex:1;" value="3. To be delivered to: MRC 보관(재고 관리) 및 호선별 납품 조건">
+        <button class="btn btn-outline btn-sm" style="padding:6px 11px;" onclick="removePOTermRow(this)" title="이 조건 삭제">✕</button>
       </div>
-      <div class="form-group" style="grid-column:span 2;">
-        <label>4. 결제 조건</label>
-        <input id="po-term5" value="4. Payment Term: 선금 30% / 잔금 70%">
+      <div class="po-term-row" style="display:flex;gap:8px;align-items:center;margin-bottom:7px;">
+        <input class="po-term-input" style="flex:1;" value="4. Payment Term: 선금 30% / 잔금 70%">
+        <button class="btn btn-outline btn-sm" style="padding:6px 11px;" onclick="removePOTermRow(this)" title="이 조건 삭제">✕</button>
       </div>
+    </div>
+    <div style="margin-bottom:6px;">
+      <button class="btn btn-outline btn-sm" onclick="addPOTermRow()">+ 조건 추가</button>
     </div>
 
     <div class="btn-row">
@@ -814,30 +814,6 @@
         <tbody id="tbl-suppliers"></tbody>
       </table>
     </div>
-  </div>
-</div>
-
-
-<!-- ================================================================
-     SECTION: 발행된 PO 목록 (전체 — 검색 + 페이지네이션)
-     JS 로직: js/phase1.js (refreshPoListTab)
-     ================================================================ -->
-<div class="section" id="sec-polist">
-  <div class="card">
-    <div class="card-title blue">발행된 PO 목록 <span id="po-all-count" style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;"></span></div>
-    <div style="margin-bottom:12px;">
-      <input id="po-all-search" oninput="resetPager('po-all');refreshPoListTab()" placeholder="🔍 PO번호·업체·호선·상태 검색"
-             style="width:100%;max-width:360px;background:var(--input-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none;">
-    </div>
-    <div class="db-wrap">
-      <table class="db-table">
-        <thead>
-          <tr><th>PO 번호</th><th>발행일</th><th>납기일</th><th>공급업체</th><th>적용 호선</th><th style="text-align:center;">품목</th><th>상태</th><th style="text-align:right;">관리</th></tr>
-        </thead>
-        <tbody id="tbl-po-all"></tbody>
-      </table>
-    </div>
-    <div id="pager-po-all"></div>
   </div>
 </div>
 
@@ -1015,8 +991,8 @@
 <div class="section" id="sec-phase5">
 
   <div class="notice notice-blue" style="font-size:11px;">
-    <strong>발주·입고 이력:</strong> 발주서·발주 품목·입고 검수 진행 내역을 조회합니다.
-    실제 S/N 단위 재고 현황은 <strong>[재고 현황]</strong> 탭에서 제품별로 확인할 수 있습니다.
+    <strong>발주 입고 이력:</strong> 발행된 PO와 입고 검수 내역을 한곳에서 조회합니다. 발주서 행을 클릭하면 발주 품목 내역과 <strong>해당 PO의 입고 검수 이력</strong>이 함께 표시됩니다.
+    실제 S/N 단위 재고는 <strong>[재고 현황]</strong> 탭에서 제품별로 확인하세요.
   </div>
 
   <div class="stats-row" id="phase5-stats">
@@ -1026,10 +1002,14 @@
   </div>
 
   <div class="card">
-    <div class="card-title">발주서 목록 (PO) <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">행을 클릭하면 아래에 발주 품목 내역이 표시됩니다</span></div>
+    <div class="card-title">발주서 목록 (PO) <span id="po-history-count" style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;"></span><span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px;">행 클릭 시 발주 품목 내역 + 연계 입고 검수 이력 표시</span></div>
+    <div style="margin-bottom:12px;">
+      <input id="po-history-search" oninput="resetPager('po-history');refreshPhase5()" placeholder="🔍 PO번호·업체·호선·상태 검색"
+             style="width:100%;max-width:360px;background:var(--input-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;outline:none;">
+    </div>
     <div class="db-wrap">
       <table class="db-table">
-        <thead><tr><th>발주서 번호</th><th>발주일</th><th>납기일</th><th>공급업체</th><th>적용 호선</th><th>진행 상태</th></tr></thead>
+        <thead><tr><th>발주서 번호</th><th>발주일</th><th>납기일</th><th>공급업체</th><th>적용 호선</th><th>진행 상태</th><th>입고 검수 진행상태</th><th style="text-align:right;">관리</th></tr></thead>
         <tbody id="tbl-po"></tbody>
       </table>
     </div>
@@ -1049,8 +1029,8 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">입고 검수 이력</div>
+  <div class="card" id="inc-history-card" style="display:none;">
+    <div class="card-title"><span id="inc-history-title">입고 검수 이력</span></div>
     <div class="db-wrap">
       <table class="db-table">
         <thead><tr><th>입고 검사자</th><th>발주서 번호</th><th>입고일</th><th style="text-align:center;">발주 수량</th><th style="text-align:center;">실입고 수량</th><th>검수 결과</th></tr></thead>
@@ -1213,7 +1193,6 @@
 
   <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
     <button class="btn btn-outline btn-sm" id="btn-admin-toggle" onclick="toggleAdminPanel()" style="border-color:rgba(245,158,11,.4);color:var(--warn);">관리자 수기 재고 등록</button>
-    <button class="btn btn-danger btn-sm" onclick="dbReset()">DB 전체 초기화</button>
   </div>
 
   <div id="admin-inventory-panel" style="display:none; margin-top:12px;">
@@ -1826,6 +1805,21 @@
     <div class="btn-row" style="justify-content:flex-end;">
       <button class="btn btn-outline" onclick="document.getElementById('outgoing-modal').classList.remove('show')">취소</button>
       <button class="btn btn-primary" onclick="confirmOutgoing()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Packing List 미리보기 (출고 처리 시 자동 생성) -->
+<div class="modal-bg" id="packing-list-modal">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-title">
+      <span>Packing List 미리보기</span>
+      <button class="modal-close" onclick="document.getElementById('packing-list-modal').classList.remove('show')">×</button>
+    </div>
+    <div id="packing-list-content"></div>
+    <div class="btn-row" style="padding-top:12px;border-top:1px solid var(--border);">
+      <button class="btn btn-primary" style="flex:1;" onclick="printPackingList()">인쇄 / PDF 저장</button>
+      <button class="btn btn-outline" onclick="document.getElementById('packing-list-modal').classList.remove('show')">닫기</button>
     </div>
   </div>
 </div>

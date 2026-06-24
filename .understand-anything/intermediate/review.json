@@ -1,0 +1,23 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'document:구매 업무 자동화/readme.md' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 90,
+    "totalEdges": 138,
+    "totalLayers": 6,
+    "tourSteps": 15,
+    "nodeTypes": {
+      "document": 25,
+      "file": 22,
+      "function": 43
+    },
+    "edgeTypes": {
+      "related": 18,
+      "depends_on": 16,
+      "documents": 61,
+      "contains": 43
+    }
+  }
+}

@@ -23,19 +23,45 @@ function refreshPhase5() {
   if (statInc)  statInc.textContent  = DB.incoming_header.filter(function(h){ return h.status === 'COMPLETE'; }).length;
   if (statOpen) statOpen.textContent = DB.po_header.filter(function(p){ return p.status === 'OPEN' || p.status === 'PARTIAL'; }).length;
 
-  /* ── PO_HEADER 테이블 ── */
+  /* ── PO_HEADER 테이블 (검색 + 입고 검수 진행상태 + PO/QR 보기) ── */
   var tblPO   = document.getElementById('tbl-po');
   var pagerPO = document.getElementById('pager-po-history');
+  var countEl = document.getElementById('po-history-count');
   if (tblPO) {
+    var term = ((document.getElementById('po-history-search') || {}).value || '').trim().toLowerCase();
+    var list = DB.po_header.slice().reverse().filter(function(p) {
+      if (!term) return true;
+      var hay = [p.po_ref_no, p.supplier_code, p.supplier_name, p.vessel_name, p.vessel_code, p.status]
+        .filter(Boolean).join(' ').toLowerCase();
+      return hay.indexOf(term) !== -1;
+    });
+    if (countEl) countEl.textContent = DB.po_header.length ? (list.length + ' / ' + DB.po_header.length + '건') : '';
+
     if (DB.po_header.length === 0) {
-      tblPO.innerHTML = '<tr><td colspan="6" class="empty-state">데이터 없음</td></tr>';
+      tblPO.innerHTML = '<tr><td colspan="8" class="empty-state">데이터 없음</td></tr>';
+      if (pagerPO) pagerPO.innerHTML = '';
+    } else if (list.length === 0) {
+      tblPO.innerHTML = '<tr><td colspan="8" class="empty-state">검색 조건에 맞는 PO가 없습니다.</td></tr>';
       if (pagerPO) pagerPO.innerHTML = '';
     } else {
-      var poInfo = paginate(DB.po_header.slice().reverse(), 'po-history');
+      var poInfo = paginate(list, 'po-history');
       tblPO.innerHTML = poInfo.slice.map(function(p) {
           var badge = p.status === 'OPEN' ? 'badge-open' : p.status === 'PARTIAL' ? 'badge-partial' : p.status === 'COMPLETE' ? 'badge-complete' : 'badge-cancel';
+          var inc = _poIncomingStatus(p);
           var selected = (_selectedPOId === p.po_id);
-          return '<tr style="cursor:pointer;' + (selected ? 'background:rgba(29,78,216,.08);' : '') + '" onclick="selectPOForLineDetail(\'' + p.po_id + '\')"><td><strong>' + p.po_ref_no + '</strong></td><td>' + p.issue_date + '</td><td>' + p.due_date + '</td><td>' + p.supplier_code + '</td><td>' + p.vessel_code + '</td><td><span class="badge ' + badge + '">' + p.status + '</span></td></tr>';
+          return '<tr style="cursor:pointer;' + (selected ? 'background:rgba(29,78,216,.08);' : '') + '" onclick="selectPOForLineDetail(\'' + p.po_id + '\')">'
+            + '<td><strong>' + p.po_ref_no + '</strong></td>'
+            + '<td>' + p.issue_date + '</td>'
+            + '<td>' + p.due_date + '</td>'
+            + '<td>' + p.supplier_code + '</td>'
+            + '<td>' + (p.vessel_name || p.vessel_code || '-') + '</td>'
+            + '<td><span class="badge ' + badge + '">' + p.status + '</span></td>'
+            + '<td><span class="badge ' + inc.cls + '">' + inc.label + '</span></td>'
+            + '<td style="text-align:right;white-space:nowrap;">'
+            +   '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showPODocument(\'' + p.po_id + '\')">PO 보기</button> '
+            +   '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showPOQR(\'' + p.po_id + '\')">QR 보기</button>'
+            + '</td>'
+            + '</tr>';
         }).join('');
       if (pagerPO) pagerPO.innerHTML = buildPager('po-history', poInfo, 'refreshPhase5');
     }
@@ -44,17 +70,40 @@ function refreshPhase5() {
   /* ── PO_LINE 테이블 (선택된 PO로 드릴다운 필터링) ── */
   _renderPOLineDetail();
 
-  /* ── INCOMING_HEADER 테이블 ── */
-  var tblInc = document.getElementById('tbl-inc');
+  /* ── INCOMING_HEADER 테이블 (PO 클릭 시에만 표시 — 해당 PO 연계 이력) ── */
+  var tblInc   = document.getElementById('tbl-inc');
+  var incCard  = document.getElementById('inc-history-card');
+  var incTitle = document.getElementById('inc-history-title');
   if (tblInc) {
-    tblInc.innerHTML = DB.incoming_header.length === 0
-      ? '<tr><td colspan="6" class="empty-state">데이터 없음</td></tr>'
-      : DB.incoming_header.map(function(h) {
-          var badge = h.status === 'COMPLETE' ? 'badge-complete' : h.status === 'SHORT' ? 'badge-partial' : 'badge-open';
-          var color = h.total_scanned === h.ordered_qty ? 'var(--success)' : h.total_scanned < h.ordered_qty ? 'var(--warn)' : 'var(--danger)';
-          return '<tr><td>' + (h.inspector || '<span style="color:var(--text3);">미입력</span>') + '</td><td>' + h.po_ref_no + '</td><td>' + h.incoming_date + '</td><td style="text-align:center;">' + h.ordered_qty + '</td><td style="text-align:center;color:' + color + ';font-weight:600;">' + h.total_scanned + '</td><td><span class="badge ' + badge + '">' + h.status + '</span></td></tr>';
-        }).join('');
+    if (!_selectedPOId) {
+      if (incCard) incCard.style.display = 'none';
+    } else {
+      if (incCard) incCard.style.display = '';
+      var selPo = DB.po_header.find(function(p){ return p.po_id === _selectedPOId; });
+      var incs  = DB.incoming_header.filter(function(h){ return h.po_id === _selectedPOId; });
+      if (incTitle) {
+        incTitle.innerHTML = '입고 검수 이력'
+          + (selPo ? ' <span style="font-size:10px;font-weight:400;color:var(--accent);">— ' + selPo.po_ref_no + ' 연계</span>' : '');
+      }
+      tblInc.innerHTML = incs.length === 0
+        ? '<tr><td colspan="6" class="empty-state">이 PO의 입고 검수 이력이 없습니다.</td></tr>'
+        : incs.map(function(h) {
+            var badge = h.status === 'COMPLETE' ? 'badge-complete' : h.status === 'SHORT' ? 'badge-partial' : 'badge-open';
+            var color = h.total_scanned === h.ordered_qty ? 'var(--success)' : h.total_scanned < h.ordered_qty ? 'var(--warn)' : 'var(--danger)';
+            return '<tr><td>' + (h.inspector || '<span style="color:var(--text3);">미입력</span>') + '</td><td>' + h.po_ref_no + '</td><td>' + h.incoming_date + '</td><td style="text-align:center;">' + h.ordered_qty + '</td><td style="text-align:center;color:' + color + ';font-weight:600;">' + h.total_scanned + '</td><td><span class="badge ' + badge + '">' + h.status + '</span></td></tr>';
+          }).join('');
+    }
   }
+}
+
+/* ── PO별 입고 검수 진행상태 (incoming_header 집계) ── */
+function _poIncomingStatus(po) {
+  var incs = DB.incoming_header.filter(function(h){ return h.po_id === po.po_id; });
+  if (incs.length === 0) return { label: '미입고', cls: 'badge-open' };
+  var ordered = incs[0].ordered_qty || 0;
+  var scanned = incs.reduce(function(s, h){ return s + (h.total_scanned || 0); }, 0);
+  if (ordered > 0 && scanned >= ordered) return { label: '입고완료', cls: 'badge-complete' };
+  return { label: '부분입고 ' + scanned + '/' + ordered, cls: 'badge-partial' };
 }
 
 /* ── 발주서 목록 → 발주 품목 내역 드릴다운 ──
@@ -436,6 +485,10 @@ function openOutgoingModal(action, items) {
       + '<label>호선 코드</label>'
       + '<input id="outgoing-vessel-code" readonly placeholder="호선 선택 시 자동 입력" style="background:var(--bg2);color:var(--text2);cursor:default;">'
       + '</div>'
+      + '<div class="form-group" style="margin-bottom:12px;">'
+      + '<label>SCM 담당자 <span style="color:var(--text3);font-size:10px;">(Packing List 기재)</span></label>'
+      + '<input id="outgoing-pic" placeholder="출고 담당자 이름">'
+      + '</div>'
       + '<div class="form-group" style="margin-bottom:14px;">'
       + '<label>메모 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>'
       + '<input id="outgoing-note" placeholder="출고 사유, 수령인 등">'
@@ -498,13 +551,15 @@ function confirmOutgoing() {
   var dt       = today();
   var labels   = { SHIPPED: '출고', RENTED: '대여', INSPECTION_REQUESTED: '검사요청' };
 
-  var vesselId = '', vesselCode = '', team = '', dueDate = '';
+  var vesselId = '', vesselCode = '', team = '', dueDate = '', pic = '', vessel = null;
   if (action === 'SHIPPED') {
     var vesselSel = document.getElementById('outgoing-vessel-select');
     vesselId = vesselSel ? vesselSel.value : '';
     if (!vesselId) { notify('배정 호선을 선택해주세요.', 'err'); return; }
-    var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
+    vessel = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
     vesselCode = (vessel && vessel.vessel_code) ? vessel.vessel_code : '';
+    var picEl = document.getElementById('outgoing-pic');
+    pic = picEl ? picEl.value.trim() : '';
   } else {
     var teamEl = document.getElementById('outgoing-team');
     team = teamEl ? teamEl.value : '';
@@ -514,6 +569,7 @@ function confirmOutgoing() {
     }
   }
 
+  var packRows = [];
   selected.forEach(function(sel) {
     var idx = DB.inventory.findIndex(function(i){ return i.mc_code === sel.mc; });
     if (idx >= 0) {
@@ -522,6 +578,7 @@ function confirmOutgoing() {
         DB.inventory[idx].vessel_assigned      = vesselId;
         DB.inventory[idx].vessel_code_assigned = vesselCode;
       }
+      packRows.push({ item_code: DB.inventory[idx].item_code, item_name: DB.inventory[idx].item_name, serial_no: DB.inventory[idx].serial_no || sel.sn });
     }
     DB.outgoing_log.push({
       log_id:     uid('OUT'),
@@ -530,6 +587,7 @@ function confirmOutgoing() {
       action:     action,
       vessel_id:  vesselId,
       vessel_code: vesselCode,
+      pic:        pic,
       team:       team,
       due_date:   dueDate,
       date:       dt,
@@ -543,6 +601,99 @@ function confirmOutgoing() {
   document.getElementById('outgoing-modal').classList.remove('show');
   clearOutgoingScanResult();
   notify(labels[action] + ' 처리 완료: ' + selected.length + '개 제품', 'ok');
+
+  /* 출고(SHIPPED) 시 납품 품목 기준 Packing List 자동 생성 */
+  if (action === 'SHIPPED' && packRows.length) {
+    _showPackingList(vessel, packRows, pic, dt);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Packing List — 출고 품목 기준 자동 생성 (호선 · SCM 담당자 기재)
+   ══════════════════════════════════════════════════════════ */
+function _showPackingList(vessel, rows, pic, dt) {
+  var el = document.getElementById('packing-list-content');
+  if (!el) return;
+  el.innerHTML = buildPackingListHTML(vessel, rows, pic, dt);
+  document.getElementById('packing-list-modal').classList.add('show');
+}
+
+function buildPackingListHTML(vessel, rows, pic, dt) {
+  var vesselName = vessel ? getVesselDisplayName(vessel) : '호선 미지정';
+  var vesselCode = (vessel && vessel.vessel_code) ? vessel.vessel_code : '-';
+  var plNo       = 'A-PL-' + String(dt || today()).replace(/-/g, '') + '-' + vesselCode;
+
+  /* 품목명(코드) 기준 그룹화 → 수량 합산 + S/N 나열 */
+  var groups = [], byKey = {};
+  (rows || []).forEach(function(r) {
+    var key = (r.item_code || '') + '||' + (r.item_name || '');
+    if (!byKey[key]) { byKey[key] = { item_code: r.item_code || '', item_name: r.item_name || '', sns: [] }; groups.push(byKey[key]); }
+    if (r.serial_no) byKey[key].sns.push(r.serial_no);
+  });
+  var totalQty = (rows || []).length;
+
+  var bodyRows = groups.map(function(g, i) {
+    return '<tr>'
+      + '<td style="border:1px solid #ccc;padding:6px;text-align:center;">' + (i + 1) + '</td>'
+      + '<td style="border:1px solid #ccc;padding:6px;font-family:\'Courier New\',monospace;">' + (g.item_code || '-') + '</td>'
+      + '<td style="border:1px solid #ccc;padding:6px;">' + (g.item_name || '-') + '</td>'
+      + '<td style="border:1px solid #ccc;padding:6px;text-align:center;font-weight:700;">' + g.sns.length + '</td>'
+      + '<td style="border:1px solid #ccc;padding:6px;text-align:center;">EA</td>'
+      + '<td style="border:1px solid #ccc;padding:6px;font-family:\'Courier New\',monospace;font-size:10px;word-break:break-all;">' + (g.sns.join(', ') || '-') + '</td>'
+      + '</tr>';
+  }).join('');
+
+  return '<div class="po-doc">'
+    /* ── 헤더 ── */
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">'
+    + '<div>'
+    + '<div style="font-size:26px;font-weight:700;color:#1a3055;letter-spacing:3px;">AVIKUS</div>'
+    + '<div style="font-size:9px;color:#666;margin-top:2px;">Avikus Co., Ltd. (HD Hyundai Group)<br>7F, 7-12, Jungang-daero 865beon-gil, Dong-gu, Busan, Republic of Korea</div>'
+    + '</div>'
+    + '<div style="text-align:right;font-size:10px;color:#444;line-height:1.8;">'
+    + '<strong>P/L No.:</strong> ' + plNo + '<br><strong>Date:</strong> ' + (dt || today())
+    + '</div></div>'
+    /* ── 타이틀 ── */
+    + '<div style="border-top:3px solid #1a3055;border-bottom:1px solid #ccc;text-align:center;padding:8px 0;font-size:17px;font-weight:700;letter-spacing:2px;margin-bottom:16px;">PACKING LIST</div>'
+    /* ── 납품 정보 ── */
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:16px;border:1px solid #ccc;">'
+    + '<div style="padding:10px;border-right:1px solid #ccc;font-size:10px;line-height:1.9;">'
+    + '<strong>Vessel:</strong> ' + vesselName + '<br>'
+    + '<strong>Vessel Code:</strong> ' + vesselCode
+    + '</div>'
+    + '<div style="padding:10px;font-size:10px;line-height:1.9;">'
+    + '<strong>SCM 담당자:</strong> ' + (pic || '-') + '<br>'
+    + '<strong>Total Q\'ty:</strong> ' + totalQty + ' EA'
+    + '</div></div>'
+    /* ── 품목 테이블 ── */
+    + '<table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:20px;">'
+    + '<thead><tr style="background:#f0f4fa;">'
+    + '<th style="border:1px solid #ccc;padding:7px;text-align:center;width:40px;">No.</th>'
+    + '<th style="border:1px solid #ccc;padding:7px;text-align:center;width:130px;">Item Code</th>'
+    + '<th style="border:1px solid #ccc;padding:7px;text-align:left;">Description</th>'
+    + '<th style="border:1px solid #ccc;padding:7px;text-align:center;width:50px;">Q\'ty</th>'
+    + '<th style="border:1px solid #ccc;padding:7px;text-align:center;width:45px;">Unit</th>'
+    + '<th style="border:1px solid #ccc;padding:7px;text-align:left;width:200px;">Serial No.</th>'
+    + '</tr></thead>'
+    + '<tbody>' + bodyRows
+    + '<tr><td colspan="3" style="border:1px solid #ccc;padding:7px;text-align:right;font-weight:700;background:#f9f9f9;">Total</td>'
+    + '<td style="border:1px solid #ccc;padding:7px;text-align:center;font-weight:700;">' + totalQty + '</td>'
+    + '<td colspan="2" style="border:1px solid #ccc;padding:7px;background:#f9f9f9;"></td></tr>'
+    + '</tbody></table>'
+    /* ── 서명 ── */
+    + '<div style="margin-top:28px;display:flex;justify-content:flex-end;font-size:11px;">'
+    + '<div style="display:inline-block;text-align:center;min-width:200px;">'
+    + '<div style="margin-bottom:34px;color:#333;">Prepared by (SCM): ' + (pic || '-') + '</div>'
+    + '<div style="border-top:1px solid #333;padding-top:4px;">Signature</div>'
+    + '</div></div>'
+    + '</div>';
+}
+
+function printPackingList() {
+  var content = document.getElementById('packing-list-content').innerHTML;
+  var w = window.open('', '_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;font-family:Arial,sans-serif;}@media print{body{margin:0;}}</style></head><body>' + content + '<script>window.onload=function(){window.print();}<\/script></body></html>');
+  w.document.close();
 }
 
 /* ══════════════════════════════════════════════════════════

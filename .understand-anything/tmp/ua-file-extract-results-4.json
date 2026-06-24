@@ -1,0 +1,721 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 14,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/00_개요.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 121,
+      "nonEmptyLines": 91,
+      "sections": [
+        {
+          "heading": "모듈별 코드 가이드 — 개요",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 전체 구조",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "2. 스크립트 로딩 순서 (index.html)",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "외부 CDN 의존성 (오프라인/서버 환경 전환 시 주의)",
+          "level": 3,
+          "line": 53
+        },
+        {
+          "heading": "3. 핵심 데이터 흐름",
+          "level": 2,
+          "line": 63
+        },
+        {
+          "heading": "4. 모듈 목록",
+          "level": 2,
+          "line": 91
+        },
+        {
+          "heading": "5. 핵심 설계 원칙 (요약 — 상세는 `../../CLAUDE.md` 참고)",
+          "level": 2,
+          "line": 111
+        },
+        {
+          "heading": "6. 참고 — CLAUDE.md와의 차이",
+          "level": 2,
+          "line": 119
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/01_db.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 71,
+      "nonEmptyLines": 52,
+      "sections": [
+        {
+          "heading": "01. db.js — DB 스키마 + localStorage 레이어",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. DB 스키마 (13개 테이블, `const DB = {...}` 18줄~)",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "2. 초기화 / 저장 / 리셋",
+          "level": 2,
+          "line": 31
+        },
+        {
+          "heading": "3. 유틸리티",
+          "level": 2,
+          "line": 41
+        },
+        {
+          "heading": "4. QR 페이로드 (avikus_system_report.html Section 3 명세)",
+          "level": 2,
+          "line": 52
+        },
+        {
+          "heading": "5. 전체 뷰 갱신 (★ 자주 찾는 함수)",
+          "level": 2,
+          "line": 64
+        },
+        {
+          "heading": "의존하는 모듈",
+          "level": 2,
+          "line": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/02_utils.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 59,
+      "nonEmptyLines": 40,
+      "sections": [
+        {
+          "heading": "02. utils.js — 공통 UI 유틸리티",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 전역 사용자 이름 (2026-06 추가)",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "2. 탭 전환",
+          "level": 2,
+          "line": 20
+        },
+        {
+          "heading": "3. 알림 / 모달",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "4. 환경 / 상태 표시",
+          "level": 2,
+          "line": 38
+        },
+        {
+          "heading": "5. 테마 / 날짜",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "새 탭/뷰 추가 시 체크리스트",
+          "level": 2,
+          "line": 57
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/03_qr.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 37,
+      "nonEmptyLines": 25,
+      "sections": [
+        {
+          "heading": "03. qr.js — QR 코드 생성 엔진",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "공개 API",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "내부 구현 (수정 시 주의 — 일반적인 기능 추가에는 건드릴 필요 없음)",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "사용처",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "전역 부산물",
+          "level": 2,
+          "line": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/04_phase0.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 92,
+      "nonEmptyLines": 79,
+      "sections": [
+        {
+          "heading": "04. phase0.js — 설계 TAB (호선 · BOM · 특이사항 · 안전재고)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 설계 서브탭 / 호선 등록 폼",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "2. 호선 마스터 (vessel_master)",
+          "level": 2,
+          "line": 18
+        },
+        {
+          "heading": "3. 호선 검색형 드롭다운 (PO 발행 등 여러 화면에서 재사용)",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "4. BOM 엑셀 업로드 & 카탈로그",
+          "level": 2,
+          "line": 38
+        },
+        {
+          "heading": "5. BOM 편집기 (vessel_bom)",
+          "level": 2,
+          "line": 51
+        },
+        {
+          "heading": "6. 호선 특이사항 (vessel_notes)",
+          "level": 2,
+          "line": 61
+        },
+        {
+          "heading": "7. 안전재고 (vessel_bom vs inventory 비교)",
+          "level": 2,
+          "line": 70
+        },
+        {
+          "heading": "★ 자주 찾는 코드",
+          "level": 2,
+          "line": 83
+        },
+        {
+          "heading": "2026-06 변경",
+          "level": 2,
+          "line": 88
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/05_phase1.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 52,
+      "nonEmptyLines": 43,
+      "sections": [
+        {
+          "heading": "05. phase1.js — PO 발행 + QR 생성",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 업체 관리 (suppliers)",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "2. PO 라인 입력",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "3. PO 생성 / 조회 / 인쇄 (핵심)",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "4. PO 번호 자동생성 (★ 자주 찾는 함수)",
+          "level": 2,
+          "line": 38
+        },
+        {
+          "heading": "5. 기타",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "★ 자주 찾는 코드",
+          "level": 2,
+          "line": 50
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/06_phase23.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 68,
+      "nonEmptyLines": 58,
+      "sections": [
+        {
+          "heading": "06. phase23.js — 입고 검수 (QR 스캔)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. 스캔 상태 / 진행률",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "2. 제품 QR 생성",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "3. QR 스캔 처리 (핵심)",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "4. 입고 완료 처리 (핵심)",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "5. 서류 첨부 (검사성적서 · COC · 거래명세서) — ★ 자주 찾는 코드",
+          "level": 2,
+          "line": 40
+        },
+        {
+          "heading": "6. QR 인쇄 / 카메라 / 일괄 처리",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "★ 자주 찾는 코드 (CLAUDE.md 인용)",
+          "level": 2,
+          "line": 65
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/07_phase4.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 88,
+      "nonEmptyLines": 73,
+      "sections": [
+        {
+          "heading": "07. phase4.js — 문서 산출물: 호선별 문서 허브 (팀별 SCM/QC/SW 구조)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "개편 배경",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "데이터 연결 체인",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "1. 공통 / 팀별 문서 정의",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "2. 호선 목록 뷰 (#docs-vessel-list-view)",
+          "level": 2,
+          "line": 51
+        },
+        {
+          "heading": "3. 호선 상세 뷰 (#docs-vessel-detail-view) — 팀별 섹션",
+          "level": 2,
+          "line": 56
+        },
+        {
+          "heading": "4. 수기 첨부 (QC=FAT / SW=SW Installation Report) — vessel_docs",
+          "level": 2,
+          "line": 65
+        },
+        {
+          "heading": "5. 기존 Incoming Report 기능 (변경 없음)",
+          "level": 2,
+          "line": 74
+        },
+        {
+          "heading": "★ 자주 찾는 코드",
+          "level": 2,
+          "line": 83
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/08_phase5.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 66,
+      "nonEmptyLines": 56,
+      "sections": [
+        {
+          "heading": "08. phase5.js — 재고 현황 + 출고 + 발주·입고 이력",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. SCM > 발주·입고 이력 (#sec-phase5)",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "2. 재고 탭 — 품목별 2단계 뷰 (★ 자주 찾는 코드)",
+          "level": 2,
+          "line": 20
+        },
+        {
+          "heading": "3. 출고 / 대여 / 검사요청 처리",
+          "level": 2,
+          "line": 32
+        },
+        {
+          "heading": "4. 재고 탭 — 호선별 뷰",
+          "level": 2,
+          "line": 40
+        },
+        {
+          "heading": "5. SCM > 출고 처리 서브탭 (#sec-outgoing)",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "6. 관리자 수기 재고 등록",
+          "level": 2,
+          "line": 56
+        },
+        {
+          "heading": "★ 자주 찾는 코드 (CLAUDE.md 인용)",
+          "level": 2,
+          "line": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/09_phase-inspection.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 26,
+      "nonEmptyLines": 21,
+      "sections": [
+        {
+          "heading": "09. phase-inspection.js — 검사요청 탭",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "함수 목록",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "참고",
+          "level": 2,
+          "line": 25
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/10_app.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 35,
+      "nonEmptyLines": 29,
+      "sections": [
+        {
+          "heading": "10. app.js — 앱 초기화 진입점",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "초기화 순서",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "참고",
+          "level": 2,
+          "line": 33
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/11_dev-mock.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 30,
+      "nonEmptyLines": 23,
+      "sections": [
+        {
+          "heading": "11. dev-mock.js — ⚠ 개발 전용 스캔 시뮬레이터",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "⚠ 삭제 방법 (서버 전환 전 — 2단계)",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "함수 목록 (전체가 `(function devMockModule(){...})()` IIFE, 17줄)",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "참고",
+          "level": 2,
+          "line": 28
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/12_phase-cxop.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 37,
+      "nonEmptyLines": 28,
+      "sections": [
+        {
+          "heading": "12. phase-cxop.js — CX/OP 호선 정보 조회·입력",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "역할",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "조회 컬럼 (좌우 스크롤)",
+          "level": 2,
+          "line": 14
+        },
+        {
+          "heading": "vessel_master에 저장되는 CX/OP 필드",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "함수",
+          "level": 2,
+          "line": 24
+        },
+        {
+          "heading": "진입점 연결",
+          "level": 2,
+          "line": 31
+        },
+        {
+          "heading": "★ 자주 찾는 코드",
+          "level": 2,
+          "line": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "구매 업무 자동화/docs/모듈가이드/13_phase-fat.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 79,
+      "nonEmptyLines": 66,
+      "sections": [
+        {
+          "heading": "13. phase-fat.js — QC FAT 관리 (선급 검사 + 코멘트 트래킹 + MED 인증서)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "업무 흐름",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "핵심 결정 (사용자 확정)",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "데이터",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "함수",
+          "level": 2,
+          "line": 32
+        },
+        {
+          "heading": "헬퍼",
+          "level": 3,
+          "line": 33
+        },
+        {
+          "heading": "목록·상세",
+          "level": 3,
+          "line": 41
+        },
+        {
+          "heading": "선급 코멘트 (구조화)",
+          "level": 3,
+          "line": 50
+        },
+        {
+          "heading": "코멘트 코드 마스터",
+          "level": 3,
+          "line": 58
+        },
+        {
+          "heading": "선급별 참고문서 / MED 인증서 / 공통",
+          "level": 3,
+          "line": 64
+        },
+        {
+          "heading": "진입점 연결",
+          "level": 2,
+          "line": 72
+        },
+        {
+          "heading": "★ 확장 포인트",
+          "level": 2,
+          "line": 76
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 12
+      }
+    }
+  ]
+}

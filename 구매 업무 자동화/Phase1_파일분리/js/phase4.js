@@ -115,7 +115,7 @@ function refreshDocsVesselList() {
     var status      = _vesselDocStatus(key);
     var keyEsc      = key.replace(/'/g, "\\'");
 
-    return '<div style="padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:#f3f5f9;cursor:pointer;" onclick="openVesselDocHub(\'' + keyEsc + '\')">'
+    return '<div class="docs-vessel-card" onclick="openVesselDocHub(\'' + keyEsc + '\')">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'
       +   '<div>'
       +     '<span style="font-size:13px;font-weight:700;color:var(--text);">' + displayName + '</span>'

@@ -20,6 +20,30 @@ function promptUserName() {
   updateHeaderUser();
 }
 
+/* ── 설정 버튼: 단일 클릭=이름 설정 / 더블 클릭=DB 전체 초기화(비밀번호) ──
+   더블 클릭 판별: 첫 클릭은 잠깐 대기했다가 두 번째 클릭이 없으면 이름 설정 실행 */
+var _settingsClickTimer = null;
+function onSettingsClick() {
+  if (_settingsClickTimer) {
+    clearTimeout(_settingsClickTimer);
+    _settingsClickTimer = null;
+    promptDbReset();
+  } else {
+    _settingsClickTimer = setTimeout(function() {
+      _settingsClickTimer = null;
+      promptUserName();
+    }, 280);
+  }
+}
+
+/* ── DB 전체 초기화 — 관리자 비밀번호(0369) 확인 후 실행 ── */
+function promptDbReset() {
+  var pw = prompt('DB 전체 초기화 — 관리자 비밀번호를 입력하세요:');
+  if (pw === null) return;
+  if (pw !== '0369') { notify('비밀번호가 올바르지 않습니다.', 'err'); return; }
+  dbReset();
+}
+
 /* ── 상단바 아바타(이니셜) 갱신 ── */
 function updateHeaderUser() {
   var el = document.getElementById('header-user-name');
@@ -69,13 +93,12 @@ function switchTab(id) {
   if (scm) {
     scm.querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
     scm.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
-    var subTabs = ['phase1','polist','phase23','phase5','outgoing'];
+    var subTabs = ['phase1','phase23','phase5','outgoing'];
     var idx     = subTabs.indexOf(id);
     if (idx >= 0) scm.querySelectorAll('.sub-tab')[idx].classList.add('active');
   }
   var sec = document.getElementById('sec-' + id);
   if (sec) sec.classList.add('active');
-  if (id === 'polist')    { refreshPoListTab(); }
   if (id === 'phase5')    { refreshPhase5(); }
   if (id === 'outgoing')  { refreshOutgoingStockList(); }
 }
