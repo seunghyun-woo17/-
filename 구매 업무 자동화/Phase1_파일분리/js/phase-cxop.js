@@ -209,7 +209,7 @@ function _cxopFmtDate(v) {
 /* 템플릿(.xlsx) 다운로드 */
 function downloadCxopTemplate() {
   if (typeof XLSX === 'undefined') { notify('엑셀 라이브러리(xlsx)를 불러오지 못했습니다. 인터넷 연결을 확인하세요.', 'err'); return; }
-  var headers = ['호선명','선종','OWNER','YARD','공급제품','공사비용','Series','D/L (계약일)','실제 인도일','커미셔닝 시작','커미셔닝 종료','시운전 시작','시운전 종료','REMARK'];
+  var headers = ['호선명','선종','OWNER','YARD','공급제품','공사비용','Series','D/L','실제 인도일','커미셔닝 시작','커미셔닝 종료','시운전 시작','시운전 종료','REMARK'];
   var example = ['2922','Container','HMM','HD현대중공업','HiNAS Control 2.0','120,000,000','3445','2025-01-15','2026-03-20','2026-02-01','2026-02-15','2026-01-10','2026-01-20','비고 예시'];
   var ws = XLSX.utils.aoa_to_sheet([headers, example]);
   var wb = XLSX.utils.book_new();
