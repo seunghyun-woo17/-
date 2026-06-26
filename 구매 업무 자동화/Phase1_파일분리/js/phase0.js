@@ -51,6 +51,7 @@ function addVessel() {
   var shipType = (document.getElementById('vessel-ship-type') || {}).value || '';
   var owner    = (document.getElementById('vessel-owner') || {}).value || '';
   var flag     = (document.getElementById('vessel-flag') || {}).value || '';
+  var yard     = (document.getElementById('vessel-yard') || {}).value || '';
   var imo      = (document.getElementById('vessel-imo') || {}).value || '';
 
   if (!name) { notify('호선명을 입력해주세요.', 'err'); return; }
@@ -72,6 +73,7 @@ function addVessel() {
     ship_type:        shipType.trim(),
     owner:            owner.trim(),
     flag:             flag.trim(),
+    yard:             yard.trim(),
     imo_number:       imo.trim(),
     contract_date:    date,
     delivery_date:    delivery,
@@ -89,7 +91,7 @@ function addVessel() {
   if (document.getElementById('vessel-shipping-company')) {
     document.getElementById('vessel-shipping-company').value = '';
   }
-  ['vessel-ship-type','vessel-owner','vessel-flag','vessel-imo'].forEach(function(id){
+  ['vessel-ship-type','vessel-owner','vessel-flag','vessel-imo','vessel-yard'].forEach(function(id){
     var el = document.getElementById(id); if (el) el.value = '';
   });
   document.querySelectorAll('input[name="vessel-class"]').forEach(function(el){ el.checked = false; });
@@ -905,6 +907,7 @@ function editVessel(vesselId) {
   set('ve-ship-type', v.ship_type);
   set('ve-owner', v.owner);
   set('ve-flag', v.flag);
+  set('ve-yard', v.yard);
   set('ve-imo', v.imo_number);
   set('ve-date', v.contract_date);
   set('ve-delivery', v.delivery_date);
@@ -945,6 +948,7 @@ function saveVesselEdit() {
   v.ship_type        = document.getElementById('ve-ship-type').value.trim();
   v.owner            = document.getElementById('ve-owner').value.trim();
   v.flag             = document.getElementById('ve-flag').value.trim();
+  v.yard             = document.getElementById('ve-yard').value.trim();
   v.imo_number       = document.getElementById('ve-imo').value.trim();
   v.contract_date    = document.getElementById('ve-date').value;
   v.delivery_date    = document.getElementById('ve-delivery').value;
