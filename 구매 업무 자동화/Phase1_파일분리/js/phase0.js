@@ -436,7 +436,7 @@ function getVesselClassBadges(v) {
 }
 /* 호선명 클릭 링크 (클릭 → 상세 360 뷰) */
 function getVesselNameLink(v) {
-  return '<span style="cursor:pointer;color:var(--accent);text-decoration:underline;" onclick="openVesselDetail(\'' + v.vessel_id + '\')" title="클릭 시 호선 상세 보기">' + getVesselDisplayName(v) + '</span>';
+  return '<span style="cursor:pointer;color:var(--accent);" onclick="openVesselDetail(\'' + v.vessel_id + '\')" title="클릭 시 호선 상세 보기">' + getVesselDisplayName(v) + '</span>';
 }
 
 function renderBOMEditor(items) {
