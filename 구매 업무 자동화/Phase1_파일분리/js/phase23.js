@@ -175,12 +175,16 @@ function updateScannedList() {
   var lines = getCurrentPOLines();
   var total = lines.reduce(function(s,l){ return s+l.ordered_qty; }, 0);
   badge.textContent = scanState.scannedItems.length + ' / ' + total + ' 스캔 완료';
+  var lineByCode = {};
+  lines.forEach(function(l){ lineByCode[l.item_code] = l.description || ''; });
   list.innerHTML = scanState.scannedItems.length === 0
     ? '<div style="font-size:12px;color:var(--text3);padding:8px;">스캔된 제품이 없습니다.</div>'
     : scanState.scannedItems.map(function(item) {
-        return '<div class="scanned-item">'
-          + '<span class="scanned-sn">' + item.sn + '</span>'
+        var nm = lineByCode[item.item] || '';
+        return '<div class="scanned-item" style="display:flex;gap:10px;align-items:center;">'
+          + '<span style="flex:1;color:var(--text);font-size:12px;">' + (nm || '<span style="color:var(--text3);">-</span>') + '</span>'
           + '<span style="color:var(--text2);font-family:monospace;font-size:11px;">' + item.item + '</span>'
+          + '<span class="scanned-sn" style="font-family:monospace;font-size:11px;">' + item.sn + '</span>'
           + '<span style="color:var(--text3);font-size:11px;">' + item.date + '</span>'
           + '</div>';
       }).join('');
