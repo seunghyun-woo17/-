@@ -836,24 +836,68 @@ function clearOutgoingScanResult() {
   if (scanInput) scanInput.value = '';
 }
 
-/* ── 출고 탭 — 재고 목록 직접 선택 (QR 스캐너 없을 때 / 테스트용) ── */
+/* ── 출고 탭 — 재고 목록 (품목별 그룹/드릴다운) ── */
+var _outgoingGroupCode = null;
+
 function refreshOutgoingStockList() {
   var tbody = document.getElementById('tbl-outgoing-stock');
   if (!tbody) return;
-  var items = DB.inventory.filter(function(i){ return i.status !== 'SHIPPED'; });
+  var items = DB.inventory.filter(function(i){ return i.status !== 'SHIPPED' && i.status !== 'SCRAPPED'; });
   if (items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">출고 가능한 재고가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">출고 가능한 재고가 없습니다.</td></tr>';
+    closeOutgoingGroupDetail();
     return;
   }
+  var groups = {};
+  items.forEach(function(i) {
+    var key = i.item_code || '(미지정)';
+    if (!groups[key]) groups[key] = { item_code: key, item_name: i.item_name || '', count: 0 };
+    groups[key].count++;
+    if (!groups[key].item_name && i.item_name) groups[key].item_name = i.item_name;
+  });
+  tbody.innerHTML = Object.keys(groups).sort().map(function(key) {
+    var g = groups[key];
+    return '<tr style="cursor:pointer;" onclick="openOutgoingGroupDetail(\'' + key.replace(/'/g, "\\'") + '\')">'
+      + '<td>' + (g.item_name || '<span style="color:var(--text3);">-</span>') + '</td>'
+      + '<td class="mono">' + g.item_code + '</td>'
+      + '<td style="text-align:center;font-weight:600;">' + g.count + '</td>'
+      + '<td style="text-align:right;"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openOutgoingGroupDetail(\'' + key.replace(/'/g, "\\'") + '\')">목록 보기 →</button></td>'
+      + '</tr>';
+  }).join('');
+  if (_outgoingGroupCode) _renderOutgoingGroupDetail(_outgoingGroupCode);
+}
+
+function openOutgoingGroupDetail(itemCode) {
+  _outgoingGroupCode = itemCode;
+  var card = document.getElementById('outgoing-group-detail-card');
+  if (card) { card.style.display = 'block'; card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  _renderOutgoingGroupDetail(itemCode);
+}
+
+function closeOutgoingGroupDetail() {
+  _outgoingGroupCode = null;
+  var card = document.getElementById('outgoing-group-detail-card');
+  if (card) card.style.display = 'none';
+}
+
+function _renderOutgoingGroupDetail(itemCode) {
+  var titleEl = document.getElementById('outgoing-group-detail-title');
+  var tbody   = document.getElementById('tbl-outgoing-group-detail');
+  if (!tbody) return;
+  var items = DB.inventory.filter(function(i){ return (i.item_code || '(미지정)') === itemCode && i.status !== 'SHIPPED' && i.status !== 'SCRAPPED'; });
+  var nm = '';
+  for (var k = 0; k < items.length; k++) { if (items[k].item_name) { nm = items[k].item_name; break; } }
+  if (titleEl) titleEl.textContent = (nm ? nm + ' - ' : '') + itemCode + ' (' + items.length + '개)';
+  if (items.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">출고 가능한 재고가 없습니다.</td></tr>'; return; }
   tbody.innerHTML = items.map(function(i) {
     var info = _inventoryStatusInfo(i.status);
-    return '<tr style="cursor:pointer;" onclick="openOutgoingModal(\'SHIPPED\',[{mc:\'' + i.mc_code + '\',sn:\'' + i.serial_no + '\'}])">'
+    return '<tr>'
       + '<td>' + (i.item_name || '<span style="color:var(--text3);">-</span>') + '</td>'
       + '<td class="mono">' + i.item_code + '</td>'
       + '<td class="sn">' + i.serial_no + '</td>'
       + '<td>' + (i.incoming_date || '-') + '</td>'
       + '<td><span class="badge ' + info.badgeClass + '">' + info.label + '</span></td>'
-      + '<td style="text-align:right;"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openOutgoingModal(\'SHIPPED\',[{mc:\'' + i.mc_code + '\',sn:\'' + i.serial_no + '\'}])">출고 처리</button></td>'
+      + '<td style="text-align:right;"><button class="btn btn-primary btn-sm" onclick="openOutgoingModal(\'SHIPPED\',[{mc:\'' + i.mc_code + '\',sn:\'' + i.serial_no + '\'}])">출고 처리</button></td>'
       + '</tr>';
   }).join('');
 }

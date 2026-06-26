@@ -1074,20 +1074,29 @@
     <div id="outgoing-scan-result" style="display:none;"></div>
   </div>
 
-  <!-- 재고 목록에서 직접 선택 (QR 스캐너 없을 때 / 테스트용) -->
+  <!-- 재고 목록 (품목별 그룹/드릴다운) -->
   <div class="card">
     <div class="card-title" style="flex-wrap:wrap;">
-      재고 목록에서 선택
-      <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:8px;">QR 스캐너 없을 때 또는 테스트 시 — 행을 클릭하면 출고 처리 창이 열립니다</span>
+      재고 목록
       <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="refreshOutgoingStockList()">새로고침</button>
     </div>
     <div class="db-wrap">
       <table class="db-table">
         <thead><tr>
-          <th>품목명</th><th>품목 코드</th><th>S/N</th><th>입고일</th><th>재고 상태</th><th></th>
+          <th>품목명</th><th>품목코드</th><th>재고수량</th><th>액션</th>
         </tr></thead>
         <tbody id="tbl-outgoing-stock"></tbody>
       </table>
+    </div>
+    <div id="outgoing-group-detail-card" style="display:none;margin-top:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong id="outgoing-group-detail-title" style="font-size:13px;"></strong>
+        <button class="btn btn-outline btn-sm" onclick="closeOutgoingGroupDetail()">닫기</button>
+      </div>
+      <div class="db-wrap"><table class="db-table">
+        <thead><tr><th>품목명</th><th>품목코드</th><th>S/N</th><th>입고일</th><th>상태</th><th></th></tr></thead>
+        <tbody id="tbl-outgoing-group-detail"></tbody>
+      </table></div>
     </div>
   </div>
 
