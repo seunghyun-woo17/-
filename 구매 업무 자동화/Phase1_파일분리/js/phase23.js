@@ -524,6 +524,8 @@ function printSingleQR() {
   var imgEl = document.querySelector('#prod-qr-img img');
   var src   = imgEl ? imgEl.src : '';
   if (!src) { notify('먼저 QR을 생성하세요.', 'err'); return; }
+  var poLine = getCurrentPOLines().find(function(l){ return l.item_code === item; });
+  var itemName = poLine ? (poLine.description || item) : item;
   var w = window.open('', '_blank');
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>제품 QR</title>'
     + '<style>body{margin:20px;font-family:Arial;text-align:center;}@media print{body{margin:5mm;}}</style>'
@@ -531,7 +533,7 @@ function printSingleQR() {
     + '<div style="display:inline-block;border:1px solid #ccc;border-radius:8px;padding:14px;text-align:center;">'
     + '<img src="' + src + '" style="width:130px;height:130px;display:block;margin:0 auto 8px;">'
     + '<div style="font-family:monospace;font-size:12px;color:#333;">' + sn + '</div>'
-    + '<div style="font-size:10px;color:#666;margin-top:3px;">' + item + '</div>'
+    + '<div style="font-size:10px;color:#666;margin-top:3px;">' + itemName + '</div>'
     + (po ? '<div style="font-size:9px;color:#999;margin-top:2px;">PO: ' + po.po_ref_no + '</div>' : '')
     + '</div>'
     + '<script>window.onload=function(){window.print();}<\/script>'
