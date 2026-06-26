@@ -195,6 +195,9 @@ function generateProductQR() {
   var dt   = document.getElementById('pq-date').value || today();
   var po   = scanState.currentPO;
   if (!sn || !item) { notify('S/N과 Item Code를 입력해주세요.', 'err'); return; }
+  var poLine   = getCurrentPOLines().find(function(l){ return l.item_code === item; });
+  var itemName = poLine ? (poLine.description || '') : '';
+  window._lastQRItemName = itemName;
   document.getElementById('pq-mc').value = mc;
   var qrData = buildProductQRPayload(po.po_id, mc, item, sn, dt, po.supplier_code);
   document.getElementById('prod-qr-output').style.display = 'block';
@@ -217,7 +220,8 @@ function populateScanItemSelect() {
   var lines = getCurrentPOLines();
   var prevValue = sel.value;
   sel.innerHTML = lines.map(function(l) {
-    return '<option value="' + l.item_code + '">' + l.item_code + (l.description ? ' — ' + l.description.substring(0,30) : '') + '</option>';
+    var nm = l.description ? l.description : l.item_code;
+    return '<option value="' + l.item_code + '">' + nm + ' (' + l.item_code + ')</option>';
   }).join('');
   /* 이전에 선택돼 있던 품목이 여전히 PO에 있으면 유지, 아니면 첫 품목 */
   if (prevValue && lines.some(function(l){ return l.item_code === prevValue; })) sel.value = prevValue;
