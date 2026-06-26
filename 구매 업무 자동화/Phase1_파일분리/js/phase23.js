@@ -507,7 +507,7 @@ function saveCertAndClose() {
 /* ── 나중에 첨부 ── */
 function skipCertAndClose() {
   closeCertModal();
-  notify('서류는 Phase 4에서 언제든 첨부할 수 있습니다.', 'info');
+  notify('서류는 [문서 산출물] 탭에서 언제든 첨부할 수 있습니다.', 'info');
   setTimeout(function() { switchTab('phase4'); }, 500);
 }
 
