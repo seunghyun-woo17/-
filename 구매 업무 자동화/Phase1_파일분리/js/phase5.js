@@ -897,7 +897,7 @@ function _renderOutgoingGroupDetail(itemCode) {
       + '<td class="sn">' + i.serial_no + '</td>'
       + '<td>' + (i.incoming_date || '-') + '</td>'
       + '<td><span class="badge ' + info.badgeClass + '">' + info.label + '</span></td>'
-      + '<td style="text-align:right;"><button class="btn btn-primary btn-sm" onclick="openOutgoingModal(\'SHIPPED\',[{mc:\'' + i.mc_code + '\',sn:\'' + i.serial_no + '\'}])">출고 처리</button></td>'
+      + '<td style="text-align:right;"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openOutgoingModal(\'SHIPPED\',[{mc:\'' + i.mc_code + '\',sn:\'' + i.serial_no + '\'}])">출고 처리</button></td>'
       + '</tr>';
   }).join('');
 }
