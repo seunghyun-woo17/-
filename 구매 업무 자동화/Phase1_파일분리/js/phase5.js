@@ -601,11 +601,6 @@ function confirmOutgoing() {
   document.getElementById('outgoing-modal').classList.remove('show');
   clearOutgoingScanResult();
   notify(labels[action] + ' 처리 완료: ' + selected.length + '개 제품', 'ok');
-
-  /* 출고(SHIPPED) 시 납품 품목 기준 Packing List 자동 생성 */
-  if (action === 'SHIPPED' && packRows.length) {
-    _showPackingList(vessel, packRows, pic, dt);
-  }
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -714,6 +709,39 @@ function switchInventoryView(view) {
   if (view === 'vessel') refreshInventoryVesselView();
 }
 
+function _vesselBomCoverage(vesselId) {
+  var bom = DB.vessel_bom.filter(function(b){ return b.vessel_id === vesselId; });
+  var shippedByCode = {};
+  DB.inventory.forEach(function(i) {
+    if (i.status === 'SHIPPED' && (i.vessel_assigned || '(미지정)') === vesselId) {
+      shippedByCode[i.item_code] = (shippedByCode[i.item_code] || 0) + 1;
+    }
+  });
+  if (bom.length === 0) return { rate: 0, complete: false, hasBom: false, lines: [] };
+  var lines = bom.map(function(b) {
+    var shipped = shippedByCode[b.item_code] || 0;
+    var required = b.required_qty || 0;
+    var pct = required > 0 ? Math.min(100, Math.floor(shipped / required * 100)) : 100;
+    return { item_code: b.item_code, item_name: b.item_name || '', required: required, shipped: shipped, pct: pct };
+  });
+  var totalReq = lines.reduce(function(s,l){ return s + l.required; }, 0);
+  var totalShip = lines.reduce(function(s,l){ return s + Math.min(l.shipped, l.required); }, 0);
+  var rate = totalReq > 0 ? Math.floor(totalShip / totalReq * 100) : 0;
+  var complete = lines.every(function(l){ return l.shipped >= l.required && l.required > 0; });
+  return { rate: rate, complete: complete, hasBom: true, lines: lines };
+}
+
+function openVesselPackingList(vesselId) {
+  var cov = _vesselBomCoverage(vesselId);
+  if (!cov.complete) { notify('BOM 100% 출고 완료 후 Packing List를 생성할 수 있습니다.', 'err'); return; }
+  var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
+  var items  = DB.inventory.filter(function(i){ return i.status === 'SHIPPED' && (i.vessel_assigned || '(미지정)') === vesselId; });
+  var rows = items.map(function(i){ return { item_code: i.item_code, item_name: i.item_name, serial_no: i.serial_no }; });
+  var log = items.length ? DB.outgoing_log.find(function(l){ return l.inv_mc === items[0].mc_code && l.action === 'SHIPPED'; }) : null;
+  var pic = log ? (log.pic || '') : '';
+  _showPackingList(vessel, rows, pic, today());
+}
+
 function refreshInventoryVesselView() {
   var shippedItems = DB.inventory.filter(function(i){ return i.status === 'SHIPPED'; });
   var groups = {};
@@ -735,15 +763,23 @@ function refreshInventoryVesselView() {
   if (!tbody) return;
   var keys = Object.keys(groups).sort();
   if (keys.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">출고된 재고가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">출고된 재고가 없습니다.</td></tr>';
     return;
   }
   tbody.innerHTML = keys.map(function(key) {
     var g = groups[key];
+    var cov = key === '(미지정)' ? { rate: 0, complete: false, hasBom: false } : _vesselBomCoverage(key);
+    var rateLabel = cov.hasBom ? (cov.rate + '%') : '<span style="color:var(--text3);">BOM 없음</span>';
+    var rateColor = cov.complete ? 'var(--success)' : 'var(--warn)';
+    var packBtn = cov.complete
+      ? '<button class="btn btn-accent btn-sm" onclick="event.stopPropagation();openVesselPackingList(\'' + key.replace(/'/g, "\\'") + '\')">Packing List</button>'
+      : '<button class="btn btn-outline btn-sm" disabled style="opacity:.5;cursor:not-allowed;" title="BOM 100% 출고 시 활성화">Packing List</button>';
     return '<tr style="cursor:pointer;" onclick="openVesselInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">'
       + '<td><strong>' + g.vessel_name + '</strong></td>'
       + '<td class="mono">' + g.vessel_code + '</td>'
       + '<td style="text-align:center;font-weight:600;">' + g.items.length + '</td>'
+      + '<td style="text-align:center;font-weight:700;color:' + (cov.hasBom ? rateColor : 'var(--text3)') + ';">' + rateLabel + '</td>'
+      + '<td style="text-align:center;">' + packBtn + '</td>'
       + '<td style="text-align:right;"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openVesselInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">상세 보기 →</button></td>'
       + '</tr>';
   }).join('');
