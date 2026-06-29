@@ -21,6 +21,20 @@ var _fatDetailId    = null;
 var _fatCommentFile = { data: null, name: null };
 var _fatRefData = null, _fatRefName = null;
 
+/* 선급 코멘트 SharePoint 엑셀 (선급별 링크 — 현재 미설정 placeholder. 실제 URL은 추후 입력) */
+var FAT_COMMENT_SHAREPOINT_URL = { ABS: '', DNV: '', _default: '' };
+/* 엑셀 헤더 → fat_comment 필드 매핑 (실제 선급 양식 도착 시 이 표만 수정) */
+var _FAT_COMMENT_HMAP = {
+  '코드':'code', 'CODE':'code', 'Item No':'code', 'No':'code',
+  '내용':'content', 'Comment':'content', 'Description':'content', 'Finding':'content',
+  '카테고리':'category', 'Category':'category',
+  '상태':'status', 'Status':'status',
+  '담당자':'assignee', 'Assignee':'assignee', 'PIC':'assignee',
+  '등록일':'reg_date', 'Date':'reg_date',
+  '완료일':'done_date', 'Closed':'done_date', 'Close Date':'done_date', 'Completed':'done_date',
+  '비고':'note', 'Remark':'note', 'Note':'note'
+};
+
 /* ── 상태 메타 ── */
 function _fatStatusInfo(s) {
   var m = {
@@ -254,7 +268,7 @@ function _renderFatDetail() {
           + '<td><span class="badge" style="background:#f3f5f9;color:' + (stColor[c.status] || 'var(--text2)') + ';">' + (c.status || '') + '</span></td>'
           + '<td>' + (c.assignee || '-') + '</td>'
           + '<td style="font-size:11px;">' + (c.reg_date || '-') + '</td>'
-          + '<td style="font-size:11px;">' + (c.done_date || '-') + '</td>'
+          + '<td style="font-size:11px;">' + (c.done_date ? (c.done_date + ' <span class="badge badge-complete" style="font-size:9px;">COMPLETE</span>') : '-') + '</td>'
           + '<td style="font-size:11px;color:var(--text3);">' + (c.note || '') + '</td>'
           + '<td style="white-space:nowrap;">' + fileBtn
           +   ' <button class="btn btn-outline btn-sm" style="padding:2px 7px;" onclick="openFatCommentModal(\'' + c.comment_id + '\')">수정</button>'
@@ -264,8 +278,11 @@ function _renderFatDetail() {
   var cmt = '<div style="' + box + '">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">'
     +   '<div style="' + lab + 'margin:0;">④ 선급 코멘트 (지적사항) — 완료율 ' + _fatProgressHTML(f.fat_id) + '</div>'
-    +   '<div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="openFatCodeModal()">코드 관리</button>'
-    +     '<button class="btn btn-accent btn-sm" onclick="openFatCommentModal()">+ 코멘트 추가</button></div>'
+    +   '<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+    +     '<button class="btn btn-outline btn-sm" onclick="openFatCommentSharePoint()">SharePoint 코멘트 엑셀 열기</button>'
+    +     '<button class="btn btn-accent btn-sm" onclick="document.getElementById(\'fat-comment-excel-input\').click()">엑셀 업로드 → 완료율 갱신</button>'
+    +     '<button class="btn btn-outline btn-sm" onclick="openFatCommentModal()">+ 직접 추가</button>'
+    +   '</div>'
     + '</div>'
     + '<div class="db-wrap"><table class="db-table" style="font-size:12px;">'
     +   '<thead><tr><th>코드</th><th>내용</th><th>카테고리</th><th>상태</th><th>담당자</th><th>등록일</th><th>완료일</th><th>비고</th><th></th></tr></thead>'
@@ -402,6 +419,73 @@ function saveFatComment() {
   document.getElementById('fat-comment-modal').classList.remove('show');
   _renderFatDetail(); refreshFatTab(); notify('코멘트 저장', 'ok');
 }
+function openFatCommentSharePoint() {
+  var f = _fat(); if (!f) { notify('FAT 호선을 먼저 선택하세요.', 'err'); return; }
+  var url = FAT_COMMENT_SHAREPOINT_URL[f.class] || FAT_COMMENT_SHAREPOINT_URL._default;
+  if (!url) { notify('SharePoint 코멘트 엑셀 링크가 설정되지 않았습니다. (관리자 설정 필요)', 'err'); return; }
+  window.open(url, '_blank');
+}
+
+function uploadFatCommentExcel(input) {
+  var f = _fat(); if (!f) { notify('FAT 호선을 먼저 선택하세요.', 'err'); input.value=''; return; }
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (typeof XLSX === 'undefined') { notify('엑셀 라이브러리(xlsx)를 불러오지 못했습니다.', 'err'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: true });
+      var sheet = wb.Sheets[wb.SheetNames[0]];
+      if (!sheet) throw new Error('시트를 찾을 수 없습니다.');
+      var rows = XLSX.utils.sheet_to_json(sheet, { defval: null });
+      var parsed = _parseFatCommentRows(rows);
+      if (parsed.length === 0) { notify('엑셀에서 코멘트 행을 찾지 못했습니다. 헤더(코드/내용/완료일 등)를 확인하세요.', 'err'); return; }
+      /* 해당 fat_id의 기존 엑셀-소스 코멘트 제거 후 교체 (수기 추가분은 보존) */
+      DB.fat_comment = DB.fat_comment.filter(function(c){ return !(c.fat_id === f.fat_id && c.source === 'excel'); });
+      parsed.forEach(function(c) {
+        c.comment_id = uid('FCMT'); c.fat_id = f.fat_id; c.source = 'excel'; c.created_at = today();
+        DB.fat_comment.push(c);
+      });
+      dbSave('fat_comment');
+      var p = _fatCommentProgress(f.fat_id);
+      var doneCnt = parsed.filter(function(c){ return c.done_date; }).length;
+      _pushFatHistory(f.fat_id, '선급 코멘트 엑셀 반영: ' + parsed.length + '건 (완료 ' + doneCnt + '건 · 완료율 ' + p.pct + '%)');
+      refreshFatTab();
+      notify('코멘트 ' + parsed.length + '건 반영 — 완료율 ' + p.pct + '%', 'ok');
+    } catch (err) {
+      notify('엑셀 파싱 실패: ' + err.message, 'err');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  input.value = '';
+}
+
+function _parseFatCommentRows(rows) {
+  var out = [];
+  (rows || []).forEach(function(r) {
+    var rec = {};
+    Object.keys(r).forEach(function(h) {
+      var field = _FAT_COMMENT_HMAP[String(h).trim()];
+      if (!field) return;
+      var v = r[h];
+      if (v === null || v === undefined) return;
+      if (field === 'done_date' || field === 'reg_date') {
+        if (v instanceof Date && !isNaN(v.getTime())) {
+          var p = function(n){ return String(n).padStart(2,'0'); };
+          rec[field] = v.getFullYear() + '-' + p(v.getMonth()+1) + '-' + p(v.getDate());
+        } else { rec[field] = String(v).trim(); }
+      } else { rec[field] = String(v).trim(); }
+    });
+    /* 코드 또는 내용이 있는 행만 유효 */
+    if (rec.code || rec.content) {
+      if (rec.done_date) rec.status = '완료';        /* 완료일 있으면 완료로 강제 */
+      else if (!rec.status) rec.status = 'OBT 전';
+      out.push(rec);
+    }
+  });
+  return out;
+}
+
 function deleteFatComment(commentId) {
   if (!confirm('해당 코멘트를 삭제하시겠습니까?')) return;
   DB.fat_comment = DB.fat_comment.filter(function(c){ return c.comment_id !== commentId; });
