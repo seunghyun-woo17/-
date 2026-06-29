@@ -257,12 +257,12 @@ function refreshInventoryGroups() {
   var tblGroups = document.getElementById('tbl-inv-groups');
   if (tblGroups) {
     if (DB.inventory.length === 0) {
-      tblGroups.innerHTML = '<tr><td colspan="9" class="empty-state">데이터 없음 — 입고 완료 처리 후 재고가 등록됩니다.</td></tr>';
+      tblGroups.innerHTML = '<tr><td colspan="10" class="empty-state">데이터 없음 — 입고 완료 처리 후 재고가 등록됩니다.</td></tr>';
     } else {
       var groups = {};
       DB.inventory.forEach(function(i) {
         var key = i.item_code || '(미지정)';
-        if (!groups[key]) groups[key] = { item_code: key, item_name: i.item_name || '', total: 0, IN_STOCK: 0, SHIPPED: 0, RENTED: 0, INSPECTION_REQUESTED: 0, DEFECT: 0 };
+        if (!groups[key]) groups[key] = { item_code: key, item_name: i.item_name || '', total: 0, IN_STOCK: 0, SHIPPED: 0, RENTED: 0, INSPECTION_REQUESTED: 0, DEFECT: 0, SCRAPPED: 0 };
         groups[key].total++;
         if (groups[key][i.status] !== undefined) groups[key][i.status]++;
         if (!groups[key].item_name && i.item_name) groups[key].item_name = i.item_name;
@@ -278,6 +278,7 @@ function refreshInventoryGroups() {
           + '<td style="text-align:center;"><span class="badge badge-partial">' + g.RENTED + '</span></td>'
           + '<td style="text-align:center;"><span class="badge badge-open">' + g.INSPECTION_REQUESTED + '</span></td>'
           + '<td style="text-align:center;">' + (g.DEFECT > 0 ? '<span class="badge badge-short">' + g.DEFECT + '</span>' : '<span style="color:var(--text3);">0</span>') + '</td>'
+          + '<td style="text-align:center;">' + (g.SCRAPPED > 0 ? '<span class="badge badge-short">' + g.SCRAPPED + '</span>' : '<span style="color:var(--text3);">0</span>') + '</td>'
           + '<td style="text-align:center;"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">상세 보기 →</button></td>'
           + '</tr>';
       }).join('');
@@ -818,7 +819,7 @@ function _vesselBomCoverage(vesselId) {
   var totalReq = lines.reduce(function(s,l){ return s + l.required; }, 0);
   var totalShip = lines.reduce(function(s,l){ return s + Math.min(l.shipped, l.required); }, 0);
   var rate = totalReq > 0 ? Math.floor(totalShip / totalReq * 100) : 0;
-  var complete = lines.every(function(l){ return l.shipped >= l.required && l.required > 0; });
+  var complete = lines.every(function(l){ return l.required <= 0 || l.shipped >= l.required; });
   return { rate: rate, complete: complete, hasBom: true, lines: lines };
 }
 
