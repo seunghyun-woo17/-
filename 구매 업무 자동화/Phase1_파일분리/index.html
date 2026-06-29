@@ -1889,7 +1889,16 @@
 
     <div class="form-group">
       <label>문서 제목</label>
-      <input id="vessel-doc-title" placeholder="예: FAT 결과 보고서">
+      <input id="vessel-doc-title" list="fat-doc-title-options" placeholder="문서 제목 선택 또는 입력" autocomplete="off">
+      <datalist id="fat-doc-title-options">
+        <option value="FAT Report"></option>
+        <option value="FAT Punch List"></option>
+        <option value="FAT Procedure"></option>
+        <option value="Test Record"></option>
+        <option value="Inspection Report"></option>
+        <option value="Survey Report"></option>
+        <option value="Certificate"></option>
+      </datalist>
     </div>
 
     <div class="form-group">
