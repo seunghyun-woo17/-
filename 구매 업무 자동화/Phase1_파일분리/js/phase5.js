@@ -227,14 +227,13 @@ function refreshInventoryGroups() {
   });
   shortItems.sort(function(a, b){ return b.shortage - a.shortage; });
 
+  var inspDone = DB.outgoing_log.filter(function(l){ return l.action === 'INSPECTION_REQUESTED' && l.completed; }).length;
   var typesEl = document.getElementById('stat-inv-types');
-  var shortEl = document.getElementById('stat-inv-shortitems');
-  var stockTopEl = document.getElementById('stat-inv-stock');
   var inspTopEl  = document.getElementById('stat-inv-insp');
+  var inspDoneEl = document.getElementById('stat-inv-insp-done');
   if (typesEl)    typesEl.textContent    = typesInStock;
-  if (shortEl)    shortEl.textContent    = shortItems.length;
-  if (stockTopEl) stockTopEl.textContent = stockCount;
   if (inspTopEl)  inspTopEl.textContent  = inspCount;
+  if (inspDoneEl) inspDoneEl.textContent = inspDone;
 
   /* 부족 품목 — 상단은 한 줄 요약, 상세는 [상세 보기] 클릭 시 모달로 (가시성 확보) */
   _shortItemsCache = shortItems;
