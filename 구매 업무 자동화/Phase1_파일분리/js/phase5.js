@@ -425,7 +425,7 @@ function _renderInventoryItemModal(mcCode) {
 
 function _defectHistoryHTML(mcCode) {
   var logs = DB.defect_log.filter(function(d){ return d.inv_mc === mcCode; })
-    .sort(function(a,b){ return (a.created_at < b.created_at) ? -1 : 1; });
+    .sort(function(a,b){ return (a.created_at > b.created_at) ? -1 : 1; });
   if (logs.length === 0) return '';
   var labels = { RETURN: '협력업체 반품/교체', REPAIR: '수리 후 재입고', SCRAP: '폐기', HOLD: '보류/자체보관' };
   var rows = logs.map(function(d) {
@@ -448,6 +448,7 @@ function openDefectModal(mcCode) {
   if (!item) return;
   closeInventoryItemModal();
   document.getElementById('defect-mc').value = mcCode;
+  document.getElementById('defect-action').value = 'RETURN';
   document.getElementById('defect-modal-title').textContent = '불량 처리 — ' + item.serial_no;
   document.getElementById('defect-modal-info').innerHTML =
       '<div class="inspect-info-row"><span>품목명</span><strong>' + (item.item_name || '-') + '</strong></div>'
