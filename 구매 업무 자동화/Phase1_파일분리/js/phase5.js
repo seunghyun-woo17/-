@@ -188,6 +188,7 @@ function _inventoryStatusInfo(status) {
   else if (status === 'INSPECTION_REQUESTED') return { label: '검사요청', badgeClass: 'badge-open' };
   else if (status === 'DEFECT')               return { label: '불량',   badgeClass: 'badge-short' };
   else if (status === 'SCRAPPED')             return { label: '폐기',   badgeClass: 'badge-short' };
+  else if (status === 'RETURNED')             return { label: '반납', badgeClass: 'badge-stock' };
   return { label: status, badgeClass: 'badge-stock' };
 }
 
@@ -405,6 +406,9 @@ function _renderInventoryItemModal(mcCode) {
       + '<span style="font-size:10px;color:var(--text3);display:block;margin-top:6px;">반품/교체·수리 후 재입고·폐기·보류 처리를 기록합니다.</span>';
   } else if (item.status === 'SCRAPPED') {
     actionsHTML = '<span style="font-size:11px;color:var(--text3);">폐기 처리된 재고입니다.</span>';
+  } else if (item.status === 'RENTED') {
+    actionsHTML = '<button class="btn btn-accent btn-sm" onclick="returnRental(\'' + mcCode + '\')">반납 처리 (재고 복귀)</button>'
+      + '<span style="font-size:10px;color:var(--text3);display:block;margin-top:6px;">대여 종료 시 반납 처리하면 가용 재고(IN_STOCK)로 복귀합니다.</span>';
   } else {
     actionsHTML = '<button class="btn btn-outline btn-sm" style="border-color:var(--accent);color:var(--accent);" onclick="inventoryItemAction(\'' + mcCode + '\',\'RENTED\')">대여</button>'
       + '<button class="btn btn-outline btn-sm" style="border-color:var(--warn);color:var(--warn);" onclick="inventoryItemAction(\'' + mcCode + '\',\'INSPECTION_REQUESTED\')">검사요청</button>'
@@ -489,6 +493,23 @@ function confirmDefect() {
   refreshAllViews();
   var labels = { RETURN: '협력업체 반품/교체', REPAIR: '수리 후 재입고', SCRAP: '폐기', HOLD: '보류' };
   notify('불량 처리 완료: ' + labels[action], 'ok');
+}
+
+function returnRental(mcCode) {
+  var idx = DB.inventory.findIndex(function(i){ return i.mc_code === mcCode; });
+  if (idx < 0) return;
+  if (DB.inventory[idx].status !== 'RENTED') { notify('대여중 상태가 아닙니다.', 'err'); return; }
+  DB.inventory[idx].status = 'IN_STOCK';
+  DB.outgoing_log.push({
+    log_id: uid('OUT'), inv_mc: mcCode, inv_sn: DB.inventory[idx].serial_no,
+    action: 'RETURNED', vessel_id: '', vessel_code: '', pic: '', team: '',
+    due_date: '', date: today(), note: '대여 반납 — 재고 복귀'
+  });
+  dbSave('inventory');
+  dbSave('outgoing_log');
+  closeInventoryItemModal();
+  refreshAllViews();
+  notify('반납 처리 완료 — 재고로 복귀: ' + DB.inventory[idx].serial_no, 'ok');
 }
 
 /* ── 모달에서 출고/대여/검사요청 → 해당 항목만 출고 처리 모달로 전달 ── */
