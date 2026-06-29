@@ -86,6 +86,9 @@ const DB = {
      med_id, no, order_old, cert_no, order_new, medf_cert_new, sn, audit, obt_fat,
      medf_status, hull_no(호선), shipyard(yard), dl_vessel, medb_cert_no, remark */
   med_cert:        [],  // MED_CERT
+  /* 불량(DEFECT) 처리 이력 — inv_mc(FK), action(RETURN|REPAIR|SCRAP|HOLD),
+     supplier_code, action_date, result_date(재입고/완료일), memo */
+  defect_log:      [],  // DEFECT_LOG (재고 TAB — 불량 처리/반품/수리/폐기 이력)
 };
 
 /* ── localStorage에서 DB 로드 (페이지 로드 시 1회 실행) ── */

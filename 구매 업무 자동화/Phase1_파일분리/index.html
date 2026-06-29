@@ -2056,6 +2056,33 @@
   </div>
 </div>
 
+<!-- 불량 처리 모달 -->
+<div class="modal-bg" id="defect-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">
+      <span id="defect-modal-title">불량 처리</span>
+      <button class="modal-close" onclick="document.getElementById('defect-modal').classList.remove('show')">×</button>
+    </div>
+    <input type="hidden" id="defect-mc">
+    <div id="defect-modal-info" style="margin-bottom:12px;"></div>
+    <div class="form-group" style="margin-bottom:12px;"><label>처리 구분</label>
+      <select id="defect-action">
+        <option value="RETURN">협력업체 반품/교체 (재입고)</option>
+        <option value="REPAIR">수리 후 재입고</option>
+        <option value="SCRAP">폐기 (Scrap)</option>
+        <option value="HOLD">보류/자체보관</option>
+      </select></div>
+    <div class="form-group" style="margin-bottom:12px;"><label>협력업체 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>
+      <input id="defect-supplier" placeholder="반품/수리 협력업체"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>메모 <span style="color:var(--text3);font-size:10px;">(선택)</span></label>
+      <input id="defect-memo" placeholder="처리 내용, 사유 등"></div>
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="document.getElementById('defect-modal').classList.remove('show')">취소</button>
+      <button class="btn btn-accent" onclick="confirmDefect()">처리 확정</button>
+    </div>
+  </div>
+</div>
+
 <!-- 알림 토스트 -->
 <div class="notif" id="notif"></div>
 

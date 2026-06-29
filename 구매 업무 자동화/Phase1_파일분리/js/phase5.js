@@ -187,6 +187,7 @@ function _inventoryStatusInfo(status) {
   else if (status === 'RENTED')               return { label: '대여중', badgeClass: 'badge-partial' };
   else if (status === 'INSPECTION_REQUESTED') return { label: '검사요청', badgeClass: 'badge-open' };
   else if (status === 'DEFECT')               return { label: '불량',   badgeClass: 'badge-short' };
+  else if (status === 'SCRAPPED')             return { label: '폐기',   badgeClass: 'badge-short' };
   return { label: status, badgeClass: 'badge-stock' };
 }
 
@@ -400,7 +401,10 @@ function _renderInventoryItemModal(mcCode) {
   if (item.status === 'SHIPPED') {
     actionsHTML = '<span style="font-size:11px;color:var(--text3);">현재 상태(출고)에서는 추가 처리가 불가합니다.</span>';
   } else if (item.status === 'DEFECT') {
-    actionsHTML = '<span style="font-size:11px;color:var(--danger);">불량 처리된 재고입니다. 가용 재고에서 제외되었습니다.</span>';
+    actionsHTML = '<button class="btn btn-outline btn-sm" style="border-color:var(--danger);color:var(--danger);" onclick="openDefectModal(\'' + mcCode + '\')">불량 처리 / 이력</button>'
+      + '<span style="font-size:10px;color:var(--text3);display:block;margin-top:6px;">반품/교체·수리 후 재입고·폐기·보류 처리를 기록합니다.</span>';
+  } else if (item.status === 'SCRAPPED') {
+    actionsHTML = '<span style="font-size:11px;color:var(--text3);">폐기 처리된 재고입니다.</span>';
   } else {
     actionsHTML = '<button class="btn btn-outline btn-sm" style="border-color:var(--accent);color:var(--accent);" onclick="inventoryItemAction(\'' + mcCode + '\',\'RENTED\')">대여</button>'
       + '<button class="btn btn-outline btn-sm" style="border-color:var(--warn);color:var(--warn);" onclick="inventoryItemAction(\'' + mcCode + '\',\'INSPECTION_REQUESTED\')">검사요청</button>'
@@ -415,7 +419,75 @@ function _renderInventoryItemModal(mcCode) {
     + '<div class="inspect-info-row"><span>현재 재고 상태</span><span class="badge ' + info.badgeClass + '">' + info.label + '</span></div>'
     + '<hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">'
     + '<div class="form-group"><label>재고 상태 변경 이력</label>' + historyHTML + '</div>'
+    + _defectHistoryHTML(mcCode)
     + '<div class="btn-row" style="margin-top:8px;flex-wrap:wrap;">' + actionsHTML + '</div>';
+}
+
+function _defectHistoryHTML(mcCode) {
+  var logs = DB.defect_log.filter(function(d){ return d.inv_mc === mcCode; })
+    .sort(function(a,b){ return (a.created_at < b.created_at) ? -1 : 1; });
+  if (logs.length === 0) return '';
+  var labels = { RETURN: '협력업체 반품/교체', REPAIR: '수리 후 재입고', SCRAP: '폐기', HOLD: '보류/자체보관' };
+  var rows = logs.map(function(d) {
+    return '<div style="padding:7px 11px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--input-bg);">'
+      + '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'
+      + '<span style="font-size:12px;font-weight:600;min-width:82px;">' + (d.action_date || '-') + '</span>'
+      + '<span class="badge badge-short">' + (labels[d.action] || d.action) + '</span>'
+      + (d.supplier_code ? '<span style="font-size:10px;color:var(--text2);background:#f3f5f9;padding:1px 6px;border-radius:10px;border:1px solid var(--border);">' + d.supplier_code + '</span>' : '')
+      + (d.result_date ? '<span style="font-size:10px;color:var(--success);">재입고/완료 ' + d.result_date + '</span>' : '')
+      + '</div>'
+      + (d.memo ? '<div style="margin-top:5px;font-size:11px;color:var(--text2);">메모: ' + d.memo + '</div>' : '')
+      + '</div>';
+  }).join('');
+  return '<hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">'
+    + '<div class="form-group"><label>불량 처리 이력</label>' + rows + '</div>';
+}
+
+function openDefectModal(mcCode) {
+  var item = DB.inventory.find(function(i){ return i.mc_code === mcCode; });
+  if (!item) return;
+  closeInventoryItemModal();
+  document.getElementById('defect-mc').value = mcCode;
+  document.getElementById('defect-modal-title').textContent = '불량 처리 — ' + item.serial_no;
+  document.getElementById('defect-modal-info').innerHTML =
+      '<div class="inspect-info-row"><span>품목명</span><strong>' + (item.item_name || '-') + '</strong></div>'
+    + '<div class="inspect-info-row"><span>품목 코드</span><strong class="mono">' + item.item_code + '</strong></div>'
+    + '<div class="inspect-info-row"><span>S/N</span><strong class="sn">' + item.serial_no + '</strong></div>';
+  document.getElementById('defect-supplier').value = item.supplier_code || '';
+  document.getElementById('defect-memo').value = '';
+  document.getElementById('defect-modal').classList.add('show');
+}
+
+function confirmDefect() {
+  var mcCode   = document.getElementById('defect-mc').value;
+  var action   = document.getElementById('defect-action').value;
+  var supplier = document.getElementById('defect-supplier').value.trim();
+  var memo     = document.getElementById('defect-memo').value.trim();
+  var idx = DB.inventory.findIndex(function(i){ return i.mc_code === mcCode; });
+  if (idx < 0) return;
+  var dt = today();
+  var resultDate = (action === 'RETURN' || action === 'REPAIR') ? dt : '';
+  DB.defect_log.push({
+    defect_id:   uid('DEF'),
+    inv_mc:      mcCode,
+    serial_no:   DB.inventory[idx].serial_no,
+    item_code:   DB.inventory[idx].item_code,
+    action:      action,
+    supplier_code: supplier,
+    action_date: dt,
+    result_date: resultDate,
+    memo:        memo,
+    created_at:  new Date().toISOString()
+  });
+  if (action === 'RETURN' || action === 'REPAIR') DB.inventory[idx].status = 'IN_STOCK';
+  else if (action === 'SCRAP') DB.inventory[idx].status = 'SCRAPPED';
+  /* HOLD: DEFECT 유지 */
+  dbSave('defect_log');
+  dbSave('inventory');
+  document.getElementById('defect-modal').classList.remove('show');
+  refreshAllViews();
+  var labels = { RETURN: '협력업체 반품/교체', REPAIR: '수리 후 재입고', SCRAP: '폐기', HOLD: '보류' };
+  notify('불량 처리 완료: ' + labels[action], 'ok');
 }
 
 /* ── 모달에서 출고/대여/검사요청 → 해당 항목만 출고 처리 모달로 전달 ── */
