@@ -85,11 +85,12 @@
 | `suppliers` | 업체 마스터 |
 | `po_header` | 발주서 헤더 |
 | `po_line` | 발주서 라인 (품목별) |
-| `inventory` | 재고 (S/N 단위, status: IN_STOCK/SHIPPED/RENTED/INSPECTION_REQUESTED) |
+| `inventory` | 재고 (S/N 단위, status: IN_STOCK/SHIPPED/RENTED/INSPECTION_REQUESTED/DEFECT/SCRAPPED/RETURNED) |
 | `incoming_header` | 입고 헤더 (COMPLETE/SHORT/OVER) |
 | `incoming_line` | 입고 라인 (S/N별 스캔 기록) |
 | `inspection_cert` | 첨부 서류 (검사성적서·COC·거래명세서, 입고 건 단위) |
 | `outgoing_log` | 출고/대여/검사요청 이력 |
+| `defect_log` | 불량(DEFECT) 처리 이력 (재고 TAB) — action(RETURN 반품·교체/REPAIR 수리 후 재입고/SCRAP 폐기/HOLD 보류)·supplier_code·action_date·result_date·memo. RETURN/REPAIR→IN_STOCK 복귀, SCRAP→SCRAPPED |
 
 ---
 
