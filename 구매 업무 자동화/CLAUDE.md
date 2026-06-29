@@ -92,15 +92,16 @@
 | `suppliers` | 업체 마스터 |
 | `po_header` | 발주서 헤더 |
 | `po_line` | 발주서 라인 (품목별) |
-| `inventory` | 재고 (S/N 단위, status: IN_STOCK/SHIPPED/RENTED/INSPECTION_REQUESTED/**DEFECT**). DEFECT=검사 불량 처리 → 가용재고(IN_STOCK)에서 제외 |
+| `inventory` | 재고 (S/N 단위, status: IN_STOCK/SHIPPED/RENTED/INSPECTION_REQUESTED/**DEFECT**/SCRAPPED/RETURNED). DEFECT=검사 불량 처리 → 가용재고(IN_STOCK)에서 제외. SCRAPPED=불량 폐기(영구 제외). RETURNED=대여 반납 로그용(재고는 IN_STOCK 복귀) |
 | `incoming_header` | 입고 헤더 (COMPLETE/SHORT/OVER) |
 | `incoming_line` | 입고 라인 (S/N별 스캔 기록) |
 | `inspection_cert` | 첨부 서류 (검사성적서·COC·거래명세서, 입고 건 단위) |
-| `outgoing_log` | 출고/대여/검사요청 이력 |
+| `outgoing_log` | 출고/대여/검사요청/반납(RETURNED) 이력 |
+| `defect_log` | 불량(DEFECT) 처리 이력 (재고 TAB) — action(RETURN 반품·교체/REPAIR 수리 후 재입고/SCRAP 폐기/HOLD 보류)·supplier_code·action_date·result_date·memo. RETURN/REPAIR→IN_STOCK 복귀, SCRAP→SCRAPPED |
 | `vessel_docs` | 호선별 수기 첨부 문서 (FAT·SW설치·기타, vessel_id 단위) |
 | `fat_master` | FAT 관리 (호선+선급 단위, status 6단계, scm_ready_from/to·fat_date·applied_date·inspector·product·flag·yard·sn·result) |
 | `fat_history` | FAT 상태변경 자동 로그 (lifecycle, fat_id 단위) |
-| `fat_comment` | 선급 코멘트(지적사항) 구조화 — code·content·category·status·assignee·reg_date·done_date·note·file (완료율 자동) |
+| `fat_comment` | 선급 코멘트(지적사항) 구조화 — code·content·category·status·assignee·reg_date·done_date·note·file·source (완료율 자동). SharePoint 엑셀 업로드 파싱으로 일괄 갱신(`source='excel'`, 완료일→status='완료', 완료율 자동·COMPLETE 배지). 수기 추가분은 보존 |
 | `fat_comment_codes` | 코멘트 코드 마스터 (ELEC-XXXX 재사용 카탈로그) |
 | `fat_ref_docs` | 선급별 FAT 참고문서 (프로세스/신청양식, class 단위) |
 | `med_cert` | MED 인증서 발급 현황 (MEDF/MEDB, Audit·OBT/FAT·발급상태) |
