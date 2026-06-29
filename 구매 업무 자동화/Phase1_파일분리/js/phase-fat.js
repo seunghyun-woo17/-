@@ -279,6 +279,7 @@ function _renderFatDetail() {
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">'
     +   '<div style="' + lab + 'margin:0;">④ 선급 코멘트 (지적사항) — 완료율 ' + _fatProgressHTML(f.fat_id) + '</div>'
     +   '<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+    +     '<button class="btn btn-outline btn-sm" onclick="openFatCodeModal()">코드 관리</button>'
     +     '<button class="btn btn-outline btn-sm" onclick="openFatCommentSharePoint()">SharePoint 코멘트 엑셀 열기</button>'
     +     '<button class="btn btn-accent btn-sm" onclick="document.getElementById(\'fat-comment-excel-input\').click()">엑셀 업로드 → 완료율 갱신</button>'
     +     '<button class="btn btn-outline btn-sm" onclick="openFatCommentModal()">+ 직접 추가</button>'
@@ -429,8 +430,8 @@ function openFatCommentSharePoint() {
 function uploadFatCommentExcel(input) {
   var f = _fat(); if (!f) { notify('FAT 호선을 먼저 선택하세요.', 'err'); input.value=''; return; }
   var file = input.files && input.files[0];
-  if (!file) return;
-  if (typeof XLSX === 'undefined') { notify('엑셀 라이브러리(xlsx)를 불러오지 못했습니다.', 'err'); return; }
+  if (!file) { input.value = ''; return; }
+  if (typeof XLSX === 'undefined') { notify('엑셀 라이브러리(xlsx)를 불러오지 못했습니다.', 'err'); input.value = ''; return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     try {
