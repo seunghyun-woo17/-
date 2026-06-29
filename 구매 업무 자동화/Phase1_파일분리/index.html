@@ -2029,13 +2029,13 @@
 
 <!-- MED 인증서 추가/수정 모달 -->
 <div class="modal-bg" id="med-modal">
-  <div class="modal" style="max-width:680px;max-height:90vh;overflow-y:auto;">
+  <div class="modal" style="max-width:880px;width:92vw;max-height:90vh;overflow-y:auto;overflow-x:hidden;">
     <div class="modal-title">
       <span id="med-modal-title">MED 인증서 추가</span>
       <button class="modal-close" onclick="document.getElementById('med-modal').classList.remove('show')">×</button>
     </div>
     <input type="hidden" id="med-modal-id">
-    <div class="form-grid-3">
+    <div class="form-grid-3" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
       <div class="form-group"><label>No</label><input id="med-no"></div>
       <div class="form-group"><label>Order(old)</label><input id="med-order_old"></div>
       <div class="form-group"><label>Cert. No.</label><input id="med-cert_no"></div>
