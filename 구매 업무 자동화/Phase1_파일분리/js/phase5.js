@@ -569,7 +569,6 @@ function confirmOutgoing() {
     }
   }
 
-  var packRows = [];
   selected.forEach(function(sel) {
     var idx = DB.inventory.findIndex(function(i){ return i.mc_code === sel.mc; });
     if (idx >= 0) {
@@ -578,7 +577,6 @@ function confirmOutgoing() {
         DB.inventory[idx].vessel_assigned      = vesselId;
         DB.inventory[idx].vessel_code_assigned = vesselCode;
       }
-      packRows.push({ item_code: DB.inventory[idx].item_code, item_name: DB.inventory[idx].item_name, serial_no: DB.inventory[idx].serial_no || sel.sn });
     }
     DB.outgoing_log.push({
       log_id:     uid('OUT'),
@@ -737,8 +735,8 @@ function openVesselPackingList(vesselId) {
   var vessel = DB.vessel_master.find(function(v){ return v.vessel_id === vesselId; });
   var items  = DB.inventory.filter(function(i){ return i.status === 'SHIPPED' && (i.vessel_assigned || '(미지정)') === vesselId; });
   var rows = items.map(function(i){ return { item_code: i.item_code, item_name: i.item_name, serial_no: i.serial_no }; });
-  var log = items.length ? DB.outgoing_log.find(function(l){ return l.inv_mc === items[0].mc_code && l.action === 'SHIPPED'; }) : null;
-  var pic = log ? (log.pic || '') : '';
+  var plogs = DB.outgoing_log.filter(function(l){ return l.action === 'SHIPPED' && l.vessel_id === vesselId && l.pic; });
+  var pic = plogs.length ? plogs[plogs.length - 1].pic : '';
   _showPackingList(vessel, rows, pic, today());
 }
 
