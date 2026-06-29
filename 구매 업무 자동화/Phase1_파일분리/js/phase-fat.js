@@ -189,16 +189,18 @@ function _renderFatDetail() {
   var fld = function(label, id, val, w){ return '<div style="display:flex;flex-direction:column;gap:3px;">'
     + '<span style="font-size:10px;color:var(--text3);">' + label + '</span>'
     + '<input id="' + id + '" value="' + _esc(val) + '" style="' + inp + (w ? 'width:' + w + ';' : '') + '"></div>'; };
+  var fldRO = function(label, val){ return '<div style="display:flex;flex-direction:column;gap:3px;">'
+    + '<span style="font-size:10px;color:var(--text3);">' + label + '</span>'
+    + '<input value="' + _esc(val) + '" readonly style="' + inp + 'background:var(--bg2);color:var(--text2);cursor:default;width:140px;"></div>'; };
 
-  /* ⓪ 호선 정보 (Product/Flag/Yard/Inspector/S/N) */
+  /* ⓪ 호선 정보 (Product/Flag/Yard 설계 자동 반영 readonly, Inspector만 편집) */
   var mf = '<div style="' + box + '">'
-    + '<div style="' + lab + '">⓪ 호선/검사 정보 <span style="font-weight:400;color:var(--text3);">(Flag·Yard·Product는 설계 정보 자동 반영, 수정 가능)</span></div>'
-    + '<div style="display:flex;gap:10px;flex-wrap:wrap;">'
-    +   fld('Product', 'fat-mf-product', f.product, '140px')
-    +   fld('Flag', 'fat-mf-flag', f.flag, '120px')
-    +   fld('Yard', 'fat-mf-yard', f.yard, '100px')
+    + '<div style="' + lab + '">⓪ 호선/검사 정보 <span style="font-weight:400;color:var(--text3);">(Flag·Yard·Product는 설계 정보 자동 반영, 수정 불가)</span></div>'
+    + '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">'
+    +   fldRO('Product', f.product)
+    +   fldRO('Flag', f.flag)
+    +   fldRO('Yard', f.yard)
     +   fld('Inspector (선급 검사관)', 'fat-mf-inspector', f.inspector, '180px')
-    +   fld('S/N', 'fat-mf-sn', f.sn, '120px')
     +   '<div style="display:flex;align-items:flex-end;"><button class="btn btn-outline btn-sm" onclick="saveFatMaster()">정보 저장</button></div>'
     + '</div></div>';
 
@@ -282,9 +284,8 @@ function _renderFatDetail() {
 /* ── 마스터/일정 저장 ── */
 function saveFatMaster() {
   var f = _fat(); if (!f) return;
-  f.product = _val('fat-mf-product'); f.flag = _val('fat-mf-flag'); f.yard = _val('fat-mf-yard');
-  f.inspector = _val('fat-mf-inspector'); f.sn = _val('fat-mf-sn');
-  dbSave('fat_master'); refreshFatTab(); notify('호선/검사 정보 저장', 'ok');
+  f.inspector = _val('fat-mf-inspector');
+  dbSave('fat_master'); refreshFatTab(); notify('검사관 정보 저장', 'ok');
 }
 function saveFatScmDate() {
   var f = _fat(); if (!f) return;
