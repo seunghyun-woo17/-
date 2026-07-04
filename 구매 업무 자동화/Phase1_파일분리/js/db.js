@@ -89,6 +89,10 @@ const DB = {
   /* 불량(DEFECT) 처리 이력 — inv_mc(FK), action(RETURN|REPAIR|SCRAP|HOLD),
      supplier_code, action_date, result_date(재입고/완료일), memo */
   defect_log:      [],  // DEFECT_LOG (재고 TAB — 불량 처리/반품/수리/폐기 이력)
+  /* 납품일정 (납품·출고 탭) — 호선별 중분류 납품예정일/필요수량
+     ds_id, vessel_id(FK), mid_cat(중분류), planned_date, actual_date, req_qty, memo, updated_at
+     · 출고는 이 일정을 기준으로 [납품·출고] 탭 세션에서 제품 QR 스캔으로 처리 */
+  delivery_schedule: [], // DELIVERY_SCHEDULE
 };
 
 /* ── localStorage에서 DB 로드 (페이지 로드 시 1회 실행) ── */
@@ -209,6 +213,7 @@ function refreshAllViews() {
   updateScanUI();
   if (typeof refreshCxopTab === 'function') refreshCxopTab();
   if (typeof refreshFatTab === 'function') refreshFatTab();
+  if (typeof refreshDeliveryTab === 'function') refreshDeliveryTab();
   var vv = document.getElementById('inventory-vessel-view');
   if (vv && vv.style.display !== 'none' && typeof refreshInventoryVesselView === 'function') {
     refreshInventoryVesselView();

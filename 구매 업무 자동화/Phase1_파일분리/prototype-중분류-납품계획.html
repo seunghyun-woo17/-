@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미리보기 — 중분류 작업대 · 납품계획</title>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/phases.css">
+<style>
+  .wrap { max-width:1180px; margin:0 auto; padding:22px 20px 70px; }
+  .proto-head { display:flex; align-items:center; gap:14px; }
+  .proto-head h1 { font-size:19px; font-weight:800; letter-spacing:-.3px; }
+  .proto-tag { font-size:11px; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:3px 10px; border-radius:999px; }
+  .proto-tabs { display:flex; gap:8px; margin:16px 0 18px; }
+  .proto-tab { padding:9px 16px; border:1px solid var(--border2); background:var(--card); color:var(--text2); border-radius:var(--radius-sm); font-size:13px; font-weight:700; cursor:pointer; transition:all .14s; }
+  .proto-tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .mid-row { cursor:pointer; }
+  .mid-row td:first-child { font-weight:700; }
+  .mid-row:hover td { background:var(--navy3); }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  .dot.ok    { background:var(--success); }
+  .dot.short { background:var(--danger); }
+  .dot.free  { background:var(--accent); }
+  .detail-sub { font-size:12px; font-weight:800; color:var(--text); margin:6px 0 10px; display:flex; align-items:center; gap:8px; }
+  .detail-sub small { font-weight:500; color:var(--text3); font-size:11px; }
+  .detail-sub::before { content:''; width:4px; height:15px; background:var(--accent); border-radius:2px; }
+  .pool-line { font-size:12px; color:var(--text2); margin-bottom:8px; }
+  .pool-line b { color:var(--accent); font-size:15px; }
+  /* 6개월 타임라인 */
+  .tl-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .tl-table th, .tl-table td { border:1px solid var(--border); padding:9px 8px; text-align:center; }
+  .tl-table th { background:var(--navy3); color:var(--text3); font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  .tl-table td.rowhead { text-align:left; font-weight:600; white-space:nowrap; color:var(--text); }
+  .mk { font-size:14px; line-height:1; }
+  .mk.planned { color:var(--accent); }
+  .mk.short   { color:var(--danger); font-weight:800; }
+  .mk.done    { color:var(--success); }
+  .tl-sub { font-size:10px; color:var(--text3); }
+  .ship-pick { display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--border); border-radius:8px; margin-bottom:6px; font-size:12px; }
+  .ship-pick .sn { font-weight:700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="proto-head">
+    <h1>중분류 작업대 · 납품계획</h1>
+    <span class="proto-tag">미리보기 (샘플 데이터 · 실제 앱과 분리)</span>
+  </div>
+  <div class="notice notice-blue" style="margin-top:8px;">
+    <strong>형태 확인용 미리보기.</strong> 실제 앱·데이터는 건드리지 않습니다. 중분류 행을 클릭하면 <strong>한 화면에서</strong>
+    ⓐ S/N 재고(대여·검사·이력) + ⓑ 호선별 납품일정·출고를 처리합니다. 버튼은 실제로 동작하며 상태가 바뀝니다(샘플).
+  </div>
+
+  <div class="proto-tabs">
+    <button class="proto-tab active" id="ptab-inv" onclick="showProto('inv')">재고 작업대 (중분류)</button>
+    <button class="proto-tab" id="ptab-del" onclick="showProto('del')">SCM 납품일정 (6개월)</button>
+  </div>
+
+  <!-- ════════ 재고 작업대 ════════ -->
+  <section id="proto-inv">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div class="card-title" style="margin:0;">재고 작업대 — 중분류 기준 (재고는 호선 무관 공용 풀)</div>
+        <button class="btn btn-outline btn-sm" onclick="openScheduleWindow()">📅 납품일정 새 창 ⧉</button>
+      </div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>중분류</th>
+            <th style="text-align:center;">품목수</th>
+            <th style="text-align:center;">가용재고</th>
+            <th style="text-align:center;">임박 납품</th>
+            <th style="text-align:center;">상태</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbl-mid"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="mid-detail" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div class="card-title" style="margin:0;" id="mid-detail-title">중분류 상세</div>
+        <button class="btn btn-outline btn-sm" onclick="closeMidDetail()">← 목록으로</button>
+      </div>
+
+      <div class="detail-sub">ⓐ 품목 재고 (공용 풀 · S/N별 상태 · 히스토리) <small>— 출고 전 대여·검사요청은 여기서</small></div>
+      <div class="db-wrap" style="margin-bottom:22px;">
+        <table class="db-table">
+          <thead><tr>
+            <th>품목 코드</th><th>품목명</th><th>S/N</th><th style="text-align:center;">상태</th><th style="text-align:right;">액션</th>
+          </tr></thead>
+          <tbody id="tbl-mid-items"></tbody>
+        </table>
+      </div>
+
+      <div class="detail-sub">ⓑ 이 중분류가 필요한 호선 · 납품일정 (수요) <small>— 풀에서 골라 그 호선으로 출고</small></div>
+      <div class="pool-line">현재 가용재고(풀): <b id="pool-count">0</b>개 · 납품예정일 순으로 배정</div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>호선</th><th>납품예정일</th>
+            <th style="text-align:center;">필요</th>
+            <th style="text-align:center;">출고완료</th>
+            <th style="text-align:center;">미출고</th>
+            <th style="text-align:center;">재고판정</th>
+            <th style="text-align:right;">처리</th>
+          </tr></thead>
+          <tbody id="tbl-mid-plan"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCM 납품일정 ════════ -->
+  <section id="proto-del" style="display:none;">
+    <div class="card">
+      <div class="card-title blue">납품일정 입력</div>
+      <div class="toolbar">
+        <div class="form-group" style="min-width:220px;">
+          <label>호선 선택</label>
+          <select id="del-vessel" onchange="renderDelInput()">
+            <option value="3445">3445 (HiNAS Control 2.0)</option>
+            <option value="2925">2925 (HiNAS Control 2.0)</option>
+          </select>
+        </div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-outline btn-sm" onclick="toast('엑셀 템플릿 다운로드(데모)','info')">⬇ 엑셀 템플릿</button>
+        <button class="btn btn-outline btn-sm" onclick="toast('엑셀 업로드 파싱(데모)','info')">⬆ 엑셀 업로드</button>
+      </div>
+      <div class="db-wrap">
+        <table class="db-table">
+          <thead><tr>
+            <th>중분류</th>
+            <th style="text-align:center;">납품예정일</th>
+            <th style="text-align:center;">실제납품일</th>
+            <th>비고</th>
+          </tr></thead>
+          <tbody id="tbl-del-input"></tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-accent btn-sm" onclick="toast('납품일정 저장 완료(데모)','ok')">저장</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title blue">6개월 납품계획</div>
+      <div class="db-wrap" style="overflow-x:auto;">
+        <table class="tl-table" id="tl-table"></table>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:10px;">
+        <span class="mk planned">●</span> 납품예정 &nbsp;
+        <span class="mk done">✓</span> 실제납품 완료 &nbsp;
+        <span class="mk short">●</span> 재고 부족 경고
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- 출고 모달 -->
+<div class="modal-bg" id="ship-modal">
+  <div class="modal">
+    <div class="modal-title"><span id="ship-modal-title">출고</span><button class="modal-close" onclick="closeShip()">×</button></div>
+    <div id="ship-modal-info" class="notice notice-amber" style="margin-bottom:14px;"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;">출고할 S/N 선택 (재고 상태만)</div>
+    <div id="ship-pick-list"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-sm" onclick="confirmShip()">출고 확정</button>
+      <button class="btn btn-outline btn-sm" onclick="closeShip()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 이력 모달 -->
+<div class="modal-bg" id="hist-modal">
+  <div class="modal">
+    <div class="modal-title"><span id="hist-modal-title">이력</span><button class="modal-close" onclick="closeHist()">×</button></div>
+    <div id="hist-modal-body"></div>
+    <div class="btn-row"><button class="btn btn-outline btn-sm" onclick="closeHist()">닫기</button></div>
+  </div>
+</div>
+
+<div class="notif" id="toast"></div>
+
+<script>
+var TODAY = '2026-03-30';
+var VNAME = { '3445':'3445 (HiNAS Control 2.0)', '2925':'2925 (HiNAS Control 2.0)' };
+
+/* 풀 단위 생성 헬퍼 */
+function gen(code, name, pre, n, st) {
+  var a = [];
+  for (var i=1;i<=n;i++) a.push({ code:code, name:name, sn:pre+String(1000+i), st:(st||'재고'), vessel:'', hist:[{d:'2026-02-18',t:'입고 등록'}] });
+  return a;
+}
+
+/* ─────────── 샘플 데이터 (중분류 → 풀 units + 호선 schedule) ─────────── */
+var DATA = {
+  'Main Rack': {
+    units: gen('SC0002','Main SERVER','MS-',4).concat(gen('SC0010','FIREWALL','FW-',2)).concat(gen('SC0021','L2 SWITCH','L2-',2)),
+    schedule: [ { vessel:'3445', due:'2026-03-10', req:5, shipped:0 }, { vessel:'2925', due:'2026-04-05', req:4, shipped:0 } ],
+  },
+  'Client Server': {
+    units: gen('SC0050','CLIENT SERVER','CS-',3).concat(gen('SC0055','SELECTOR SW','SW-',2)),
+    schedule: [ { vessel:'3445', due:'2026-04-05', req:4, shipped:0 } ],
+  },
+  'Camera Housing': {
+    units: gen('SC0080','IR CAMERA','IR-',3).concat(gen('SC0081','EO CAMERA','EO-',3)),
+    schedule: [ { vessel:'3445', due:'2026-05-20', req:6, shipped:0 } ],
+  },
+  'Display Unit': {
+    units: gen('SC0100','DISPLAY UNIT(32)','DU-',2).concat(gen('SC0101','DISPLAY UNIT(58)','DV-',1)),
+    schedule: [ { vessel:'3445', due:'2026-06-15', req:3, shipped:0 } ],
+  },
+};
+/* 특수 상태 시드 (대여중·검사요청 데모) */
+DATA['Client Server'].units[1].st = '대여중'; DATA['Client Server'].units[1].hist.push({d:'2026-03-12',t:'대여 — SW팀'});
+DATA['Client Server'].units[3].st = '검사요청'; DATA['Client Server'].units[3].hist.push({d:'2026-03-15',t:'검사요청 — QC팀'});
+
+var MONTHS = ['2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'];
+
+/* ─────────── 파생 계산 ─────────── */
+function availOf(mid) { return DATA[mid].units.filter(function(u){ return u.st==='재고'; }).length; }
+function nearestDue(mid) {
+  var s = DATA[mid].schedule.filter(function(r){ return r.req - r.shipped > 0; });
+  return s.length ? s.map(function(r){return r.due;}).sort()[0] : '-';
+}
+/* 납품예정일 순으로 풀을 배정해 각 호선 행의 부족분 계산 */
+function planRows(mid) {
+  var pool = availOf(mid);
+  var rows = DATA[mid].schedule.slice().sort(function(a,b){ return a.due < b.due ? -1 : 1; });
+  return rows.map(function(r){
+    var open = r.req - r.shipped;
+    var canShip = Math.min(open, pool);
+    var shortage = open - canShip;
+    pool -= canShip;
+    return { r:r, open:open, shortage:shortage };
+  });
+}
+function midVerdict(mid) {
+  var totalShort = planRows(mid).reduce(function(s,p){ return s + p.shortage; }, 0);
+  var anyOpen = DATA[mid].schedule.some(function(r){ return r.req - r.shipped > 0; });
+  if (totalShort > 0) return { cls:'short', label:'부족 '+totalShort, badge:'badge-short' };
+  if (!anyOpen)       return { cls:'ok',   label:'완료',           badge:'badge-complete' };
+  return { cls:'ok', label:'충족', badge:'badge-complete' };
+}
+
+/* ─────────── 렌더 ─────────── */
+function statusBadge(st) {
+  if (st === '재고')    return '<span class="badge badge-stock">재고</span>';
+  if (st === '대여중')  return '<span class="badge badge-partial">대여중</span>';
+  if (st === '검사요청') return '<span class="badge badge-open">검사요청</span>';
+  if (st === '출고')    return '<span class="badge badge-complete">출고완료</span>';
+  return '<span class="badge badge-neutral">'+st+'</span>';
+}
+
+function renderMidList() {
+  document.getElementById('tbl-mid').innerHTML = Object.keys(DATA).map(function(mid){
+    var v = midVerdict(mid);
+    var codes = {}; DATA[mid].units.forEach(function(u){ codes[u.code]=1; });
+    var dot = v.cls === 'short' ? 'short' : 'ok';
+    return '<tr class="mid-row" onclick="openMidDetail(\''+mid+'\')">'
+      + '<td>'+mid+'</td>'
+      + '<td style="text-align:center;">'+Object.keys(codes).length+'</td>'
+      + '<td style="text-align:center;font-weight:700;color:var(--accent);">'+availOf(mid)+'</td>'
+      + '<td style="text-align:center;">'+nearestDue(mid)+'</td>'
+      + '<td style="text-align:center;"><span class="badge '+v.badge+'"><span class="dot '+dot+'"></span>'+v.label+'</span></td>'
+      + '<td style="text-align:right;"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openMidDetail(\''+mid+'\')">작업 →</button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+var _curMid = null;
+function openMidDetail(mid) {
+  _curMid = mid;
+  document.getElementById('mid-detail-title').textContent = '중분류 작업대 — ' + mid;
+  document.getElementById('mid-detail').style.display = 'block';
+  renderMidDetail();
+  document.getElementById('mid-detail').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function closeMidDetail() { document.getElementById('mid-detail').style.display = 'none'; _curMid = null; }
+
+function renderMidDetail() {
+  var mid = _curMid; if (!mid) return;
+  /* ⓐ 품목 풀 */
+  document.getElementById('tbl-mid-items').innerHTML = DATA[mid].units.map(function(u, idx){
+    var act = '';
+    if (u.st === '재고')       act = '<button class="btn btn-outline btn-sm" onclick="actUnit('+idx+',\'대여\')">대여</button> <button class="btn btn-outline btn-sm" onclick="actUnit('+idx+',\'검사요청\')">검사요청</button>';
+    else if (u.st === '대여중') act = '<button class="btn btn-outline btn-sm" onclick="actUnit('+idx+',\'반납\')">반납</button>';
+    else if (u.st === '검사요청') act = '<button class="btn btn-outline btn-sm" onclick="actUnit('+idx+',\'검사완료\')">검사완료</button>';
+    else if (u.st === '출고')   act = '<span style="font-size:10px;color:var(--text3);">'+ (u.vessel?VNAME[u.vessel].split(' ')[0]+' 배정':'') +'</span>';
+    return '<tr>'
+      + '<td class="mono">'+u.code+'</td>'
+      + '<td>'+u.name+'</td>'
+      + '<td class="sn">'+u.sn+'</td>'
+      + '<td style="text-align:center;">'+statusBadge(u.st)+'</td>'
+      + '<td style="text-align:right;white-space:nowrap;">'+act+' <button class="btn btn-outline btn-sm" onclick="showHist('+idx+')">이력</button></td>'
+      + '</tr>';
+  }).join('');
+
+  /* ⓑ 호선 납품일정 */
+  document.getElementById('pool-count').textContent = availOf(mid);
+  var pr = planRows(mid);
+  document.getElementById('tbl-mid-plan').innerHTML = pr.map(function(p){
+    var r = p.r;
+    var done = r.req - r.shipped <= 0;
+    var verdict = done
+      ? '<span class="badge badge-complete"><span class="dot ok"></span>완료</span>'
+      : (p.shortage > 0
+          ? '<span class="badge badge-short"><span class="dot short"></span>부족 '+p.shortage+'</span>'
+          : '<span class="badge badge-complete"><span class="dot ok"></span>출고가능</span>');
+    var sIdx = DATA[mid].schedule.indexOf(r);
+    var proc = done
+      ? '<span style="font-size:11px;color:var(--success);font-weight:700;">납품완료</span>'
+      : '<button class="btn btn-primary btn-sm" onclick="openShip(\''+mid+'\','+sIdx+')">이 호선으로 출고</button>'
+        + (p.shortage>0 ? ' <button class="btn btn-outline btn-sm" onclick="toast(\'추가발주 요청(데모)\',\'info\')">추가발주</button>' : '');
+    return '<tr>'
+      + '<td><strong>'+r.vessel+'</strong></td>'
+      + '<td>'+r.due+'</td>'
+      + '<td style="text-align:center;">'+r.req+'</td>'
+      + '<td style="text-align:center;color:var(--success);font-weight:600;">'+r.shipped+'</td>'
+      + '<td style="text-align:center;font-weight:700;">'+(r.req-r.shipped)+'</td>'
+      + '<td style="text-align:center;">'+verdict+'</td>'
+      + '<td style="text-align:right;white-space:nowrap;">'+proc+'</td>'
+      + '</tr>';
+  }).join('');
+}
+
+/* 단위 액션 (대여/검사요청/반납/검사완료) */
+function actUnit(idx, action) {
+  var u = DATA[_curMid].units[idx];
+  if (action === '대여')      { u.st='대여중';   u.hist.push({d:TODAY,t:'대여 처리'}); }
+  else if (action === '검사요청') { u.st='검사요청'; u.hist.push({d:TODAY,t:'검사요청'}); }
+  else if (action === '반납')   { u.st='재고';     u.hist.push({d:TODAY,t:'반납 — 재고 복귀'}); }
+  else if (action === '검사완료') { u.st='재고';     u.hist.push({d:TODAY,t:'검사완료 — 정상'}); }
+  toast(u.sn + ' · ' + action + ' 처리', 'ok');
+  renderMidDetail(); renderMidList();
+}
+
+/* 이력 */
+function showHist(idx) {
+  var u = DATA[_curMid].units[idx];
+  document.getElementById('hist-modal-title').textContent = '재고 이력 — ' + u.sn;
+  document.getElementById('hist-modal-body').innerHTML = u.hist.map(function(h){
+    return '<div style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;display:flex;gap:10px;align-items:center;">'
+      + '<span style="font-size:12px;font-weight:700;min-width:84px;">'+h.d+'</span>'
+      + '<span style="font-size:12px;color:var(--text2);">'+h.t+'</span></div>';
+  }).join('');
+  document.getElementById('hist-modal').classList.add('show');
+}
+function closeHist() { document.getElementById('hist-modal').classList.remove('show'); }
+
+/* 출고 모달 */
+var _shipMid = null, _shipSi = null;
+function openShip(mid, si) {
+  _shipMid = mid; _shipSi = si;
+  var r = DATA[mid].schedule[si];
+  document.getElementById('ship-modal-title').textContent = mid + ' → ' + r.vessel + '로 출고';
+  document.getElementById('ship-modal-info').innerHTML =
+    '<strong>'+VNAME[r.vessel]+'</strong> · 필요 '+r.req+' · 출고완료 '+r.shipped+' · <strong>미출고 '+(r.req-r.shipped)+'</strong>';
+  var avail = DATA[mid].units.filter(function(u){ return u.st==='재고'; });
+  document.getElementById('ship-pick-list').innerHTML = avail.length
+    ? avail.map(function(u){
+        return '<label class="ship-pick"><input type="checkbox" value="'+u.sn+'"> <span class="sn">'+u.sn+'</span> <span style="color:var(--text3);">'+u.code+' · '+u.name+'</span></label>';
+      }).join('')
+    : '<div class="empty-state">가용 재고가 없습니다. 추가발주가 필요합니다.</div>';
+  document.getElementById('ship-modal').classList.add('show');
+}
+function closeShip() { document.getElementById('ship-modal').classList.remove('show'); }
+function confirmShip() {
+  var r = DATA[_shipMid].schedule[_shipSi];
+  var checks = document.querySelectorAll('#ship-pick-list input:checked');
+  if (checks.length === 0) { toast('출고할 S/N을 선택하세요','err'); return; }
+  var sns = {}; checks.forEach(function(c){ sns[c.value]=1; });
+  DATA[_shipMid].units.forEach(function(u){
+    if (sns[u.sn] && u.st==='재고') { u.st='출고'; u.vessel=r.vessel; u.hist.push({d:TODAY,t:r.vessel+' 출고 (Packing List)'}); }
+  });
+  r.shipped += checks.length;
+  closeShip();
+  toast(checks.length + '개 출고 → ' + r.vessel, 'ok');
+  renderMidDetail(); renderMidList();
+}
+
+/* SCM 납품일정 입력 */
+function renderDelInput() {
+  var v = document.getElementById('del-vessel').value;
+  var rows = [];
+  Object.keys(DATA).forEach(function(mid){
+    DATA[mid].schedule.forEach(function(s){ if (s.vessel === v) rows.push({ mid:mid, planned:s.due, actual:(s.shipped>=s.req && s.req>0)?TODAY:'', memo:'' }); });
+  });
+  document.getElementById('tbl-del-input').innerHTML = rows.length ? rows.map(function(s){
+    return '<tr>'
+      + '<td><strong>'+s.mid+'</strong></td>'
+      + '<td style="text-align:center;"><input type="date" value="'+s.planned+'" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;font-family:inherit;"></td>'
+      + '<td style="text-align:center;"><input type="date" value="'+s.actual+'" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;font-family:inherit;"></td>'
+      + '<td><input value="'+s.memo+'" placeholder="비고" style="width:100%;padding:6px 8px;border:1px solid var(--border2);border-radius:6px;font-family:inherit;"></td>'
+      + '</tr>';
+  }).join('') : '<tr><td colspan="4" class="empty-state">이 호선의 납품일정이 없습니다.</td></tr>';
+}
+
+/* 6개월 타임라인 */
+function renderTimeline() {
+  var tl = [];
+  Object.keys(DATA).forEach(function(mid){
+    DATA[mid].schedule.forEach(function(s){
+      var open = s.req - s.shipped;
+      var status = open <= 0 ? 'done' : (availOf(mid) < open ? 'short' : 'planned');
+      tl.push({ key:s.vessel+' / '+mid, month:s.due.slice(0,7), status:status });
+    });
+  });
+  var head = '<thead><tr><th class="rowhead" style="text-align:left;">호선 / 중분류</th>'
+    + MONTHS.map(function(m){ return '<th>'+parseInt(m.slice(5),10)+'월</th>'; }).join('') + '</tr></thead>';
+  var keys = []; tl.forEach(function(t){ if (keys.indexOf(t.key)===-1) keys.push(t.key); });
+  var body = '<tbody>' + keys.map(function(k){
+    var cells = MONTHS.map(function(m){
+      var hit = tl.find(function(t){ return t.key===k && t.month===m; });
+      if (!hit) return '<td></td>';
+      var mk = hit.status==='done' ? '<span class="mk done">✓</span>'
+             : hit.status==='short' ? '<span class="mk short">●</span><div class="tl-sub">부족</div>'
+             : '<span class="mk planned">●</span>';
+      return '<td>'+mk+'</td>';
+    }).join('');
+    return '<tr><td class="rowhead">'+k+'</td>'+cells+'</tr>';
+  }).join('') + '</tbody>';
+  document.getElementById('tl-table').innerHTML = head + body;
+}
+
+function showProto(which) {
+  document.getElementById('proto-inv').style.display = which==='inv' ? '' : 'none';
+  document.getElementById('proto-del').style.display = which==='del' ? '' : 'none';
+  document.getElementById('ptab-inv').classList.toggle('active', which==='inv');
+  document.getElementById('ptab-del').classList.toggle('active', which==='del');
+  if (which==='del') { renderDelInput(); renderTimeline(); }
+}
+
+/* 납품일정 6개월 타임라인 행 계산 (팝업/인앱 공용) */
+function buildTimelineRows() {
+  var tl = [];
+  Object.keys(DATA).forEach(function(mid){
+    DATA[mid].schedule.forEach(function(s){
+      var open = s.req - s.shipped;
+      var status = open <= 0 ? 'done' : (availOf(mid) < open ? 'short' : 'planned');
+      tl.push({ key:s.vessel+' / '+mid, month:s.due.slice(0,7), status:status });
+    });
+  });
+  return tl;
+}
+
+/* 📅 납품일정 — 별도 창(팝업)으로 열기 → 다른 모니터로 드래그 */
+function openScheduleWindow() {
+  var tl = buildTimelineRows();
+  var keys = []; tl.forEach(function(t){ if (keys.indexOf(t.key)===-1) keys.push(t.key); });
+  var head = '<tr><th class="rh">호선 / 중분류</th>' + MONTHS.map(function(m){ return '<th>'+parseInt(m.slice(5),10)+'월</th>'; }).join('') + '</tr>';
+  var body = keys.map(function(k){
+    var cells = MONTHS.map(function(m){
+      var hit = tl.find(function(t){ return t.key===k && t.month===m; });
+      if (!hit) return '<td></td>';
+      var mk = hit.status==='done' ? '<span style="color:#16a34a;font-size:15px;">✓</span>'
+             : hit.status==='short' ? '<span style="color:#dc2626;font-size:15px;font-weight:800;">●</span><div style="font-size:10px;color:#dc2626;">부족</div>'
+             : '<span style="color:#2563eb;font-size:15px;">●</span>';
+      return '<td>'+mk+'</td>';
+    }).join('');
+    return '<tr><td class="rh">'+k+'</td>'+cells+'</tr>';
+  }).join('');
+  var html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>납품일정 — 6개월</title>'
+    + '<style>body{font-family:"Noto Sans KR",system-ui,Arial,sans-serif;background:#f6f7f9;color:#0f172a;margin:0;padding:20px;}'
+    + 'h2{font-size:16px;margin:0 0 4px;}p.sub{font-size:12px;color:#8895a7;margin:0 0 14px;}'
+    + 'table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border:1px solid #eceff3;}'
+    + 'th,td{border:1px solid #eceff3;padding:10px 8px;text-align:center;}'
+    + 'th{background:#f8fafc;color:#8895a7;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;}'
+    + 'td.rh,th.rh{text-align:left;font-weight:600;white-space:nowrap;}'
+    + '.tip{font-size:11.5px;color:#1e3a8a;background:#eef2ff;border-left:3px solid #2563eb;padding:9px 12px;border-radius:6px;margin-bottom:14px;}'
+    + '.legend{font-size:11px;color:#8895a7;margin-top:12px;}</style></head><body>'
+    + '<h2>납품일정 — 6개월 계획</h2><p class="sub">기준일 '+TODAY+' · 재고현황 화면과 함께 보는 참고용</p>'
+    + '<div class="tip">⧉ 이 창은 별도 창입니다. <b>드래그해서 다른 모니터로 옮긴 뒤</b>, 재고현황 화면과 나란히 두고 작업하세요. (열 때 기준 스냅샷)</div>'
+    + '<table><thead>'+head+'</thead><tbody>'+body+'</tbody></table>'
+    + '<div class="legend"><span style="color:#2563eb;">●</span> 납품예정 &nbsp; <span style="color:#16a34a;">✓</span> 완료 &nbsp; <span style="color:#dc2626;">●</span> 재고부족</div>'
+    + '</body></html>';
+  var w = window.open('', 'deliverySchedule', 'width=1000,height=620');
+  if (!w) { toast('팝업이 차단되었습니다. 브라우저에서 팝업을 허용하세요.', 'err'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+  toast('납품일정 새 창 — 다른 모니터로 옮겨 보세요', 'info');
+}
+
+var _toastT;
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.className = 'notif ' + (type||'info') + ' show';
+  el.textContent = msg;
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function(){ el.classList.remove('show'); }, 1800);
+}
+
+renderMidList();
+</script>
+</body>
+</html>

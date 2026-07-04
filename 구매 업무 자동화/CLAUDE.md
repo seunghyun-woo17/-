@@ -58,6 +58,7 @@
 │       ├── phase-inspection.js  ← 검사요청 탭
 │       ├── phase-cxop.js        ← CX/OP 호선 정보 조회·입력
 │       ├── phase-fat.js         ← QC FAT 관리 (선급별, 6단계, 히스토리)
+│       ├── phase-delivery.js    ← 납품·출고 (출고 세션 QR 스캔 / 납품일정·6개월 계획)
 │       └── dev-mock.js          ← ⚠ 개발 전용 스캔 시뮬레이터 (서버 전환 전 삭제)
 ├── avikus_system_report.html    ← 백엔드 개발자용 명세 문서 (HTML)
 ├── legacy/                      ← 레거시 파일 (avikus_v2.html 등)
@@ -98,6 +99,7 @@
 | `inspection_cert` | 첨부 서류 (검사성적서·COC·거래명세서, 입고 건 단위) |
 | `outgoing_log` | 출고/대여/검사요청/반납(RETURNED) 이력 |
 | `defect_log` | 불량(DEFECT) 처리 이력 (재고 TAB) — action(RETURN 반품·교체/REPAIR 수리 후 재입고/SCRAP 폐기/HOLD 보류)·supplier_code·action_date·result_date·memo. RETURN/REPAIR→IN_STOCK 복귀, SCRAP→SCRAPPED |
+| `delivery_schedule` | 납품일정 (납품·출고 TAB) — 호선별 중분류 납품예정일/필요수량. ds_id·vessel_id(FK)·mid_cat(중분류)·planned_date·actual_date·req_qty·memo. `(vessel_id, mid_cat)` upsert. 출고 진행 = outgoing_log(action=SHIPPED·vessel_id·mid_cat) 카운트 |
 | `vessel_docs` | 호선별 수기 첨부 문서 (FAT·SW설치·기타, vessel_id 단위) |
 | `fat_master` | FAT 관리 (호선+선급 단위, status 6단계, scm_ready_from/to·fat_date·applied_date·inspector·product·flag·yard·sn·result) |
 | `fat_history` | FAT 상태변경 자동 로그 (lifecycle, fat_id 단위) |
@@ -124,8 +126,11 @@
 │   ├── 입고 검수                       ← phase23.js (구현 완료)
 │   └── 발주·입고 이력                  ← phase5.js  (PO/입고 DB 조회 전용, 구현 완료)
 ├── [재고 TAB]   제품별 S/N 재고 (2단계 뷰)
-│   └── 품목 그룹 목록 → 드릴다운 → S/N 상세 + 출고/대여/검사요청 + 관리자 수기 등록
+│   └── 품목 그룹 목록 → 드릴다운 → S/N 상세 + 대여/검사요청 + 관리자 수기 등록
 │                                       ← phase5.js (refreshInventoryGroups 등, 구현 완료)
+├── [납품·출고 TAB] 호선 중심 출고 (단일 퍼널)  ← phase-delivery.js (구현 완료)
+│   ├── 출고 작업: (호선×중분류) 일정 → 세션 → 제품 QR/S·N 스캔 → 진행률 → 100% Packing List
+│   └── 납품일정: 호선별 중분류 납품예정일·필요수량 입력(직접+엑셀) + 6개월 계획
 ├── [QC TAB]     FAT 관리               ← phase-fat.js (구현 완료)
 ├── [문서 산출물 TAB] 호선별 문서 허브 (SCM/QC/SW 팀별 산출물)
 │                                       ← phase4.js  (구현 완료)
@@ -133,7 +138,7 @@
                                         ← phase-cxop.js (구현 완료)
 ```
 
-> **내비게이션**: 좌측 **접이식 사이드바**(`#sidebar.sidebar`). 기본은 **접힘**(`.collapsed` = 아이콘 레일, 호버 시 `.nav-tip` 툴팁), 좌측하단 토글 버튼(`toggleSidebar()`)으로 **펼침**(그룹 라벨 `.nav-group-label` + `.nav-text` 텍스트 라벨). 상태는 localStorage(`avikus_sidebar_collapsed`)에 저장, 로드 시 `restoreSidebarState()`로 복원 (둘 다 `js/utils.js`). 구조: `.sidebar`(`.sidebar-head` 브랜드 + `.main-tabs` > `.main-tab` + `.sidebar-footer` 토글) / `.content`(`.topbar` + main-sections). `switchMainTab(data-tab)` 로직 동일. `data-tab`: design/scm/inventory/inspection/qc/docs/cxop
+> **내비게이션**: 좌측 **접이식 사이드바**(`#sidebar.sidebar`). 기본은 **접힘**(`.collapsed` = 아이콘 레일, 호버 시 `.nav-tip` 툴팁), 좌측하단 토글 버튼(`toggleSidebar()`)으로 **펼침**(그룹 라벨 `.nav-group-label` + `.nav-text` 텍스트 라벨). 상태는 localStorage(`avikus_sidebar_collapsed`)에 저장, 로드 시 `restoreSidebarState()`로 복원 (둘 다 `js/utils.js`). 구조: `.sidebar`(`.sidebar-head` 브랜드 + `.main-tabs` > `.main-tab` + `.sidebar-footer` 토글) / `.content`(`.topbar` + main-sections). `switchMainTab(data-tab)` 로직 동일. `data-tab`: design/scm/inventory/delivery/inspection/qc/docs/cxop
 > 디자인 레퍼런스: **HiNAS 365** (clean SaaS 대시보드, 단일 블루 accent). 색상 토큰은 `css/variables.css`(`--accent`/`--accent-soft`/`--border`/그림자·라운드·사이드바 너비), 사이드바·상단바는 `css/layout.css`, 테이블·카드·배지는 `css/components.css`. 2026-06 UI 개편 시 다크 테마 잔재(흰배경 위 흰 rgba·옅은 글씨) 정리 완료
 > **공용 페이지네이션**(`js/utils.js`): `paginate(list, name)` + `buildPager(name, info, '렌더함수명')` + `gotoPage`/`resetPager`. 15행/페이지. `<div id="pager-XXX">`에 주입. 적용: 호선목록(vessels)·특이사항(notes)·CX/OP(cxop)·발행PO(po-all)·발주이력(po-history)·검사상세(insp-detail). 검색·필터 핸들러에서 `resetPager(name)`로 1쪽 리셋
 
@@ -177,6 +182,13 @@
 - 출고/대여/검사요청: 드릴다운 화면에서 체크박스 선택 → 액션 버튼 → 모달 확인 → 처리 (`openOutgoingModal`/`confirmOutgoing`)
 - 관리자 수기 재고 등록 (PIN: 1234, `toggleAdminPanel`/`addManualInventory`)
 - 그룹 집계 컬럼: 전체/재고/출고/대여중/검사요청/**불량(DEFECT)**
+
+### 납품·출고 TAB (phase-delivery.js, 구현 완료) — 서브탭 2개: 출고 작업 / 납품일정
+- **설계 원칙**: 출고는 이 탭 "세션" 한 곳에서만(**단일 퍼널**). 재고=호선 무관 공용 풀, 호선은 출고 시점 배정. 대여/검사요청은 재고 TAB 유지. 재고현황 탭엔 출고 없음
+- **① 출고 작업** (`renderDeliveryWork`): (호선×중분류) 납품일정 목록 → 행 클릭 `openShipSession` → 세션에서 **제품 QR/S·N 입력=출고 커밋**(`onDeliveryScanInput`/`_commitShip`: inventory→SHIPPED·vessel_assigned, outgoing_log에 mid_cat 태그) → 진행률(shipped/req_qty). 예외: `toggleManualPick`/`manualShipConfirm`(스캔 없이 선택). 100%/수기 → `finishShipSession` → `_showPackingList`(phase5 재사용). 중분류 알 때 오배송 차단
+- **② 납품일정** (`renderDeliveryScheduleInput`): 호선 선택 → 중분류 행 입력(중분류/납품예정일/필요수량/실제납품일/비고) → `saveDeliverySchedule`(vessel 단위 upsert). 엑셀: `downloadDeliveryTemplate`/`onDeliveryExcelUpload`(호선명 매칭 upsert). 6개월 타임라인 `renderDeliveryTimeline`
+- **헬퍼**: `getItemCategory(item_code)`→{mid_cat,name} (vessel_bom.mid_cat / bom_catalog, 없으면 null=미분류). 중분류 그룹핑(재고 TAB)·리드타임은 **BOM 재작성 후** 확장 예정
+- ※ 기존 SCM `출고 처리` 서브탭은 이 탭 검증 후 **은퇴 예정**(임시 중복)
 
 ### 검사요청 TAB (phase-inspection.js) — `outgoing_log` action=INSPECTION_REQUESTED
 - 팀별(QC/SW/공통) 품목 집계 → [상세보기] 드릴다운(`openInspectionDetail`)

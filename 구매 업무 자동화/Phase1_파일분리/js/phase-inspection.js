@@ -135,7 +135,7 @@ function _renderInspectionDetail(team, itemCode) {
       + '<td>' + (l.due_date || '<span style="color:var(--text3);">-</span>') + '</td>'
       + '<td>' + (l.note || '<span style="color:var(--text3);">-</span>') + '</td>'
       + '<td style="text-align:center;">' + statusBadge + '</td>'
-      + '<td>' + actionCell + '</td>'
+      + '<td style="text-align:right;">' + actionCell + '</td>'
       + '</tr>';
   }).join('');
   if (pagerEl) pagerEl.innerHTML = buildPager('insp-detail', info, '_rerenderInspDetail');

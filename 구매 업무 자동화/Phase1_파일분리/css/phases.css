@@ -85,6 +85,8 @@ canvas#cam-canvas { display:none; }
 .vessel-type-toggle input[type="radio"]:checked + label {
   background:var(--purple); color:#fff;
 }
+.vessel-type-toggle input[type="radio"]:disabled + label { cursor:not-allowed; }
+.vessel-type-toggle input[type="radio"]:disabled:not(:checked) + label { color:var(--text3); opacity:.55; }
 
 /* ── Phase 0: 특이사항 필터 탭 ── */
 .note-filter-btn {

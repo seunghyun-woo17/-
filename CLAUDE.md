@@ -91,6 +91,7 @@
 | `inspection_cert` | 첨부 서류 (검사성적서·COC·거래명세서, 입고 건 단위) |
 | `outgoing_log` | 출고/대여/검사요청 이력 |
 | `defect_log` | 불량(DEFECT) 처리 이력 (재고 TAB) — action(RETURN 반품·교체/REPAIR 수리 후 재입고/SCRAP 폐기/HOLD 보류)·supplier_code·action_date·result_date·memo. RETURN/REPAIR→IN_STOCK 복귀, SCRAP→SCRAPPED |
+| `delivery_schedule` | 납품일정 (납품·출고 TAB, phase-delivery.js) — 호선별 중분류 납품예정일/필요수량. ds_id·vessel_id·mid_cat·planned_date·actual_date·req_qty·memo. 출고는 이 일정 기준 제품 QR 스캔 세션으로 처리(단일 퍼널) |
 
 ---
 
@@ -99,8 +100,8 @@
 ```
 부산사무소 ERP (http://서버IP:3000)
 ├── [탭 1] 구매·자재관리     ← 현재 프로토타입 전체 (Phase 0~5)
-├── [탭 2] 출고·대여·검사요청 ← 신규 개발 예정
-└── [탭 3] FAT 관리          ← 신규 개발 예정
+├── [납품·출고] 호선 중심 출고(제품 QR 스캔 세션) + 납품일정 ← phase-delivery.js (구현 완료)
+└── [탭 3] FAT 관리          ← 구현 완료 (phase-fat.js)
 ```
 
 ---

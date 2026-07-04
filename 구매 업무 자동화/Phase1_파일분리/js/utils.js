@@ -81,6 +81,7 @@ function switchMainTab(tabId) {
   if (sec) sec.classList.add('active');
   if (tabId === 'design')     { refreshSafetyStock(); refreshVesselList(); refreshSpecialNotes(); }
   if (tabId === 'inventory')  { refreshInventoryGroups(); }
+  if (tabId === 'delivery')   { refreshDeliveryTab(); }
   if (tabId === 'inspection') { refreshInspectionTab(); }
   if (tabId === 'docs')       { refreshIncomingReports(); }
   if (tabId === 'cxop')       { refreshCxopTab(); }

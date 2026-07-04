@@ -86,14 +86,87 @@ function refreshPhase5() {
           + (selPo ? ' <span style="font-size:10px;font-weight:400;color:var(--accent);">— ' + selPo.po_ref_no + ' 연계</span>' : '');
       }
       tblInc.innerHTML = incs.length === 0
-        ? '<tr><td colspan="6" class="empty-state">이 PO의 입고 검수 이력이 없습니다.</td></tr>'
+        ? '<tr><td colspan="7" class="empty-state">이 PO의 입고 검수 이력이 없습니다.</td></tr>'
         : incs.map(function(h) {
             var badge = h.status === 'COMPLETE' ? 'badge-complete' : h.status === 'SHORT' ? 'badge-partial' : 'badge-open';
             var color = h.total_scanned === h.ordered_qty ? 'var(--success)' : h.total_scanned < h.ordered_qty ? 'var(--warn)' : 'var(--danger)';
-            return '<tr><td>' + (h.inspector || '<span style="color:var(--text3);">미입력</span>') + '</td><td>' + h.po_ref_no + '</td><td>' + h.incoming_date + '</td><td style="text-align:center;">' + h.ordered_qty + '</td><td style="text-align:center;color:' + color + ';font-weight:600;">' + h.total_scanned + '</td><td><span class="badge ' + badge + '">' + h.status + '</span></td></tr>';
+            return '<tr><td>' + (h.inspector || '<span style="color:var(--text3);">미입력</span>') + '</td><td>' + h.po_ref_no + '</td><td>' + h.incoming_date + '</td><td style="text-align:center;">' + h.ordered_qty + '</td><td style="text-align:center;color:' + color + ';font-weight:600;">' + h.total_scanned + '</td><td><span class="badge ' + badge + '">' + h.status + '</span></td>'
+              + '<td style="text-align:center;"><button class="btn btn-outline btn-sm" onclick="showIncomingQRs(\'' + h.incoming_id + '\')">QR 보기</button></td>'
+              + '</tr>';
           }).join('');
     }
   }
+}
+
+/* ── 입고 건별 생성 제품 QR 보기 ──
+   incoming_line(S/N) 기록을 기준으로 제품 QR을 재생성하여 품목명·코드·S/N·스캔일과 함께 표시 */
+function showIncomingQRs(incomingId) {
+  var inc = DB.incoming_header.find(function(h){ return h.incoming_id === incomingId; });
+  if (!inc) return;
+  var po       = DB.po_header.find(function(p){ return p.po_id === inc.po_id; });
+  var supplier = po ? po.supplier_code : '';
+  var nameByCode = {};
+  DB.po_line.filter(function(l){ return l.po_id === inc.po_id; }).forEach(function(l){ nameByCode[l.item_code] = l.description || ''; });
+  var lines = DB.incoming_line.filter(function(l){ return l.incoming_id === incomingId; });
+
+  document.getElementById('incoming-qr-modal-title').textContent =
+    '생성된 제품 QR — ' + (inc.po_ref_no || '') + ' (' + lines.length + '개)';
+  var body = document.getElementById('incoming-qr-modal-body');
+
+  if (lines.length === 0) {
+    body.innerHTML = '<div class="empty-state" style="padding:20px;">이 입고 건에 스캔된 제품이 없습니다.</div>';
+  } else {
+    window._incomingQRPrint = { poRef: inc.po_ref_no || '', items: [] };
+    body.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">'
+    + '<span style="font-size:11px;color:var(--text2);">검사자 <strong>' + (inc.inspector || '-') + '</strong> · 입고일 ' + (inc.incoming_date || '-') + '</span>'
+    + '<button class="btn btn-accent btn-sm" onclick="printIncomingQRs()">전체 QR 인쇄</button>'
+    + '</div>'
+    + '<div id="incoming-qr-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;"></div>';
+    var grid = document.getElementById('incoming-qr-grid');
+    lines.forEach(function(l) {
+      var dt     = l.scanned_at ? String(l.scanned_at).slice(0, 10) : (inc.incoming_date || today());
+      var qrData = buildProductQRPayload(inc.po_id, l.mc_code, l.item_code, l.serial_no, dt, supplier);
+      var safeId = 'incqr-' + String(l.serial_no).replace(/[^a-zA-Z0-9]/g, '');
+      window._incomingQRPrint.items.push({ safeId: safeId, itemCode: l.item_code, itemName: nameByCode[l.item_code] || '', sn: l.serial_no });
+      var cell = document.createElement('div');
+      cell.style.cssText = 'text-align:center;padding:10px;background:#f3f5f9;border:1px solid var(--border);border-radius:8px;';
+      cell.innerHTML =
+        '<div id="' + safeId + '" style="display:inline-block;background:#fff;padding:5px;border-radius:4px;"></div>'
+      + '<div style="font-size:11px;color:var(--text);margin-top:6px;word-break:break-word;">' + (nameByCode[l.item_code] || '-') + '</div>'
+      + '<div style="font-size:10px;color:var(--text3);font-family:monospace;">' + l.item_code + '</div>'
+      + '<div style="font-size:10px;color:var(--accent);font-family:monospace;word-break:break-all;margin-top:2px;">' + l.serial_no + '</div>'
+      + '<div style="font-size:10px;color:var(--text3);margin-top:2px;">' + dt + '</div>';
+      grid.appendChild(cell);
+      setTimeout(function(){ renderQRTo(safeId, qrData, 90); }, 30);
+    });
+  }
+  document.getElementById('incoming-qr-modal').classList.add('show');
+}
+
+/* ── 입고 건 생성 QR 일괄 인쇄 (showIncomingQRs로 표시한 QR 이미지 기준) ── */
+function printIncomingQRs() {
+  var ctx = window._incomingQRPrint;
+  if (!ctx || !ctx.items || ctx.items.length === 0) { notify('인쇄할 QR이 없습니다.', 'err'); return; }
+  var cells = ctx.items.map(function(it) {
+    var imgEl = document.querySelector('#' + it.safeId + ' img');
+    var src   = imgEl ? imgEl.src : '';
+    return '<div style="display:inline-block;text-align:center;border:1px solid #ccc;border-radius:6px;padding:8px;margin:4px;width:120px;vertical-align:top;">'
+      + (src ? '<img src="' + src + '" style="width:90px;height:90px;">' : '')
+      + '<div style="font-size:8px;color:#666;margin-top:3px;">' + (it.itemName || '') + '</div>'
+      + '<div style="font-size:8px;font-family:monospace;color:#333;word-break:break-all;">' + it.sn + '</div>'
+      + '<div style="font-size:8px;color:#666;">' + it.itemCode + '</div>'
+      + '</div>';
+  }).join('');
+  var w = window.open('', '_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>제품 QR - ' + (ctx.poRef || '') + '</title>'
+    + '<style>body{margin:10px;font-family:Arial,sans-serif;} h3{font-size:13px;margin-bottom:8px;} @media print{body{margin:5mm;}}</style>'
+    + '</head><body>'
+    + '<h3>제품 QR 코드 | PO: ' + (ctx.poRef || '') + ' | 총 ' + ctx.items.length + '개 | 출력일: ' + today() + '</h3>'
+    + cells
+    + '<script>window.onload=function(){window.print();}<\/script>'
+    + '</body></html>');
+  w.document.close();
 }
 
 /* ── PO별 입고 검수 진행상태 (incoming_header 집계) ── */
@@ -866,7 +939,7 @@ function refreshInventoryVesselView() {
     var packBtn = cov.complete
       ? '<button class="btn btn-accent btn-sm" onclick="event.stopPropagation();openVesselPackingList(\'' + key.replace(/'/g, "\\'") + '\')">Packing List</button>'
       : '<button class="btn btn-outline btn-sm" disabled style="opacity:.5;cursor:not-allowed;" title="BOM 100% 출고 시 활성화">Packing List</button>';
-    return '<tr style="cursor:pointer;" onclick="openVesselInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">'
+    return '<tr style="cursor:pointer;' + (cov.complete ? 'background:rgba(34,197,94,0.10);' : '') + '" onclick="openVesselInventoryDetail(\'' + key.replace(/'/g, "\\'") + '\')">'
       + '<td><strong>' + g.vessel_name + '</strong></td>'
       + '<td class="mono">' + g.vessel_code + '</td>'
       + '<td style="text-align:center;font-weight:600;">' + g.items.length + '</td>'

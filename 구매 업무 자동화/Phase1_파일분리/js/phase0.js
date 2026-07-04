@@ -794,7 +794,9 @@ function _renderSafetyItemDetail(itemCode) {
   var titleEl = document.getElementById('safety-item-detail-title');
   var rows    = DB.vessel_bom.filter(function(b){ return b.item_code === itemCode; });
   var current = DB.inventory.filter(function(i){ return i.item_code === itemCode && i.status === 'IN_STOCK'; }).length;
-  if (titleEl) titleEl.textContent = '품목별 호선 내역 — ' + itemCode + ' (현재 재고 ' + current + '개)';
+  var itemName = (rows[0] && rows[0].item_name) || '';
+  var itemLabel = itemName ? (itemName + ' (' + itemCode + ')') : itemCode;
+  if (titleEl) titleEl.textContent = '품목별 호선 내역 — ' + itemLabel + ' (현재 재고 ' + current + '개)';
 
   var tbody = document.getElementById('tbl-safety-item-detail');
   if (!tbody) return;

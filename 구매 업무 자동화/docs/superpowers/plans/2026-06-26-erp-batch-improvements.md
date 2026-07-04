@@ -48,7 +48,7 @@
 - [ ] **Step 1: 등록 폼에 Yard 입력칸 추가** — `index.html`에서 `<input id="vessel-flag" placeholder="PANAMA / KOREA ...">`가 들어있는 `form-group` 바로 다음에 추가:
 
 ```html
-<div class="form-group"><label>YARD</label><input id="vessel-yard" placeholder="HD현대중공업 ..."></div>
+<div class="form-group"><label>YARD</label><input id="vessel-yard" placeholder="HHI"></div>
 ```
 
 - [ ] **Step 2: 수정 모달에 Yard 입력칸 추가** — `index.html`에서 `<div class="form-group"><label>FLAG</label><input id="ve-flag"></div>` 바로 다음에 추가:
