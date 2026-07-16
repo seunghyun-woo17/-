@@ -1,10 +1,10 @@
-from sqlalchemy import BigInteger, String
+from sqlalchemy import BigInteger, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 
 class PkMixin:
     id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInteger().with_variant(Integer(), "sqlite"),
         primary_key=True,
         autoincrement=True,
     )
