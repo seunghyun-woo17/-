@@ -31,38 +31,47 @@
 ```
 구매 업무 자동화/
 ├── CLAUDE.md                    ← 이 파일 (자동 로드 컨텍스트)
-├── docs/
-│   ├── 요구사항_명세서.md        ← 백엔드 개발 명세 (전체 컨텍스트)
-│   ├── 기능_요구사항_정의서.html  ← 기능 요구사항 정의 (ID별 표)
-│   └── DB_전환_3단계_로드맵.md   ← localStorage → PostgreSQL 전환 계획
+├── readme.md                    ← 코드 작성 주의사항
+├── avikus_system_report.html    ← 백엔드 개발자용 명세 문서 (HTML)
 ├── Phase1_파일분리/              ← 실제 프론트엔드 앱 (여기가 핵심)
 │   ├── index.html               ← 메인 ERP 화면
 │   ├── 열기.bat                 ← 로컬 실행용
-│   ├── assets/signature.png1
+│   ├── assets/                  ← avikus-logo.png, signature.png
 │   ├── css/
 │   │   ├── variables.css        ← CSS 변수 (라이트 테마 고정 — 다크/토글 제거됨)
-│   │   ├── layout.css           ← 헤더, 탭, 레이아웃
+│   │   ├── layout.css           ← 사이드바, 상단바, 레이아웃
 │   │   ├── components.css       ← 버튼, 카드, 테이블 등 공통 컴포넌트
-│   │   └── phases.css           ← Phase별 전용 스타일
+│   │   └── phases.css           ← 탭별 전용 스타일
 │   └── js/
 │       ├── db.js                ← ★ localStorage 추상화 레이어 (서버 전환 시 api.js로 교체)
-│       ├── utils.js             ← 공통 유틸 (notify, switchTab 등)
-│       ├── app.js               ← 탭 전환, 초기화, 테마
+│       ├── utils.js             ← 공통 유틸 (notify, 사이드바, 페이지네이션)
+│       ├── app.js               ← 탭 전환, 초기화
 │       ├── qr.js                ← QR 생성/파싱
-│       ├── bom-templates.js     ← BOM 세대별 템플릿 데이터
-│       ├── phase0.js            ← 호선·BOM·안전재고 관리
-│       ├── phase1.js            ← PO 발행 (generatePORefNo 포함)
-│       ├── phase23.js           ← 입고 검수·QR 스캔·서류 첨부
-│       ├── phase4.js            ← 호선별 문서 허브 (SCM/QC/SW 산출물)
-│       ├── phase5.js            ← 재고 현황·출고·대여
+│       ├── phase0.js            ← 설계: 호선·BOM·특이사항
+│       ├── phase1.js            ← SCM: PO 발행 (generatePORefNo 포함)
+│       ├── phase23.js           ← SCM: 입고 검수·QR 스캔·서류 첨부
+│       ├── phase4.js            ← 문서 산출물: Incoming Report·호선 문서 허브
+│       ├── phase5.js            ← 재고 현황·발주입고 이력·출고 모달
 │       ├── phase-inspection.js  ← 검사요청 탭
 │       ├── phase-cxop.js        ← CX/OP 호선 정보 조회·입력
 │       ├── phase-fat.js         ← QC FAT 관리 (선급별, 6단계, 히스토리)
 │       ├── phase-delivery.js    ← 납품·출고 (출고 세션 QR 스캔 / 납품일정·6개월 계획)
 │       └── dev-mock.js          ← ⚠ 개발 전용 스캔 시뮬레이터 (서버 전환 전 삭제)
-├── avikus_system_report.html    ← 백엔드 개발자용 명세 문서 (HTML)
-├── legacy/                      ← 레거시 파일 (avikus_v2.html 등)
-└── exports/PO 파일/              ← 생성된 PO 문서
+├── docs/                        ← 문서 허브
+│   ├── 요구사항_명세서.md        ← 백엔드 개발 명세 (전체 컨텍스트)
+│   ├── 기능_요구사항_정의서.html  ← 기능 요구사항 정의 (ID별 표)
+│   ├── DB_전환_3단계_로드맵.md    ← localStorage → PostgreSQL 전환 계획
+│   ├── 혼자 수정하는 방법 가이드.md ← 비개발자용 수정 가이드
+│   ├── 검증_메모.md              ← 검증 방식 메모
+│   ├── 코드작성_주의사항.md       ← 한글 인코딩 등 주의사항
+│   ├── 선급별_FAT_OBT_프로세스_비교.pdf
+│   ├── FAT_참고자료/             ← 현업 FAT 엑셀 (ABS·MED)
+│   ├── 모듈가이드/               ← js 파일별 상세 가이드 (00~13)
+│   └── superpowers/             ← 설계 스펙·플랜
+├── 자료/                        ← 참고 데이터·이미지
+│   ├── BOM.xlsx                 ← BOM 원본
+│   └── 양식/                    ← 문서 양식 이미지 (수정0·수정1.png)
+└── PO 파일/                     ← 생성된 PO 문서 (출력물)
 ```
 
 ---
