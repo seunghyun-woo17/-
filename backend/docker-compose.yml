@@ -1,0 +1,39 @@
+services:
+  api:
+    build: .
+    environment:
+      # Points at the local postgres service below.
+      # In production, change only DATABASE_URL to the RDS endpoint and the
+      # postgres service below can be removed entirely.
+      DATABASE_URL: postgresql+psycopg://scmauto:scmauto@postgres:5432/scmauto
+      ENV: prod
+    depends_on:
+      - postgres
+
+  postgres:
+    # Local development only. Remove this service in production and point
+    # DATABASE_URL at a managed database (e.g. AWS RDS).
+    image: postgres:16
+    environment:
+      POSTGRES_USER: scmauto
+      POSTGRES_PASSWORD: scmauto
+      POSTGRES_DB: scmauto
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  caddy:
+    image: caddy:2
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

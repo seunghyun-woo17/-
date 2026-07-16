@@ -1,0 +1,22 @@
+# Production block. Replace the domain placeholder with your real domain,
+# e.g. scmauto.avikus.ai. Caddy will provision TLS automatically.
+# scmauto.avikus.ai {
+#     # Frontend build is expected to be mounted/copied to /srv/frontend.
+#     root * /srv/frontend
+#     file_server
+#
+#     # API requests are proxied to the FastAPI container.
+#     handle /api/* {
+#         reverse_proxy api:8000
+#     }
+# }
+
+# Development / local block: serve over plain HTTP on port 80.
+:80 {
+    root * /srv/frontend
+    file_server
+
+    handle /api/* {
+        reverse_proxy api:8000
+    }
+}
