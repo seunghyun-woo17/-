@@ -5,6 +5,11 @@ from app.models.procurement import PoHeader, PoLine, PoCounter
 from app.models.inventory import (
     Inventory, IncomingHeader, IncomingLine, InspectionCert, OutgoingLog, DefectLog,
 )
+from app.models.delivery import DeliverySchedule
+from app.models.fat import (
+    FatMaster, FatHistory, FatComment, FatCommentCode, FatRefDoc, MedCert,
+)
+from app.models.file_object import FileObject
 
 __all__ = [
     "Base",
@@ -23,4 +28,12 @@ __all__ = [
     "InspectionCert",
     "OutgoingLog",
     "DefectLog",
+    "DeliverySchedule",
+    "FatMaster",
+    "FatHistory",
+    "FatComment",
+    "FatCommentCode",
+    "FatRefDoc",
+    "MedCert",
+    "FileObject",
 ]
