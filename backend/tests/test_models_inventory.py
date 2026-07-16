@@ -57,3 +57,59 @@ def test_business_id_uniques_present():
     finally:
         s.rollback()
         s.close()
+
+
+def test_inventory_mc_code_unique():
+    _fresh()
+    s = SessionLocal()
+    try:
+        s.add(Inventory(mc_code="MCX-1", item_code="ITM", serial_no="SN-A1", status="IN_STOCK"))
+        s.commit()
+        s.add(Inventory(mc_code="MCX-1", item_code="ITM", serial_no="SN-A2", status="IN_STOCK"))
+        with pytest.raises(IntegrityError):
+            s.commit()
+    finally:
+        s.rollback()
+        s.close()
+
+
+def test_inspection_cert_incoming_id_unique():
+    _fresh()
+    s = SessionLocal()
+    try:
+        s.add(InspectionCert(cert_id="CERTX-1", incoming_id="INCX-1"))
+        s.commit()
+        s.add(InspectionCert(cert_id="CERTX-2", incoming_id="INCX-1"))
+        with pytest.raises(IntegrityError):
+            s.commit()
+    finally:
+        s.rollback()
+        s.close()
+
+
+def test_outgoing_and_defect_id_unique():
+    # duplicate log_id
+    _fresh()
+    s = SessionLocal()
+    try:
+        s.add(OutgoingLog(log_id="LOGX-1", inv_mc="MC-X", action="SHIPPED"))
+        s.commit()
+        s.add(OutgoingLog(log_id="LOGX-1", inv_mc="MC-X", action="SHIPPED"))
+        with pytest.raises(IntegrityError):
+            s.commit()
+    finally:
+        s.rollback()
+        s.close()
+
+    # duplicate defect_id
+    _fresh()
+    s = SessionLocal()
+    try:
+        s.add(DefectLog(defect_id="DEFX-1", inv_mc="MC-X", action="SCRAP"))
+        s.commit()
+        s.add(DefectLog(defect_id="DEFX-1", inv_mc="MC-X", action="SCRAP"))
+        with pytest.raises(IntegrityError):
+            s.commit()
+    finally:
+        s.rollback()
+        s.close()
