@@ -38,7 +38,7 @@ class PoLine(Base, PkMixin, LegacyIdMixin, TimestampMixin, VersionMixin):
     currency: Mapped[str | None] = mapped_column(String(10), nullable=True, default="KRW")
 
 
-class PoCounter(Base, TimestampMixin):
+class PoCounter(Base, TimestampMixin, VersionMixin):
     __tablename__ = "po_counter"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
