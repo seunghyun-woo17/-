@@ -60,3 +60,17 @@ def test_fat_comment_code_unique_and_file_object_cols():
     # file_object schema present
     assert FileObject.__tablename__ == "file_object"
     assert "s3_key" in FileObject.__table__.c
+
+
+def test_file_object_s3_key_unique():
+    _fresh()
+    s = SessionLocal()
+    try:
+        s.add(FileObject(s3_key="s3://bucket/key-A"))
+        s.commit()
+        s.add(FileObject(s3_key="s3://bucket/key-A"))
+        with pytest.raises(IntegrityError):
+            s.commit()
+    finally:
+        s.rollback()
+        s.close()
