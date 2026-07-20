@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from decimal import Decimal
 
 from sqlalchemy import update
 from sqlalchemy.orm import Session
@@ -12,6 +13,8 @@ def row_to_dict(obj) -> dict:
         value = getattr(obj, col.name)
         if isinstance(value, (datetime, date)):
             value = value.isoformat()
+        elif isinstance(value, Decimal):
+            value = float(value)
         result[col.name] = value
     return result
 
