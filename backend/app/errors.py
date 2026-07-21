@@ -94,12 +94,23 @@ async def _app_error_handler(request: Request, exc: AppError) -> JSONResponse:
     )
 
 
+def _serialise_errors(errors: list) -> list:
+    """Pydantic v2 error ctx may contain raw Exception objects; convert to str."""
+    result = []
+    for err in errors:
+        e = dict(err)
+        if "ctx" in e and isinstance(e["ctx"], dict):
+            e["ctx"] = {k: str(v) if isinstance(v, Exception) else v for k, v in e["ctx"].items()}
+        result.append(e)
+    return result
+
+
 async def _request_validation_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     return JSONResponse(
         status_code=422,
-        content={"error": "VALIDATION", "detail": exc.errors()},
+        content={"error": "VALIDATION", "detail": _serialise_errors(exc.errors())},
     )
 
 
