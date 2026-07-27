@@ -100,25 +100,18 @@ def inventory_defect(mc: str, payload: DefectIn, db: Session = Depends(get_db)) 
     else:  # HOLD
         target_status = None
         result_date = None
+    defect_id = _gen("DEF")
     try:
         db.add(DefectLog(
-            defect_id=_gen("DEF"), inv_mc=mc, serial_no=inv.serial_no, item_code=inv.item_code,
+            defect_id=defect_id, inv_mc=mc, serial_no=inv.serial_no, item_code=inv.item_code,
             action=payload.action, supplier_code=payload.supplier_code,
             action_date=today, result_date=result_date, memo=payload.memo,
         ))
         if target_status is not None:
-            db.execute(
-                update(Inventory)
-                .where(Inventory.mc_code == mc)
-                .values(status=target_status, version=Inventory.version + 1)
-            )
+            db.execute(update(Inventory).where(Inventory.mc_code == mc).values(status=target_status, version=Inventory.version + 1))
         db.flush()
         updated = db.execute(select(Inventory).where(Inventory.mc_code == mc)).scalar_one()
-        result: dict = {"defect_id": None, "inventory": row_to_dict(updated)}
-        last = db.execute(
-            select(DefectLog).where(DefectLog.inv_mc == mc).order_by(DefectLog.id.desc())
-        ).scalars().first()
-        result["defect_id"] = last.defect_id if last else None
+        result = {"defect_id": defect_id, "inventory": row_to_dict(updated)}
         db.commit()
         return result
     except Exception:

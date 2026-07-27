@@ -67,6 +67,16 @@ def test_defect_return_restores_stock_with_result_date(client):
     assert dlog[0]["result_date"] is not None
 
 
+def test_defect_hold_keeps_status_and_logs(client):
+    _seed(status="DEFECT")
+    r = client.post("/api/inventory/MC-1/defect", json={"action": "HOLD", "memo": "보류"})
+    assert r.status_code == 200
+    assert r.json()["inventory"]["status"] == "DEFECT"
+    dlog = client.get("/api/defect_log").json()
+    assert any(d["action"] == "HOLD" for d in dlog)
+    assert r.json()["defect_id"] and r.json()["defect_id"].startswith("DEF-")
+
+
 def test_defect_unknown_mc_404(client):
     r = client.post("/api/inventory/MC-NOPE/defect", json={"action": "SCRAP"})
     assert r.status_code == 404
