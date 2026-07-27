@@ -80,3 +80,61 @@ def complete_incoming(payload: IncomingCompleteIn, db: Session = Depends(get_db)
     except Exception:
         db.rollback()
         raise
+
+
+@router.post("/incoming/{incoming_id}/cert")
+def upsert_cert(incoming_id: str, payload: CertIn, db: Session = Depends(get_db)) -> dict:
+    hdr = db.execute(
+        select(IncomingHeader).where(IncomingHeader.incoming_id == incoming_id)
+    ).scalar_one_or_none()
+    if hdr is None:
+        raise NotFoundError(detail=f"입고 건 없음: {incoming_id}")
+    try:
+        existing = db.execute(
+            select(InspectionCert).where(InspectionCert.incoming_id == incoming_id)
+        ).scalar_one_or_none()
+        if existing is not None:
+            if payload.cert_no is not None:
+                existing.cert_no = payload.cert_no
+            if payload.issued_by is not None:
+                existing.issued_by = payload.issued_by
+            if payload.issued_date is not None:
+                existing.issued_date = payload.issued_date
+            existing.version += 1
+            db.flush()
+            cert_id = existing.cert_id
+            stamped = db.execute(
+                select(Inventory).where(Inventory.cert_id == cert_id)
+            ).scalars().all()
+            result = {"cert_id": cert_id, "stamped_count": len(stamped)}
+            db.commit()
+            return result
+
+        cert_id = _gen_id("CERT")
+        db.add(InspectionCert(
+            cert_id=cert_id, incoming_id=incoming_id, po_id=hdr.po_id,
+            cert_no=payload.cert_no or "미입력",
+            issued_by=payload.issued_by or "미입력",
+            issued_date=payload.issued_date,
+        ))
+        sns = [
+            r.serial_no
+            for r in db.execute(
+                select(IncomingLine).where(IncomingLine.incoming_id == incoming_id)
+            ).scalars().all()
+        ]
+        stamped_count = 0
+        if sns:
+            res = db.execute(
+                update(Inventory)
+                .where(Inventory.serial_no.in_(sns))
+                .values(cert_id=cert_id, version=Inventory.version + 1)
+            )
+            stamped_count = res.rowcount
+        db.flush()
+        result = {"cert_id": cert_id, "stamped_count": stamped_count}
+        db.commit()
+        return result
+    except Exception:
+        db.rollback()
+        raise
