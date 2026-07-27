@@ -1,4 +1,7 @@
+from datetime import datetime, timezone
+
 from app.database import SessionLocal
+from app.models.procurement import PoHeader
 from tests.factories import make_supplier
 
 
@@ -56,3 +59,21 @@ def test_create_po_rollback_on_bad_line_leaves_no_partial(client):
     assert r.status_code == 422
     assert client.get("/api/po_header").json() == []
     assert client.get("/api/po_line").json() == []
+
+
+def test_create_po_duplicate_ref_returns_409(client):
+    _seed_supplier()
+    yy = datetime.now(timezone.utc).year % 100
+    clash_ref = f"A-PO-{yy:02d}0001"   # what next_po_ref_no allocates first this year
+    s = SessionLocal()
+    try:
+        s.add(PoHeader(po_ref_no=clash_ref, supplier_code="VND-MRC-001", status="OPEN"))
+        s.commit()
+    finally:
+        s.close()
+    r = client.post("/api/po", json={"supplier_code": "VND-MRC-001", "lines": [{"item_code": "ITM-1", "ordered_qty": 1}]})
+    assert r.status_code == 409
+    assert r.json()["error"] == "DUPLICATE"
+    # no partial commit: po_line for the failed ref must not leak
+    lines = client.get("/api/po_line").json()
+    assert all(l["po_id"] != clash_ref for l in lines)

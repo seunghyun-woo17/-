@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.deps import get_db
+from app.errors import DuplicateError
 from app.models.procurement import PoHeader, PoLine
 from app.schemas.po import PoCreate
 from app.services.locking import row_to_dict
@@ -53,6 +55,9 @@ def create_po(payload: PoCreate, db: Session = Depends(get_db)) -> dict:
         }
         db.commit()
         return result
+    except IntegrityError:
+        db.rollback()
+        raise DuplicateError(detail="PO 번호 중복 — 재발행이 필요합니다.")
     except Exception:
         db.rollback()
         raise
